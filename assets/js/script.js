@@ -100,7 +100,13 @@ const I18N = {
     p_iut_cat: "Desktop · GUI",
     p_iut_title: "IUT Messenger",
     p_iut_desc: "Desktop messenger application built with C++ and Qt 6 — IUT Advanced Programming final project.",
-    view_github: "View on GitHub"
+    view_github: "View on GitHub",
+    nav_logs: "Logs",
+    logs_title: "Engineering Logs",
+    logs_sub: "Real-world architectural notes, system design trade-offs, and on-premise AI deployment insights directly synced from <a href=\"https://t.me/KhanAcademyy\" target=\"_blank\" rel=\"noopener noreferrer\">@KhanAcademyy</a>.",
+    logs_read: "Read on Telegram",
+    logs_subscribe: "Subscribe on Telegram",
+    logs_empty: "No logs yet — subscribe to catch the next engineering note."
   },
 
   fa: {
@@ -197,7 +203,13 @@ const I18N = {
     p_iut_cat: "دسکتاپ · رابط گرافیکی",
     p_iut_title: "پیام‌رسان IUT",
     p_iut_desc: "برنامهٔ پیام‌رسان دسکتاپ با C++ و Qt 6 — پروژهٔ پایانی برنامه‌نویسی پیشرفتهٔ دانشگاه صنعتی اصفهان.",
-    view_github: "مشاهده در گیت‌هاب"
+    view_github: "مشاهده در گیت‌هاب",
+    nav_logs: "یادداشت‌ها",
+    logs_title: "یادداشت‌های مهندسی",
+    logs_sub: "نکته‌های واقعی معماری، مصالحه‌های طراحی سیستم و بینش‌های استقرار هوش مصنوعی On-Premise — مستقیماً از <a href=\"https://t.me/KhanAcademyy\" target=\"_blank\" rel=\"noopener noreferrer\">@KhanAcademyy</a> همگام‌سازی شده.",
+    logs_read: "مطالعه در تلگرام",
+    logs_subscribe: "عضویت در تلگرام",
+    logs_empty: "هنوز یادداشتی منتشر نشده — برای مطالعهٔ یادداشت‌های بعدی عضو شوید."
   }
 
 };
@@ -266,6 +278,9 @@ const applyLang = function (lang) {
     caseToggleLabel.textContent = dict[opened ? "case_show_less" : "case_read_more"];
   }
 
+  /* re-render the engineering logs in the current language */
+  renderLogs();
+
   document.title = dict.meta_title;
 
   try { localStorage.setItem("lang", lang); } catch (e) { }
@@ -275,8 +290,317 @@ langBtns.forEach(function (b) {
   b.addEventListener("click", function () { applyLang(b.dataset.lang); });
 });
 
-/* sync UI with the boot-time language (from the inline <head> script) */
-applyLang(rootEl.getAttribute("lang") === "fa" ? "fa" : "en");
+/*-----------------------------------*\
+  engineering logs (Telegram feed)
+\*-----------------------------------*/
+
+const TELEGRAM_CHANNEL = "https://t.me/KhanAcademyy";
+
+/* RSSHub instances, tried in order until one resolves.
+   rsshub.app is rate-limiting public usage (403 since 2026-08);
+   rsshub.rssforever.com verified reachable. */
+const TELEGRAM_RSS_HUBS = [
+  "https://rsshub.rssforever.com/telegram/channel/KhanAcademyy",
+  "https://rsshub.app/telegram/channel/KhanAcademyy"
+];
+
+const logsGrid = document.querySelector("[data-logs-grid]");
+
+let logsStatus = "loading";   /* "loading" | "ready" | "fallback" | "empty" */
+let logsItems = [];
+
+const FALLBACK_LOGS = {
+  en: [
+    {
+      title: "Zero-Cloud RAG on Air-Gapped Municipal Hardware",
+      excerpt: "Why hybrid retrieval — exact rule matching plus dense vectors — beats pure embedding search when every token must stay inside the building.",
+      tags: ["RAG", "On-Premise", "Vector DBs"]
+    },
+    {
+      title: "Low-Latency Persian ASR Pipeline in .NET",
+      excerpt: "Streaming Sherpa/Gyro inference behind an ASP.NET Core orchestrator: chunking, VAD gating, and tuning for noisy office environments.",
+      tags: ["ASR", "Persian NLP", ".NET"]
+    }
+  ],
+  fa: [
+    {
+      title: "RAG بدون ابر روی سخت‌افزار شهری ایزوله",
+      excerpt: "چرا بازیابی ترکیبی — تطبیق دقیق قواعد به‌همراه بردارهای متراکم — از جستجوی صرفاً embedding بهتر است وقتی هر توکن باید داخل ساختمان بماند.",
+      tags: ["RAG", "On-Premise", "Vector DBs"]
+    },
+    {
+      title: "پایپ‌لاین ASR فارسی با تأخیر کم در .NET",
+      excerpt: "استنتاج جریانی Sherpa/Gyro پشت هماهنگ‌کنندهٔ ASP.NET Core: تقسیم‌بندی، گیتینگ VAD و تنظیم برای محیط‌های اداری پر سر و صدا.",
+      tags: ["ASR", "پردازش زبان فارسی", ".NET"]
+    }
+  ]
+};
+
+/* only *.t.me links are acceptable post targets */
+const normalizeTelegramUrl = function (link) {
+  try {
+    const u = new URL(link);
+    if (!u.hostname.endsWith("t.me") && !u.hostname.endsWith("telegram.me")) {
+      return TELEGRAM_CHANNEL;
+    }
+    return u.href.replace("/s/", "/");
+  } catch (e) {
+    return TELEGRAM_CHANNEL;
+  }
+};
+
+const parseLogItem = function (item) {
+  const rawDesc = item.description || item.content || "";
+  const html = rawDesc.replace(/<br\s*\/?>/gi, "\n");
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  const text = div.textContent.replace(/\u00a0/g, " ").trim();
+
+  /* no strict hashtag filter — every post with readable text is a log;
+     drop only fully empty / media-only entries */
+  const fallbackTitle = (item.title || "").trim();
+  if (!text && !fallbackTitle) return null;
+
+  /* strip rsshub media markers, then split into lines */
+  const lines = text.split("\n")
+    .map(function (l) { return l.replace(/^(Photo|Video)\s+/i, "").trim(); })
+    .filter(Boolean);
+
+  const truncate = function (s, n) {
+    return s.length > n ? s.slice(0, n).trimEnd() + "…" : s;
+  };
+
+  /* first line = title (skipping the channel / "Forwarded From" signature
+     lines rsshub prepends, so titles are the post's own first sentence) */
+  const titleLines = lines.filter(function (l) {
+    return !/^(Khan Academy!|Forwarded From)[:：]/.test(l);
+  });
+  const title = truncate((titleLines[0] || lines[0] || fallbackTitle || "Log").trim(), 90);
+
+  const rest = lines.slice(1).join(" ").trim();
+  const excerpt = truncate((rest || text).replace(/\s+/g, " ").slice(0, 220), 220);
+
+  /* hashtags → chips; default #Log chip when the post has none */
+  const hashtags = (text + " " + fallbackTitle).match(/#[\p{L}\p{N}_]+/gu) || [];
+  const uniqueTags = Array.from(new Set(hashtags.map(function (t) { return t.replace(/^#/, ""); })));
+  const tags = uniqueTags.length > 0 ? uniqueTags.slice(0, 5) : ["Log"];
+
+  const date = new Date(item.pubDate);
+  const reading = Math.max(1, Math.round(text.split(/\s+/).length / 200));
+
+  /* media-only posts ("Photo" / "Video" with no readable body) are dropped */
+  if (!excerpt && /^(photo|video)$/i.test(title.trim())) return null;
+
+  return {
+    title: title,
+    excerpt: excerpt,
+    tags: tags,
+    url: normalizeTelegramUrl(item.link),
+    date: isNaN(date.getTime()) ? null : date,
+    reading: reading
+  };
+};
+
+const buildLogCard = function (item, lang) {
+  const dict = I18N[lang];
+  const card = document.createElement("article");
+  card.className = "logs-card";
+
+  const meta = document.createElement("div");
+  meta.className = "logs-meta";
+
+  if (item.date) {
+    const time = document.createElement("time");
+    time.dateTime = item.date.toISOString();
+    time.textContent = item.date.toLocaleDateString(lang === "fa" ? "fa-IR" : "en-GB", {
+      numberingSystem: "latn",
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    });
+    meta.appendChild(time);
+    const dot = document.createElement("span");
+    dot.className = "dot";
+    dot.setAttribute("aria-hidden", "true");
+    meta.appendChild(dot);
+  }
+
+  const reading = document.createElement("span");
+  reading.textContent = lang === "fa"
+    ? "مطالعهٔ " + item.reading + " دقیقه‌ای"
+    : item.reading + " min read";
+  meta.appendChild(reading);
+
+  const badge = document.createElement("a");
+  badge.className = "logs-badge";
+  badge.href = TELEGRAM_CHANNEL;
+  badge.target = "_blank";
+  badge.rel = "noopener noreferrer";
+  badge.textContent = "t.me/KhanAcademyy";
+  meta.appendChild(badge);
+
+  const title = document.createElement("h4");
+  title.className = "logs-title";
+  title.setAttribute("dir", "auto");   /* Persian → RTL, English snippets → LTR */
+  title.textContent = item.title;
+
+  const excerpt = document.createElement("p");
+  excerpt.className = "logs-excerpt";
+  excerpt.setAttribute("dir", "auto");   /* Persian → RTL, English snippets → LTR */
+  excerpt.textContent = item.excerpt;
+
+  const tags = document.createElement("ul");
+  tags.className = "tag-row";
+  item.tags.forEach(function (t) {
+    const li = document.createElement("li");
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.textContent = "#" + t;
+    li.appendChild(chip);
+    tags.appendChild(li);
+  });
+
+  const actions = document.createElement("div");
+  actions.className = "logs-card-actions";
+  const btn = document.createElement("a");
+  btn.className = "btn btn--ghost";
+  btn.href = item.url;
+  btn.target = "_blank";
+  btn.rel = "noopener noreferrer";
+  const label = document.createElement("span");
+  label.textContent = dict.logs_read;
+  const arrow = document.createElement("ion-icon");
+  arrow.setAttribute("name", "arrow-forward-outline");
+  arrow.className = "btn-arrow";
+  btn.appendChild(label);
+  btn.appendChild(arrow);
+  actions.appendChild(btn);
+
+  card.appendChild(meta);
+  card.appendChild(title);
+  card.appendChild(excerpt);
+  card.appendChild(tags);
+  card.appendChild(actions);
+
+  return card;
+};
+
+const renderLogs = function () {
+  if (!logsGrid) return;
+  const lang = rootEl.getAttribute("lang") === "fa" ? "fa" : "en";
+  logsGrid.textContent = "";
+
+  if (logsStatus === "loading") {
+    for (let i = 0; i < 4; i++) {
+      const s = document.createElement("div");
+      s.className = "skeleton-card";
+      s.setAttribute("aria-hidden", "true");
+      s.innerHTML =
+        '<div class="skel skel-meta" style="width:45%"></div>' +
+        '<div class="skel skel-title" style="width:75%"></div>' +
+        '<div class="skel skel-line"></div>' +
+        '<div class="skel skel-line" style="width:85%"></div>' +
+        '<div class="skel skel-line" style="width:55%"></div>' +
+        '<div class="skel skel-chips" style="width:60%"></div>';
+      logsGrid.appendChild(s);
+    }
+    return;
+  }
+
+  if (logsStatus === "fallback") {
+    FALLBACK_LOGS[lang].forEach(function (item) {
+      logsGrid.appendChild(buildLogCard({
+        title: item.title,
+        excerpt: item.excerpt,
+        tags: item.tags,
+        url: TELEGRAM_CHANNEL,
+        date: null,
+        reading: 4
+      }, lang));
+    });
+    return;
+  }
+
+  if (logsStatus === "empty") {
+    const empty = document.createElement("p");
+    empty.className = "logs-empty";
+    empty.textContent = I18N[lang].logs_empty;
+    logsGrid.appendChild(empty);
+    return;
+  }
+
+  logsItems.forEach(function (item) {
+    logsGrid.appendChild(buildLogCard(item, lang));
+  });
+};
+
+const fetchTelegramLogs = async function () {
+  let lastError = null;
+  let lastEmpty = null;   /* first successful payload even if it had 0 matches */
+
+  for (const hub of TELEGRAM_RSS_HUBS) {
+    const controller = new AbortController();
+    const timer = setTimeout(function () { controller.abort(); }, 10000);
+
+    try {
+      /* cache-bust: rss2json rejects unknown TOP-LEVEL params (422), so the
+         timestamp goes INSIDE rss_url — it also busts the RSSHub instance's
+         own cache key, forcing a fresh Telegram scrape per load */
+      const url = "https://api.rss2json.com/v1/api.json?rss_url=" +
+        encodeURIComponent(hub + "?_t=" + Date.now());
+
+      const res = await fetch(url, { signal: controller.signal });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+      if (!data || data.status !== "ok" || !Array.isArray(data.items)) {
+        throw new Error("invalid payload from " + hub);
+      }
+
+      const parsed = data.items.map(parseLogItem).filter(Boolean);
+
+      console.log("[Telegram Logs] Raw items fetched:", data.items.length);
+      console.log("[Telegram Logs] Readable text posts:", parsed.length);
+      console.log("[Telegram Logs] Source:", hub);
+
+      if (parsed.length === 0) {
+        console.warn("[Telegram Logs] No readable posts in this copy — the feed layer may still be catching up.");
+        lastEmpty = parsed;
+        continue;   /* try the next hub — a fresher copy may include the posts */
+      }
+
+      /* newest first */
+      parsed.sort(function (a, b) {
+        return (b.date ? b.date.getTime() : 0) - (a.date ? a.date.getTime() : 0);
+      });
+
+      return parsed;
+    } catch (e) {
+      lastError = e;
+      console.warn("[Telegram Logs] Hub failed:", hub, e);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  if (lastEmpty) return lastEmpty;
+
+  throw lastError || new Error("all RSS hubs failed");
+};
+
+const loadLogs = async function () {
+  logsStatus = "loading";
+  renderLogs();
+  try {
+    logsItems = await fetchTelegramLogs();   /* already parsed: readable posts, newest first */
+    logsStatus = logsItems.length > 0 ? "ready" : "empty";
+  } catch (e) {
+    console.warn("[Telegram Logs] Feed unavailable — showing fallback cards:", e);
+    logsStatus = "fallback";
+  }
+  renderLogs();
+};
+
+loadLogs();
 
 /*-----------------------------------*\
   sidebar toggle (mobile)
@@ -427,3 +751,7 @@ if (caseToggle) {
     caseToggleLabel.textContent = I18N[lang][opened ? "case_show_less" : "case_read_more"];
   });
 }
+
+/* sync UI with the boot-time language (from the inline <head> script).
+   Runs last so every renderer above (incl. the logs engine) is initialized. */
+applyLang(rootEl.getAttribute("lang") === "fa" ? "fa" : "en");

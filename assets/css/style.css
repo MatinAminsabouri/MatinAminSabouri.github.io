@@ -1471,7 +1471,7 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
 /* mono-labeled elements carrying Persian text → body font, no tracking */
 [dir="rtl"] :is(.badge, .case-title, .contact-title, .project-category,
                 .stat-value, .stat-label, .status-text, .timeline-company,
-                .project-note, .copy-tooltip, .persian-name) {
+                .project-note, .copy-tooltip, .persian-name, .logs-meta) {
   font-family: var(--ff-body);
   letter-spacing: 0;
 }
@@ -1480,3 +1480,223 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
 [dir="rtl"] .btn .btn-arrow { transform: scaleX(-1); }
 
 [dir="rtl"] .btn:hover .btn-arrow { transform: translateX(-3px) scaleX(-1); }
+
+/*-----------------------------------*\
+  #15 ENGINEERING LOGS
+\*-----------------------------------*/
+
+.logs-sub {
+  color: var(--text-2);
+  font-size: var(--fs-small);
+  max-width: 64ch;
+  margin-bottom: var(--sp-5);
+}
+
+.logs-sub a {
+  color: var(--accent-1);
+  font-weight: 500;
+  transition: color var(--dur-1);
+}
+
+.logs-sub a:hover { color: var(--accent-2); }
+
+.logs-feed {
+  display: grid;
+  gap: var(--sp-5);
+}
+
+.logs-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-4);
+  min-height: 240px;   /* CLS guard while skeleton → content swaps */
+}
+
+@media (min-width: 768px) {
+  .logs-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.logs-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-brd);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5);
+  transition: transform var(--dur-2) var(--ease-out), border-color var(--dur-2), box-shadow var(--dur-2);
+}
+
+.logs-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(34, 211, 238, 0.3);
+  box-shadow: 0 16px 40px -16px rgba(2, 6, 23, 0.8);
+}
+
+.logs-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  font-family: var(--ff-mono);
+  font-size: 0.6875rem;
+  color: var(--text-3);
+}
+
+.logs-meta .dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--line-3);
+}
+
+.logs-badge {
+  margin-inline-start: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(34, 211, 238, 0.25);
+  background: rgba(34, 211, 238, 0.06);
+  color: var(--accent-2);
+  font-size: 0.625rem;
+  transition: border-color var(--dur-1), color var(--dur-1);
+}
+
+.logs-badge:hover {
+  border-color: rgba(34, 211, 238, 0.45);
+  color: var(--accent-1);
+}
+
+.logs-title { font-size: var(--fs-sub); }
+
+.logs-excerpt {
+  color: var(--text-2);
+  font-size: var(--fs-small);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.logs-card-actions {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+}
+
+.logs-footer {
+  display: flex;
+  justify-content: center;
+}
+
+.logs-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-2);
+  font-size: var(--fs-small);
+  padding: var(--sp-6) var(--sp-5);
+  border: 1px dashed var(--line-2);
+  border-radius: var(--radius-lg);
+}
+
+/* skeleton loaders */
+.skeleton-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-height: 220px;
+  padding: var(--sp-5);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-brd);
+  border-radius: var(--radius-lg);
+}
+
+.skel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--bg-2);
+}
+
+.skel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.12), transparent);
+  animation: shimmer 1.6s var(--ease-out) infinite;
+}
+
+.skel-meta { height: 10px; width: 45%; }
+.skel-title { height: 16px; width: 72%; }
+.skel-line { height: 11px; }
+.skel-chips { height: 22px; width: 60%; border-radius: 999px; }
+
+@keyframes shimmer {
+  to { transform: translateX(100%); }
+}
+
+/* very narrow screens: keep the 4-tab bottom nav on one line */
+@media (max-width: 379px) {
+  .navbar-link { padding: 10px 12px; font-size: 0.8rem; }
+  .navbar-list { gap: 0; }
+}
+
+/*-----------------------------------*\
+  #16 PERSIAN TYPOGRAPHY & TELEGRAM LOG CARDS
+\*-----------------------------------*/
+
+/* Log content is Persian regardless of the site language — always render
+   titles/excerpts in Vazirmatn (loaded unconditionally in <head>) so no
+   system-font fallback (Tahoma/Arial) ever appears */
+.logs-grid .logs-title,
+.logs-grid .logs-excerpt {
+  font-family: 'Vazirmatn', 'Inter', sans-serif;
+  letter-spacing: normal;   /* keeps Persian ligatures/joining intact */
+}
+
+.logs-grid .logs-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.logs-grid .logs-excerpt {
+  font-size: 0.9rem;
+  line-height: 1.85;
+}
+
+/* meta row (date · reading · badge) stays LTR; dates use Latin digits */
+.logs-grid .logs-meta { direction: ltr; }
+
+.logs-grid .logs-badge {
+  font-family: 'JetBrains Mono', monospace;
+  direction: ltr;
+  letter-spacing: -0.02em;
+}
+
+/* Persian headings: heavier weight + taller leading (Vazirmatn optical size) */
+html[lang="fa"] h1,
+html[lang="fa"] h2,
+html[lang="fa"] h3,
+html[lang="fa"] h4,
+html[lang="fa"] .article-title,
+html[lang="fa"] .project-title {
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* Persian body copy needs taller leading than Latin */
+html[lang="fa"] p,
+html[lang="fa"] .about-text,
+html[lang="fa"] .timeline-text {
+  line-height: 1.8;
+}
+
+/* keep tags and the channel badge left-to-right in RTL mode */
+[dir="rtl"] .chip,
+[dir="rtl"] .logs-badge {
+  direction: ltr;
+}
