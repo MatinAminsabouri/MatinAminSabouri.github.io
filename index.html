@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 
 <head>
   <meta charset="UTF-8">
@@ -13,16 +13,47 @@
   <meta property="og:description" content="Software &amp; AI Systems Engineer with 3+ years experience building RAG, ASR, and enterprise backend architectures.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="./assets/images/myPic.jpg">
+  <script>
+    (function () {
+      /* FOUC-free boot: apply persisted (or system) theme + language before first paint */
+      try {
+        var t = localStorage.getItem('theme');
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute('content', t === 'light' ? '#F8FAFC' : '#070B12');
+        var l = localStorage.getItem('lang') === 'fa' ? 'fa' : 'en';
+        document.documentElement.setAttribute('lang', l);
+        document.documentElement.setAttribute('dir', l === 'fa' ? 'rtl' : 'ltr');
+      } catch (e) { }
+    })();
+  </script>
   <link rel="shortcut icon" href="./assets/images/gear (1).png" type="image/x-icon">
   <link rel="stylesheet" href="./assets/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
   <main>
+
+    <div class="controls" role="group" aria-label="Preferences" data-i18n-aria="a_prefs">
+
+    <button class="controls-btn" data-theme-toggle aria-label="Toggle theme" data-i18n-aria="a_theme">
+      <ion-icon name="moon-outline" class="ic-moon"></ion-icon>
+      <ion-icon name="sunny-outline" class="ic-sun"></ion-icon>
+    </button>
+
+    <div class="lang-switch" role="group" aria-label="Language" data-i18n-aria="a_lang">
+      <button class="lang-btn active" data-lang="en" aria-pressed="true">EN</button>
+      <button class="lang-btn" data-lang="fa" aria-pressed="false">FA</button>
+    </div>
+
+  </div>
 
     <aside class="sidebar" data-sidebar>
 
@@ -36,18 +67,18 @@
           <h1 class="name" title="Matin AminSabouri">Matin AminSabouri</h1>
           <p class="persian-name">متین امین صبوری</p>
 
-          <p class="title">AI &amp; Backend Engineer (.NET / AI Systems)</p>
+          <p class="title" data-i18n="tagline">AI &amp; Backend Engineer (.NET / AI Systems)</p>
 
-          <p class="positioning">AI &amp; Backend Systems Engineer building production-grade distributed backends, RAG pipelines, and on-premise AI deployments under real-world infrastructure constraints.</p>
+          <p class="positioning" data-i18n="positioning">AI &amp; Backend Systems Engineer building production-grade distributed backends, RAG pipelines, and on-premise AI deployments under real-world infrastructure constraints.</p>
 
           <div class="status-row">
             <span class="status-dot" aria-hidden="true"></span>
-            <span class="status-text">Open to work</span>
+            <span class="status-text" data-i18n="open_to_work">Open to work</span>
           </div>
         </div>
 
-        <button class="info_more-btn" data-sidebar-btn aria-label="Show or hide contact details">
-          <span>Show Contacts</span>
+        <button class="info_more-btn" data-sidebar-btn aria-label="Show or hide contact details" data-i18n-aria="a_contacts">
+          <span data-i18n="show_contacts">Show Contacts</span>
           <ion-icon name="chevron-down"></ion-icon>
         </button>
 
@@ -65,7 +96,7 @@
                 <ion-icon name="logo-github"></ion-icon>
               </div>
               <div class="contact-info">
-                <p class="contact-title">GitHub</p>
+                <p class="contact-title" data-i18n="c_github">GitHub</p>
                 <a href="https://github.com/MatinAminsabouri" class="contact-link">matinaminsabouri</a>
               </div>
             </li>
@@ -75,13 +106,13 @@
                 <ion-icon name="mail-outline"></ion-icon>
               </div>
               <div class="contact-info">
-                <p class="contact-title">Email</p>
+                <p class="contact-title" data-i18n="c_email">Email</p>
                 <a href="mailto:matinaminsabouri70@gmail.com" class="contact-link">matinaminsabouri70@gmail.com</a>
               </div>
-              <button class="copy-btn" data-copy="matinaminsabouri70@gmail.com" aria-label="Copy email address">
+              <button class="copy-btn" data-copy="matinaminsabouri70@gmail.com" aria-label="Copy email address" data-i18n-aria="a_copy_email">
                 <ion-icon name="copy-outline" class="copy-ic"></ion-icon>
                 <ion-icon name="checkmark-outline" class="check-ic"></ion-icon>
-                <span class="copy-tooltip" aria-hidden="true">Copied!</span>
+                <span class="copy-tooltip" aria-hidden="true" data-i18n="copy_done">Copied!</span>
               </button>
             </li>
 
@@ -90,13 +121,13 @@
                 <ion-icon name="call-outline"></ion-icon>
               </div>
               <div class="contact-info">
-                <p class="contact-title">Phone</p>
+                <p class="contact-title" data-i18n="c_phone">Phone</p>
                 <a href="tel:+989135458251" class="contact-link">(+98) 913 545 8251</a>
               </div>
-              <button class="copy-btn" data-copy="+989135458251" aria-label="Copy phone number">
+              <button class="copy-btn" data-copy="+989135458251" aria-label="Copy phone number" data-i18n-aria="a_copy_phone">
                 <ion-icon name="copy-outline" class="copy-ic"></ion-icon>
                 <ion-icon name="checkmark-outline" class="check-ic"></ion-icon>
-                <span class="copy-tooltip" aria-hidden="true">Copied!</span>
+                <span class="copy-tooltip" aria-hidden="true" data-i18n="copy_done">Copied!</span>
               </button>
             </li>
 
@@ -105,7 +136,7 @@
                 <ion-icon name="logo-linkedin"></ion-icon>
               </div>
               <div class="contact-info">
-                <p class="contact-title">LinkedIn</p>
+                <p class="contact-title" data-i18n="c_linkedin">LinkedIn</p>
                 <a href="https://www.linkedin.com/in/matin-amin-sabouri-b0a6b2200/" class="contact-link">linkedin.com/in/matin-amin-sabouri</a>
               </div>
             </li>
@@ -115,8 +146,8 @@
                 <ion-icon name="location-outline"></ion-icon>
               </div>
               <div class="contact-info">
-                <p class="contact-title">Location</p>
-                <address>Esfahan, Iran</address>
+                <p class="contact-title" data-i18n="c_location">Location</p>
+                <address data-i18n="c_location_value">Esfahan, Iran</address>
               </div>
             </li>
 
@@ -127,12 +158,12 @@
           <ul class="social-list">
 
             <li class="social-item">
-              <a href="https://github.com/MatinAminsabouri" class="social-link" aria-label="GitHub profile">
+              <a href="https://github.com/MatinAminsabouri" class="social-link" aria-label="GitHub profile" data-i18n-aria="a_github">
                 <ion-icon name="logo-github"></ion-icon>
               </a>
             </li>
             <li class="social-item">
-              <a href="https://www.linkedin.com/in/matin-amin-sabouri-b0a6b2200/" class="social-link" aria-label="LinkedIn profile">
+              <a href="https://www.linkedin.com/in/matin-amin-sabouri-b0a6b2200/" class="social-link" aria-label="LinkedIn profile" data-i18n-aria="a_linkedin">
                 <ion-icon name="logo-linkedin"></ion-icon>
               </a>
             </li>
@@ -146,20 +177,20 @@
 
     <div class="main-content">
 
-      <nav class="navbar" aria-label="Primary">
+      <nav class="navbar" aria-label="Primary" data-i18n-aria="a_nav">
 
         <ul class="navbar-list">
 
           <li class="navbar-item">
-            <button class="navbar-link active" data-nav-link aria-current="page">About</button>
+            <button class="navbar-link active" data-nav-link data-nav-target="about" data-i18n="nav_about" aria-current="page">About</button>
           </li>
 
           <li class="navbar-item">
-            <button class="navbar-link" data-nav-link>Resume</button>
+            <button class="navbar-link" data-nav-link data-nav-target="resume" data-i18n="nav_resume">Resume</button>
           </li>
 
           <li class="navbar-item">
-            <button class="navbar-link" data-nav-link>Portfolio</button>
+            <button class="navbar-link" data-nav-link data-nav-target="portfolio" data-i18n="nav_portfolio">Portfolio</button>
           </li>
 
         </ul>
@@ -169,17 +200,17 @@
       <article class="about active" data-page="about">
 
         <header>
-          <h2 class="article-title">About me</h2>
+          <h2 class="article-title" data-i18n="about_title">About me</h2>
         </header>
 
         <section class="about-text">
-          <p>
+          <p data-i18n="bio_1">
             Software Engineer with 3+ years of experience designing and implementing intelligent systems, scalable
             web backends, and municipal/enterprise automation. Specialized in <strong>.NET Core</strong> and
             <strong>Python</strong>, with a strong focus on RAG (Retrieval-Augmented Generation) architectures,
             AI Agents &amp; MCP workflows, local ASR (Speech Recognition), and Persian NLP.
           </p>
-          <p>
+          <p data-i18n="bio_2">
             Technical Lead for <strong>'Ravin'</strong> — the first specialized municipal and urban-planning AI
             assistant in Iran, deployed fully on-premise.
           </p>
@@ -189,22 +220,22 @@
 
           <div class="stat">
             <span class="stat-value">3+</span>
-            <span class="stat-label">Years of Experience</span>
+            <span class="stat-label" data-i18n="stat_1l">Years of Experience</span>
           </div>
           <div class="stat">
-            <span class="stat-value">AI Lead</span>
-            <span class="stat-label">Ravin AI Assistant</span>
+            <span class="stat-value" data-i18n="stat_2v">AI Lead</span>
+            <span class="stat-label" data-i18n="stat_2l">Ravin AI Assistant</span>
           </div>
           <div class="stat">
             <span class="stat-value">100%</span>
-            <span class="stat-label">On-Premise Deployments</span>
+            <span class="stat-label" data-i18n="stat_3l">On-Premise Deployments</span>
           </div>
 
         </div>
 
         <section class="service">
 
-          <h3 class="service-title">What I'm Doing</h3>
+          <h3 class="service-title" data-i18n="doing_title">What I'm Doing</h3>
 
           <ul class="service-list">
 
@@ -213,8 +244,8 @@
                 <ion-icon name="sparkles-outline"></ion-icon>
               </div>
               <div class="service-content-box">
-                <h4 class="service-item-title">AI Systems &amp; RAG Pipelines</h4>
-                <p class="service-item-text">
+                <h4 class="service-item-title" data-i18n="svc_1t">AI Systems &amp; RAG Pipelines</h4>
+                <p class="service-item-text" data-i18n="svc_1d">
                   Designing deterministic RAG workflows, vector search, custom knowledge bases, and agentic
                   integrations (MCP).
                 </p>
@@ -226,8 +257,8 @@
                 <ion-icon name="server-outline"></ion-icon>
               </div>
               <div class="service-content-box">
-                <h4 class="service-item-title">Scalable Backend Architecture</h4>
-                <p class="service-item-text">
+                <h4 class="service-item-title" data-i18n="svc_2t">Scalable Backend Architecture</h4>
+                <p class="service-item-text" data-i18n="svc_2d">
                   Building resilient RESTful APIs, distributed microservices, and database schemas with .NET Core,
                   Python, SQL Server, and MongoDB.
                 </p>
@@ -239,8 +270,8 @@
                 <ion-icon name="mic-outline"></ion-icon>
               </div>
               <div class="service-content-box">
-                <h4 class="service-item-title">Speech &amp; Persian NLP (ASR)</h4>
-                <p class="service-item-text">
+                <h4 class="service-item-title" data-i18n="svc_3t">Speech &amp; Persian NLP (ASR)</h4>
+                <p class="service-item-text" data-i18n="svc_3d">
                   Deploying on-premise Sherpa/Gyro ASR engines and NLP models tailored for complex Persian
                   administrative domains.
                 </p>
@@ -256,17 +287,17 @@
       <article class="resume" data-page="resume">
 
         <header>
-          <h2 class="article-title">Resume</h2>
+          <h2 class="article-title" data-i18n="resume_title">Resume</h2>
 
           <div class="resume-actions">
             <a href="./assets/MatinAminSabouri-Resume.pdf" target="_blank" class="btn btn--primary">
-              <span>View Resume</span>
+              <span data-i18n="view_resume">View Resume</span>
               <ion-icon name="arrow-forward-outline" class="btn-arrow"></ion-icon>
             </a>
 
             <a href="./assets/MatinAminSabouri-Resume.pdf" download class="btn btn--ghost">
               <ion-icon name="download-outline"></ion-icon>
-              <span>Download</span>
+              <span data-i18n="download">Download</span>
             </a>
           </div>
         </header>
@@ -277,21 +308,21 @@
             <div class="icon-box">
               <ion-icon name="book-outline"></ion-icon>
             </div>
-            <h3 class="timeline-title">Education</h3>
+            <h3 class="timeline-title" data-i18n="edu_title">Education</h3>
           </div>
 
           <ol class="timeline-list">
 
             <li class="timeline-item">
-              <h4 class="timeline-item-title">Isfahan University Of Technology</h4>
+              <h4 class="timeline-item-title" data-i18n="edu_1t">Isfahan University Of Technology</h4>
               <span>2023 — Present</span>
-              <p class="timeline-text">Studying Computer Engineering</p>
+              <p class="timeline-text" data-i18n="edu_1d">Studying Computer Engineering</p>
             </li>
 
             <li class="timeline-item">
-              <h4 class="timeline-item-title">Harati High school</h4>
+              <h4 class="timeline-item-title" data-i18n="edu_2t">Harati High school</h4>
               <span>2019 — 2022</span>
-              <p class="timeline-text">Studied Mathematics in Harati high school</p>
+              <p class="timeline-text" data-i18n="edu_2d">Studied Mathematics in Harati high school</p>
             </li>
 
           </ol>
@@ -304,33 +335,33 @@
             <div class="icon-box">
               <ion-icon name="briefcase-outline"></ion-icon>
             </div>
-            <h3 class="timeline-title">Experience</h3>
+            <h3 class="timeline-title" data-i18n="exp_title">Experience</h3>
           </div>
 
           <ol class="timeline-list">
 
             <li class="timeline-item">
-              <h4 class="timeline-item-title">Senior Backend &amp; AI Engineer | Project Lead (Ravin)</h4>
+              <h4 class="timeline-item-title" data-i18n="exp_role">Senior Backend &amp; AI Engineer | Project Lead (Ravin)</h4>
               <span>Nov 2023 — Present</span>
-              <p class="timeline-company">Nosaz Mohaseb Safahan — Municipal Automation Systems</p>
+              <p class="timeline-company" data-i18n="exp_company">Nosaz Mohaseb Safahan — Municipal Automation Systems</p>
 
-              <p class="timeline-text">
+              <p class="timeline-text" data-i18n="exp_1">
                 Architected and led the development of <strong>Ravin AI Assistant</strong> for municipal and urban
                 planning workflows.
               </p>
-              <p class="timeline-text">
+              <p class="timeline-text" data-i18n="exp_2">
                 Engineered zero-hallucination RAG pipelines with semantic search across extensive municipal
                 regulations.
               </p>
-              <p class="timeline-text">
+              <p class="timeline-text" data-i18n="exp_3">
                 Integrated local real-time ASR (Sherpa/Gyro) for Persian speech recognition in noisy office
                 environments.
               </p>
-              <p class="timeline-text">
+              <p class="timeline-text" data-i18n="exp_4">
                 Orchestrated fully on-premise (air-gapped) deployments ensuring data privacy and zero cloud
                 dependency.
               </p>
-              <p class="timeline-text">
+              <p class="timeline-text" data-i18n="exp_5">
                 Implemented observability and distributed tracing with OpenTelemetry and Grafana.
               </p>
             </li>
@@ -341,10 +372,10 @@
 
         <section class="skills">
 
-          <h3 class="skills-title">Tech Stack</h3>
+          <h3 class="skills-title" data-i18n="skills_title">Tech Stack</h3>
 
           <div class="skill-group">
-            <h4 class="skill-group-title">AI / RAG &amp; Agents</h4>
+            <h4 class="skill-group-title" data-i18n="grp_1t">AI / RAG &amp; Agents</h4>
             <ul class="tag-row">
               <li><span class="chip">RAG</span></li>
               <li><span class="chip">AI Agents</span></li>
@@ -358,7 +389,7 @@
           </div>
 
           <div class="skill-group">
-            <h4 class="skill-group-title">Backend &amp; Distributed Systems</h4>
+            <h4 class="skill-group-title" data-i18n="grp_2t">Backend &amp; Distributed Systems</h4>
             <ul class="tag-row">
               <li><span class="chip">C#</span></li>
               <li><span class="chip">.NET Core</span></li>
@@ -371,7 +402,7 @@
           </div>
 
           <div class="skill-group">
-            <h4 class="skill-group-title">Data &amp; Databases</h4>
+            <h4 class="skill-group-title" data-i18n="grp_3t">Data &amp; Databases</h4>
             <ul class="tag-row">
               <li><span class="chip">MongoDB</span></li>
               <li><span class="chip">SQL Server</span></li>
@@ -381,7 +412,7 @@
           </div>
 
           <div class="skill-group">
-            <h4 class="skill-group-title">DevOps &amp; Observability</h4>
+            <h4 class="skill-group-title" data-i18n="grp_4t">DevOps &amp; Observability</h4>
             <ul class="tag-row">
               <li><span class="chip">Docker</span></li>
               <li><span class="chip">OpenTelemetry</span></li>
@@ -398,7 +429,7 @@
       <article class="portfolio" data-page="portfolio">
 
         <header>
-          <h2 class="article-title">Portfolio</h2>
+          <h2 class="article-title" data-i18n="portfolio_title">Portfolio</h2>
         </header>
 
         <section class="projects">
@@ -406,27 +437,27 @@
           <div class="filter-select-box">
 
             <button class="filter-select" data-select>
-              <div class="select-value" data-select-value>All</div>
+              <div class="select-value" data-select-value data-i18n="filter_all">All</div>
               <div class="select-icon">
                 <ion-icon name="chevron-down"></ion-icon>
               </div>
             </button>
 
             <ul class="select-list">
-              <li class="select-item"><button data-select-item>All</button></li>
-              <li class="select-item"><button data-select-item>AI Systems</button></li>
-              <li class="select-item"><button data-select-item>Backend</button></li>
-              <li class="select-item"><button data-select-item>Desktop</button></li>
+              <li class="select-item"><button data-select-item data-filter-value="all" data-i18n="filter_all">All</button></li>
+              <li class="select-item"><button data-select-item data-filter-value="ai systems" data-i18n="filter_ai">AI Systems</button></li>
+              <li class="select-item"><button data-select-item data-filter-value="backend" data-i18n="filter_backend">Backend</button></li>
+              <li class="select-item"><button data-select-item data-filter-value="desktop" data-i18n="filter_desktop">Desktop</button></li>
             </ul>
 
           </div>
 
-          <ul class="filter-list" aria-label="Filter projects by category">
+          <ul class="filter-list" aria-label="Filter projects by category" data-i18n-aria="a_filter">
 
-            <li class="filter-item"><button class="active" data-filter-btn>All</button></li>
-            <li class="filter-item"><button data-filter-btn>AI Systems</button></li>
-            <li class="filter-item"><button data-filter-btn>Backend</button></li>
-            <li class="filter-item"><button data-filter-btn>Desktop</button></li>
+            <li class="filter-item"><button class="active" data-filter-btn data-filter-value="all" data-i18n="filter_all">All</button></li>
+            <li class="filter-item"><button data-filter-btn data-filter-value="ai systems" data-i18n="filter_ai">AI Systems</button></li>
+            <li class="filter-item"><button data-filter-btn data-filter-value="backend" data-i18n="filter_backend">Backend</button></li>
+            <li class="filter-item"><button data-filter-btn data-filter-value="desktop" data-i18n="filter_desktop">Desktop</button></li>
 
           </ul>
 
@@ -436,49 +467,55 @@
               <article class="project-card project-card--featured">
                 <div class="project-card-head">
                   <div class="badge-row">
-                    <span class="badge badge--warn">Enterprise</span>
-                    <span class="badge badge--info">100% Air-Gapped</span>
+                    <span class="badge badge--warn" data-i18n="badge_enterprise">Enterprise</span>
+                    <span class="badge badge--info" data-i18n="badge_airgap">100% Air-Gapped</span>
                   </div>
-                  <span class="project-category">AI Systems / RAG</span>
+                  <span class="project-category" data-i18n="p_ravin_cat">AI Systems / RAG</span>
                 </div>
 
-                <h3 class="project-title">Ravin — On-Premise Municipal AI Assistant</h3>
+                <h3 class="project-title" data-i18n="p_ravin_title">Ravin — On-Premise Municipal AI Assistant</h3>
 
-                <p class="project-text">
+                <p class="project-text" data-i18n="p_ravin_intro">
                   The first specialized municipal AI assistant in Iran with Persian NLP, RAG, and Speech-to-Text,
                   deployed entirely on-premise.
                 </p>
 
-                <div class="case-block">
-                  <h4 class="case-title">The Challenge &amp; Hard Constraints</h4>
-                  <p class="case-text">
-                    Municipal inquiries required interpreting complex, localized urban planning regulations with
-                    <strong>zero external cloud dependencies</strong>, no internet access (strict air-gapped
-                    security), and limited on-premise compute/VRAM.
-                  </p>
-                </div>
+                <div class="case-study" id="ravin-case" data-case-study>
+                  <div class="case-study-inner">
 
-                <div class="case-block">
-                  <h4 class="case-title">Engineered Pipeline</h4>
-                  <pre class="pipeline">Persian Voice/Text -&gt; Offline ASR (Sherpa) -&gt; Semantic Chunking &amp; Vector Search -&gt; .NET Orchestrator -&gt; Local LLM + Strict Guardrails</pre>
-                </div>
+                    <div class="case-block">
+                      <h4 class="case-title" data-i18n="case_challenge">The Challenge &amp; Hard Constraints</h4>
+                      <p class="case-text" data-i18n="ravin_challenge">
+                        Municipal inquiries required interpreting complex, localized urban planning regulations with
+                        <strong>zero external cloud dependencies</strong>, no internet access (strict air-gapped
+                        security), and limited on-premise compute/VRAM.
+                      </p>
+                    </div>
 
-                <div class="case-block">
-                  <h4 class="case-title">Key Architectural Decisions &amp; Evidence</h4>
-                  <ul class="case-list">
-                    <li>
-                      <span class="case-dec">Decoupled Execution</span>
-                      <span class="case-desc">.NET Core handles deterministic business logic &amp; API gateways; Python manages local model inference &amp; embeddings.</span>
-                    </li>
-                    <li>
-                      <span class="case-dec">Zero-Hallucination RAG</span>
-                      <span class="case-desc">Hybrid retrieval combining exact rule matching with dense vector embeddings stored in on-premise storage.</span>
-                    </li>
-                    <li>
-                      <span class="case-dec">Resilient Audio Processing</span>
-                      <span class="case-desc">Low-latency streaming ASR tuned for noisy administrative environments.</span>
-                    </li>
-                  </ul>
+                    <div class="case-block">
+                      <h4 class="case-title" data-i18n="case_pipeline">Engineered Pipeline</h4>
+                      <pre class="pipeline">Persian Voice/Text -&gt; Offline ASR (Sherpa) -&gt; Semantic Chunking &amp; Vector Search -&gt; .NET Orchestrator -&gt; Local LLM + Strict Guardrails</pre>
+                    </div>
+
+                    <div class="case-block">
+                      <h4 class="case-title" data-i18n="case_decisions">Key Architectural Decisions &amp; Evidence</h4>
+                      <ul class="case-list">
+                        <li>
+                          <span class="case-dec" data-i18n="dec_1t">Decoupled Execution</span>
+                          <span class="case-desc" data-i18n="dec_1d">.NET Core handles deterministic business logic &amp; API gateways; Python manages local model inference &amp; embeddings.</span>
+                        </li>
+                        <li>
+                          <span class="case-dec" data-i18n="dec_2t">Zero-Hallucination RAG</span>
+                          <span class="case-desc" data-i18n="dec_2d">Hybrid retrieval combining exact rule matching with dense vector embeddings stored in on-premise storage.</span>
+                        </li>
+                        <li>
+                          <span class="case-dec" data-i18n="dec_3t">Resilient Audio Processing</span>
+                          <span class="case-desc" data-i18n="dec_3d">Low-latency streaming ASR tuned for noisy administrative environments.</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                  </div>
                 </div>
 
                 <ul class="tag-row">
@@ -490,7 +527,10 @@
                 </ul>
 
                 <div class="project-actions">
-                  <span class="project-note">Full architecture deep-dive available on request</span>
+                  <button class="btn btn--ghost case-toggle" data-case-toggle aria-expanded="false" aria-controls="ravin-case">
+                    <span class="case-toggle-label" data-i18n="case_read_more">View Case Study</span>
+                    <ion-icon name="chevron-down" class="case-toggle-icon"></ion-icon>
+                  </button>
                 </div>
               </article>
             </li>
@@ -499,14 +539,14 @@
               <article class="project-card">
                 <div class="project-card-head">
                   <div class="badge-row">
-                    <span class="badge badge--ok">Open Source</span>
+                    <span class="badge badge--ok" data-i18n="badge_oss">Open Source</span>
                   </div>
-                  <span class="project-category">Backend · Web Application</span>
+                  <span class="project-category" data-i18n="p_leave_cat">Backend · Web Application</span>
                 </div>
 
-                <h3 class="project-title">Leave Management System</h3>
+                <h3 class="project-title" data-i18n="p_leave_title">Leave Management System</h3>
 
-                <p class="project-text">
+                <p class="project-text" data-i18n="p_leave_desc">
                   Employee leave management web application built on .NET Core with MongoDB persistence.
                 </p>
 
@@ -519,7 +559,7 @@
                 <div class="project-actions">
                   <a href="https://github.com/MatinAminsabouri/Leave-Management" target="_blank" class="btn btn--ghost">
                     <ion-icon name="logo-github"></ion-icon>
-                    <span>View on GitHub</span>
+                    <span data-i18n="view_github">View on GitHub</span>
                     <ion-icon name="arrow-forward-outline" class="btn-arrow"></ion-icon>
                   </a>
                 </div>
@@ -529,12 +569,12 @@
             <li class="project-item active" data-filter-item data-category="backend">
               <article class="project-card">
                 <div class="project-card-head">
-                  <span class="project-category">Backend · E-Commerce</span>
+                  <span class="project-category" data-i18n="p_sib_cat">Backend · E-Commerce</span>
                 </div>
 
-                <h3 class="project-title">SibSalamat Online Pharmacy</h3>
+                <h3 class="project-title" data-i18n="p_sib_title">SibSalamat Online Pharmacy</h3>
 
-                <p class="project-text">
+                <p class="project-text" data-i18n="p_sib_desc">
                   Online pharmacy platform built with .NET 7 and MongoDB as the core persistence layer.
                 </p>
 
@@ -544,7 +584,7 @@
                 </ul>
 
                 <div class="project-actions">
-                  <span class="project-note">Repository private — available on request</span>
+                  <span class="project-note" data-i18n="p_sib_note">Repository private — available on request</span>
                 </div>
               </article>
             </li>
@@ -553,14 +593,14 @@
               <article class="project-card">
                 <div class="project-card-head">
                   <div class="badge-row">
-                    <span class="badge badge--ok">Open Source</span>
+                    <span class="badge badge--ok" data-i18n="badge_oss">Open Source</span>
                   </div>
-                  <span class="project-category">Desktop · GUI</span>
+                  <span class="project-category" data-i18n="p_iut_cat">Desktop · GUI</span>
                 </div>
 
-                <h3 class="project-title">IUT Messenger</h3>
+                <h3 class="project-title" data-i18n="p_iut_title">IUT Messenger</h3>
 
-                <p class="project-text">
+                <p class="project-text" data-i18n="p_iut_desc">
                   Desktop messenger application built with C++ and Qt 6 — IUT Advanced Programming final project.
                 </p>
 
@@ -572,7 +612,7 @@
                 <div class="project-actions">
                   <a href="https://github.com/MatinAminsabouri/Messenger_sprites_6" target="_blank" class="btn btn--ghost">
                     <ion-icon name="logo-github"></ion-icon>
-                    <span>View on GitHub</span>
+                    <span data-i18n="view_github">View on GitHub</span>
                     <ion-icon name="arrow-forward-outline" class="btn-arrow"></ion-icon>
                   </a>
                 </div>

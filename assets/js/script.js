@@ -1,6 +1,284 @@
 'use strict';
 
 /*-----------------------------------*\
+  i18n dictionary (EN / FA)
+\*-----------------------------------*/
+
+const I18N = {
+
+  en: {
+    meta_title: "Matin AminSabouri — AI & Backend Engineer (.NET / AI Systems)",
+    a_prefs: "Preferences",
+    a_theme: "Toggle theme",
+    a_lang: "Language",
+    a_contacts: "Show or hide contact details",
+    a_copy_email: "Copy email address",
+    a_copy_phone: "Copy phone number",
+    a_github: "GitHub profile",
+    a_linkedin: "LinkedIn profile",
+    a_nav: "Primary",
+    a_filter: "Filter projects by category",
+    positioning: "AI & Backend Systems Engineer building production-grade distributed backends, RAG pipelines, and on-premise AI deployments under real-world infrastructure constraints.",
+    tagline: "AI & Backend Engineer (.NET / AI Systems)",
+    open_to_work: "Open to work",
+    show_contacts: "Show Contacts",
+    c_github: "GitHub",
+    c_email: "Email",
+    c_phone: "Phone",
+    c_linkedin: "LinkedIn",
+    c_location: "Location",
+    c_location_value: "Esfahan, Iran",
+    copy_done: "Copied!",
+    nav_about: "About",
+    nav_resume: "Resume",
+    nav_portfolio: "Portfolio",
+    about_title: "About me",
+    bio_1: "Software Engineer with 3+ years of experience designing and implementing intelligent systems, scalable web backends, and municipal/enterprise automation. Specialized in <strong>.NET Core</strong> and <strong>Python</strong>, with a strong focus on RAG (Retrieval-Augmented Generation) architectures, AI Agents & MCP workflows, local ASR (Speech Recognition), and Persian NLP.",
+    bio_2: "Technical Lead for <strong>'Ravin'</strong> — the first specialized municipal and urban-planning AI assistant in Iran, deployed fully on-premise.",
+    stat_1l: "Years of Experience",
+    stat_2v: "AI Lead",
+    stat_2l: "Ravin AI Assistant",
+    stat_3l: "On-Premise Deployments",
+    doing_title: "What I'm Doing",
+    svc_1t: "AI Systems & RAG Pipelines",
+    svc_1d: "Designing deterministic RAG workflows, vector search, custom knowledge bases, and agentic integrations (MCP).",
+    svc_2t: "Scalable Backend Architecture",
+    svc_2d: "Building resilient RESTful APIs, distributed microservices, and database schemas with .NET Core, Python, SQL Server, and MongoDB.",
+    svc_3t: "Speech & Persian NLP (ASR)",
+    svc_3d: "Deploying on-premise Sherpa/Gyro ASR engines and NLP models tailored for complex Persian administrative domains.",
+    resume_title: "Resume",
+    view_resume: "View Resume",
+    download: "Download",
+    edu_title: "Education",
+    exp_title: "Experience",
+    edu_1t: "Isfahan University Of Technology",
+    edu_1d: "Studying Computer Engineering",
+    edu_2t: "Harati High school",
+    edu_2d: "Studied Mathematics in Harati high school",
+    exp_role: "Senior Backend & AI Engineer | Project Lead (Ravin)",
+    exp_company: "Nosaz Mohaseb Safahan — Municipal Automation Systems",
+    exp_1: "Architected and led the development of <strong>Ravin AI Assistant</strong> for municipal and urban planning workflows.",
+    exp_2: "Engineered zero-hallucination RAG pipelines with semantic search across extensive municipal regulations.",
+    exp_3: "Integrated local real-time ASR (Sherpa/Gyro) for Persian speech recognition in noisy office environments.",
+    exp_4: "Orchestrated fully on-premise (air-gapped) deployments ensuring data privacy and zero cloud dependency.",
+    exp_5: "Implemented observability and distributed tracing with OpenTelemetry and Grafana.",
+    skills_title: "Tech Stack",
+    grp_1t: "AI / RAG & Agents",
+    grp_2t: "Backend & Distributed Systems",
+    grp_3t: "Data & Databases",
+    grp_4t: "DevOps & Observability",
+    portfolio_title: "Portfolio",
+    filter_all: "All",
+    filter_ai: "AI Systems",
+    filter_backend: "Backend",
+    filter_desktop: "Desktop",
+    badge_enterprise: "Enterprise",
+    badge_airgap: "100% Air-Gapped",
+    badge_oss: "Open Source",
+    p_ravin_cat: "AI Systems / RAG",
+    p_ravin_title: "Ravin — On-Premise Municipal AI Assistant",
+    p_ravin_intro: "The first specialized municipal AI assistant in Iran with Persian NLP, RAG, and Speech-to-Text, deployed entirely on-premise.",
+    case_challenge: "The Challenge & Hard Constraints",
+    case_pipeline: "Engineered Pipeline",
+    case_decisions: "Key Architectural Decisions & Evidence",
+    case_read_more: "View Case Study",
+    case_show_less: "Show Less",
+    ravin_challenge: "Municipal inquiries required interpreting complex, localized urban planning regulations with <strong>zero external cloud dependencies</strong>, no internet access (strict air-gapped security), and limited on-premise compute/VRAM.",
+    dec_1t: "Decoupled Execution",
+    dec_1d: ".NET Core handles deterministic business logic & API gateways; Python manages local model inference & embeddings.",
+    dec_2t: "Zero-Hallucination RAG",
+    dec_2d: "Hybrid retrieval combining exact rule matching with dense vector embeddings stored in on-premise storage.",
+    dec_3t: "Resilient Audio Processing",
+    dec_3d: "Low-latency streaming ASR tuned for noisy administrative environments.",
+    p_leave_cat: "Backend · Web Application",
+    p_leave_title: "Leave Management System",
+    p_leave_desc: "Employee leave management web application built on .NET Core with MongoDB persistence.",
+    p_sib_cat: "Backend · E-Commerce",
+    p_sib_title: "SibSalamat Online Pharmacy",
+    p_sib_desc: "Online pharmacy platform built with .NET 7 and MongoDB as the core persistence layer.",
+    p_sib_note: "Repository private — available on request",
+    p_iut_cat: "Desktop · GUI",
+    p_iut_title: "IUT Messenger",
+    p_iut_desc: "Desktop messenger application built with C++ and Qt 6 — IUT Advanced Programming final project.",
+    view_github: "View on GitHub"
+  },
+
+  fa: {
+    meta_title: "متین امین صبوری — مهندس هوش مصنوعی و بک‌اند (.NET / سیستم‌های هوش مصنوعی)",
+    a_prefs: "تنظیمات",
+    a_theme: "تغییر پوسته",
+    a_lang: "زبان",
+    a_contacts: "نمایش یا مخفی کردن اطلاعات تماس",
+    a_copy_email: "کپی آدرس ایمیل",
+    a_copy_phone: "کپی شماره تلفن",
+    a_github: "پروفایل گیت‌هاب",
+    a_linkedin: "پروفایل لینکدین",
+    a_nav: "ناوبری اصلی",
+    a_filter: "فیلتر پروژه‌ها بر اساس دسته",
+    positioning: "مهندس سیستم‌های هوش مصنوعی و بک‌اند؛ سازندهٔ بک‌اندهای توزیع‌شدهٔ تولیدی، پایپلاین‌های RAG و استقرارهای On-Premise هوش مصنوعی در محدودیت‌های زیرساخت واقعی.",
+    tagline: "مهندس هوش مصنوعی و بک‌اند (.NET / سیستم‌های هوش مصنوعی)",
+    open_to_work: "آمادهٔ همکاری",
+    show_contacts: "نمایش اطلاعات تماس",
+    c_github: "گیت‌هاب",
+    c_email: "ایمیل",
+    c_phone: "تلفن",
+    c_linkedin: "لینکدین",
+    c_location: "موقعیت مکانی",
+    c_location_value: "اصفهان، ایران",
+    copy_done: "کپی شد!",
+    nav_about: "دربارهٔ من",
+    nav_resume: "رزومه",
+    nav_portfolio: "نمونه‌کارها",
+    about_title: "دربارهٔ من",
+    bio_1: "مهندس نرم‌افزار با بیش از ۳ سال تجربه در طراحی و پیاده‌سازی سیستم‌های هوشمند، بک‌اندهای وب مقیاس‌پذیر و اتوماسیون شهری/سازمانی؛ متخصص در <strong>.NET Core</strong> و <strong>پایتون</strong> با تمرکز ویژه بر معماری‌های RAG (تولید افزوده با بازیابی)، عوامل هوش مصنوعی و جریان‌های کاری MCP، تشخیص گفتار محلی (ASR) و پردازش زبان فارسی.",
+    bio_2: "راهبر فنی پروژهٔ <strong>«Ravin»</strong> — نخستین دستیار هوش مصنوعی تخصصی امور شهری و شهرسازی ایران — با استقرار کاملاً On-Premise.",
+    stat_1l: "سال تجربه",
+    stat_2v: "راهبر هوش مصنوعی",
+    stat_2l: "دستیار هوش مصنوعی Ravin",
+    stat_3l: "استقرارهای On-Premise",
+    doing_title: "حوزه‌های تخصصی من",
+    svc_1t: "سیستم‌های هوش مصنوعی و پایپلاین‌های RAG",
+    svc_1d: "طراحی جریان‌های کاری RAG قطعی، جستجوی برداری، پایگاه‌های دانش سفارشی و یکپارچه‌سازی عوامل (MCP).",
+    svc_2t: "معماری بک‌اند مقیاس‌پذیر",
+    svc_2d: "ساخت APIهای REST پایدار، میکروسرویس‌های توزیع‌شده و طراحی اسکیماهای داده با .NET Core، پایتون، SQL Server و MongoDB.",
+    svc_3t: "تشخیص گفتار و پردازش زبان فارسی (ASR)",
+    svc_3d: "استقرار موتورهای ASR محلی Sherpa/Gyro و مدل‌های NLP متناسب با حوزه‌های اداری پیچیدهٔ فارسی.",
+    resume_title: "رزومه",
+    view_resume: "مشاهدهٔ رزومه",
+    download: "دانلود",
+    edu_title: "تحصیلات",
+    exp_title: "تجربهٔ کاری",
+    edu_1t: "دانشگاه صنعتی اصفهان",
+    edu_1d: "دانشجوی مهندسی کامپیوتر",
+    edu_2t: "دبیرستان هراتی",
+    edu_2d: "تحصیل در رشتهٔ ریاضی فیزیک — دبیرستان هراتی",
+    exp_role: "مهندس ارشد بک‌اند و هوش مصنوعی | راهبر پروژه (Ravin)",
+    exp_company: "نوساز محاسب صفاهان — سامانه‌های اتوماسیون شهری",
+    exp_1: "معماری و رهبری توسعهٔ <strong>دستیار هوش مصنوعی Ravin</strong> برای جریان‌های کاری شهری و شهرسازی.",
+    exp_2: "طراحی پایپلاین‌های RAG بدون توهم با جستجوی معنایی در گسترهٔ مقررات شهری.",
+    exp_3: "یکپارچه‌سازی ASR بلادرنگ محلی (Sherpa/Gyro) برای تشخیص گفتار فارسی در محیط‌های اداری پرسر و صدا.",
+    exp_4: "مدیریت استقرارهای کاملاً On-Premise (ایزوله از اینترنت) برای تضمین حریم داده‌ها و وابستگی صفر به ابر.",
+    exp_5: "پیاده‌سازی مشاهده‌پذیری و ردیابی توزیع‌شده با OpenTelemetry و Grafana.",
+    skills_title: "پشتهٔ فناوری",
+    grp_1t: "هوش مصنوعی / RAG و عوامل",
+    grp_2t: "بک‌اند و سیستم‌های توزیع‌شده",
+    grp_3t: "داده و پایگاه‌های داده",
+    grp_4t: "دوآپس و مشاهده‌پذیری",
+    portfolio_title: "نمونه‌کارها",
+    filter_all: "همه",
+    filter_ai: "سیستم‌های هوش مصنوعی",
+    filter_backend: "بک‌اند",
+    filter_desktop: "دسکتاپ",
+    badge_enterprise: "سازمانی",
+    badge_airgap: "۱۰۰٪ ایزوله از اینترنت",
+    badge_oss: "متن‌باز",
+    p_ravin_cat: "سیستم‌های هوش مصنوعی / RAG",
+    p_ravin_title: "Ravin — دستیار هوش مصنوعی شهری On-Premise",
+    p_ravin_intro: "نخستین دستیار هوش مصنوعی تخصصی شهری ایران با پردازش زبان فارسی، RAG و تبدیل گفتار به متن؛ با استقرار کاملاً On-Premise.",
+    case_challenge: "چالش و محدودیت‌های سخت‌گیرانه",
+    case_pipeline: "خط لولهٔ مهندسی‌شده",
+    case_decisions: "تصمیم‌های کلیدی معماری و شواهد",
+    case_read_more: "مشاهدهٔ مطالعهٔ موردی",
+    case_show_less: "نمایش کمتر",
+    ravin_challenge: "پاسخ به پرسش‌های شهری مستلزم تفسیر مقررات پیچیده و بومی شهرسازی با <strong>وابستگی صفر به سرویس‌های ابری</strong>، بدون دسترسی به اینترنت (امنیت سخت‌گیرانهٔ ایزوله) و با منابع پردازشی و VRAM محدود On-Premise بود.",
+    dec_1t: "اجرای جداسازی‌شده",
+    dec_1d: ".NET Core منطق کسب‌وکار قطعی و دروازه‌های API را مدیریت می‌کند و پایتون استنتاج مدل و Embeddingهای محلی را بر عهده دارد.",
+    dec_2t: "RAG بدون توهم",
+    dec_2d: "بازیابی ترکیبی از تطبیق دقیق قواعد و بردارهای متراکم ذخیره‌شده در فضای ذخیره‌سازی On-Premise.",
+    dec_3t: "پردازش مقاوم صوتی",
+    dec_3d: "ASR جریانی با تأخیر کم، تنظیم‌شده برای محیط‌های اداری پر سر و صدا.",
+    p_leave_cat: "بک‌اند · برنامهٔ وب",
+    p_leave_title: "سامانهٔ مدیریت مرخصی",
+    p_leave_desc: "برنامهٔ وب مدیریت مرخصی کارکنان مبتنی بر .NET Core با ذخیره‌سازی MongoDB.",
+    p_sib_cat: "بک‌اند · تجارت الکترونیک",
+    p_sib_title: "داروخانهٔ آنلاین سیب‌سلمات",
+    p_sib_desc: "پلتفرم داروخانهٔ آنلاین ساخته‌شده با .NET 7 و MongoDB به‌عنوان لایهٔ اصلی ذخیره‌سازی.",
+    p_sib_note: "مخزن خصوصی — در صورت درخواست",
+    p_iut_cat: "دسکتاپ · رابط گرافیکی",
+    p_iut_title: "پیام‌رسان IUT",
+    p_iut_desc: "برنامهٔ پیام‌رسان دسکتاپ با C++ و Qt 6 — پروژهٔ پایانی برنامه‌نویسی پیشرفتهٔ دانشگاه صنعتی اصفهان.",
+    view_github: "مشاهده در گیت‌هاب"
+  }
+
+};
+
+/*-----------------------------------*\
+  theme engine (light / dark)
+\*-----------------------------------*/
+
+const rootEl = document.documentElement;
+const themeToggle = document.querySelector("[data-theme-toggle]");
+const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+const applyTheme = function (theme) {
+  rootEl.setAttribute("data-theme", theme);
+  try { localStorage.setItem("theme", theme); } catch (e) { }
+  if (themeMeta) themeMeta.setAttribute("content", theme === "light" ? "#F8FAFC" : "#070B12");
+};
+
+themeToggle.addEventListener("click", function () {
+  const next = rootEl.getAttribute("data-theme") === "light" ? "dark" : "light";
+  applyTheme(next);
+});
+
+/* follow system preference only while the user hasn't chosen explicitly */
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (e) {
+  let stored = null;
+  try { stored = localStorage.getItem("theme"); } catch (err) { }
+  if (!stored) applyTheme(e.matches ? "dark" : "light");
+});
+
+/*-----------------------------------*\
+  language engine (EN / FA)
+\*-----------------------------------*/
+
+const langBtns = document.querySelectorAll("[data-lang]");
+const i18nNodes = document.querySelectorAll("[data-i18n]");
+const i18nAriaNodes = document.querySelectorAll("[data-i18n-aria]");
+const caseToggle = document.querySelector("[data-case-toggle]");
+const caseToggleLabel = caseToggle ? caseToggle.querySelector(".case-toggle-label") : null;
+
+const applyLang = function (lang) {
+  const dict = I18N[lang] || I18N.en;
+
+  rootEl.setAttribute("lang", lang);
+  rootEl.setAttribute("dir", lang === "fa" ? "rtl" : "ltr");
+
+  i18nNodes.forEach(function (el) {
+    const key = el.dataset.i18n;
+    if (dict[key] != null) el.innerHTML = dict[key];
+  });
+
+  i18nAriaNodes.forEach(function (el) {
+    const key = el.dataset.i18nAria;
+    if (dict[key]) el.setAttribute("aria-label", dict[key]);
+  });
+
+  langBtns.forEach(function (b) {
+    const active = b.dataset.lang === lang;
+    b.classList.toggle("active", active);
+    b.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+
+  /* keep the collapsible case-study toggle label in sync with the current language */
+  if (caseToggle) {
+    const opened = caseToggle.getAttribute("aria-expanded") === "true";
+    caseToggleLabel.textContent = dict[opened ? "case_show_less" : "case_read_more"];
+  }
+
+  document.title = dict.meta_title;
+
+  try { localStorage.setItem("lang", lang); } catch (e) { }
+};
+
+langBtns.forEach(function (b) {
+  b.addEventListener("click", function () { applyLang(b.dataset.lang); });
+});
+
+/* sync UI with the boot-time language (from the inline <head> script) */
+applyLang(rootEl.getAttribute("lang") === "fa" ? "fa" : "en");
+
+/*-----------------------------------*\
   sidebar toggle (mobile)
 \*-----------------------------------*/
 
@@ -21,7 +299,7 @@ const pages = document.querySelectorAll("[data-page]");
 navLinks.forEach(function (link) {
   link.addEventListener("click", function () {
 
-    const target = link.textContent.trim().toLowerCase();
+    const target = link.dataset.navTarget;
 
     navLinks.forEach(function (l) {
       const isActive = (l === link);
@@ -65,7 +343,7 @@ select.addEventListener("click", function () {
 selectItems.forEach(function (item) {
   item.addEventListener("click", function () {
 
-    const value = item.textContent.trim().toLowerCase();
+    const value = item.dataset.filterValue || "all";
     if (selectValue) selectValue.textContent = item.textContent.trim();
 
     select.classList.remove("active");
@@ -77,7 +355,7 @@ selectItems.forEach(function (item) {
 filterBtns.forEach(function (btn) {
   btn.addEventListener("click", function () {
 
-    const value = btn.textContent.trim().toLowerCase();
+    const value = btn.dataset.filterValue || "all";
 
     filterBtns.forEach(function (b) {
       b.classList.toggle("active", b === btn);
@@ -134,3 +412,18 @@ copyBtns.forEach(function (btn) {
 
   });
 });
+
+/*-----------------------------------*\
+  collapsible case study (Ravin "Read More")
+\*-----------------------------------*/
+
+if (caseToggle) {
+  const caseCard = caseToggle.closest(".project-card");
+
+  caseToggle.addEventListener("click", function () {
+    const opened = caseCard.classList.toggle("open");
+    caseToggle.setAttribute("aria-expanded", opened ? "true" : "false");
+    const lang = rootEl.getAttribute("lang") === "fa" ? "fa" : "en";
+    caseToggleLabel.textContent = I18N[lang][opened ? "case_show_less" : "case_read_more"];
+  });
+}
