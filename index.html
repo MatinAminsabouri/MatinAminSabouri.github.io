@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070B12">
   <title>Matin AminSabouri — AI &amp; Backend Engineer (.NET / AI Systems)</title>
   <meta name="description" content="Portfolio of Matin AminSabouri (متین امین صبوری) — Software Engineer specializing in .NET Core, Python, RAG Architectures, AI Agents, MCP, Persian NLP, and Scalable Backend Systems.">
   <meta name="author" content="Matin AminSabouri">
@@ -16,139 +17,141 @@
   <link rel="stylesheet" href="./assets/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
   <main>
+
     <aside class="sidebar" data-sidebar>
 
       <div class="sidebar-info">
 
         <figure class="avatar-box">
-          <img class="pic" src="./assets/images/myPic.jpg" alt="Matin AminSabouri" width="45">
+          <img class="pic" src="./assets/images/myPic.jpg" alt="Matin AminSabouri">
         </figure>
 
         <div class="info-content">
           <h1 class="name" title="Matin AminSabouri">Matin AminSabouri</h1>
-          <p class="persian-name" style="font-size: 0.9rem; color: var(--light-gray-70); margin-top: 4px; margin-bottom: 10px;">متین امین صبوری</p>
+          <p class="persian-name">متین امین صبوری</p>
 
           <p class="title">AI &amp; Backend Engineer (.NET / AI Systems)</p>
+
+          <p class="positioning">AI &amp; Backend Systems Engineer building production-grade distributed backends, RAG pipelines, and on-premise AI deployments under real-world infrastructure constraints.</p>
+
+          <div class="status-row">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span class="status-text">Open to work</span>
+          </div>
         </div>
 
-        <button class="info_more-btn" data-sidebar-btn>
+        <button class="info_more-btn" data-sidebar-btn aria-label="Show or hide contact details">
           <span>Show Contacts</span>
-
           <ion-icon name="chevron-down"></ion-icon>
         </button>
 
       </div>
 
       <div class="sidebar-info_more">
+        <div class="sidebar-info_more-inner">
 
-        <div class="separator"></div>
+          <div class="separator"></div>
 
-        <ul class="contacts-list">
+          <ul class="contacts-list">
 
-          <li class="contact-item">
+            <li class="contact-item">
+              <div class="icon-box">
+                <ion-icon name="logo-github"></ion-icon>
+              </div>
+              <div class="contact-info">
+                <p class="contact-title">GitHub</p>
+                <a href="https://github.com/MatinAminsabouri" class="contact-link">matinaminsabouri</a>
+              </div>
+            </li>
 
-            <div class="icon-box">
-              <img src="./assets/images/githb3.png" alt="camera icon" width="40">
-            </div>
+            <li class="contact-item">
+              <div class="icon-box">
+                <ion-icon name="mail-outline"></ion-icon>
+              </div>
+              <div class="contact-info">
+                <p class="contact-title">Email</p>
+                <a href="mailto:matinaminsabouri70@gmail.com" class="contact-link">matinaminsabouri70@gmail.com</a>
+              </div>
+              <button class="copy-btn" data-copy="matinaminsabouri70@gmail.com" aria-label="Copy email address">
+                <ion-icon name="copy-outline" class="copy-ic"></ion-icon>
+                <ion-icon name="checkmark-outline" class="check-ic"></ion-icon>
+                <span class="copy-tooltip" aria-hidden="true">Copied!</span>
+              </button>
+            </li>
 
-            <div class="contact-info">
-              <p class="contact-title">GitHub</p>
+            <li class="contact-item">
+              <div class="icon-box">
+                <ion-icon name="call-outline"></ion-icon>
+              </div>
+              <div class="contact-info">
+                <p class="contact-title">Phone</p>
+                <a href="tel:+989135458251" class="contact-link">(+98) 913 545 8251</a>
+              </div>
+              <button class="copy-btn" data-copy="+989135458251" aria-label="Copy phone number">
+                <ion-icon name="copy-outline" class="copy-ic"></ion-icon>
+                <ion-icon name="checkmark-outline" class="check-ic"></ion-icon>
+                <span class="copy-tooltip" aria-hidden="true">Copied!</span>
+              </button>
+            </li>
 
-              <a href="https://github.com/MatinAminsabouri" class="contact-link">matinaminsabouri</a>
-            </div>
+            <li class="contact-item">
+              <div class="icon-box">
+                <ion-icon name="logo-linkedin"></ion-icon>
+              </div>
+              <div class="contact-info">
+                <p class="contact-title">LinkedIn</p>
+                <a href="https://www.linkedin.com/in/matin-amin-sabouri-b0a6b2200/" class="contact-link">linkedin.com/in/matin-amin-sabouri</a>
+              </div>
+            </li>
 
-          </li>
-          <li class="contact-item">
+            <li class="contact-item">
+              <div class="icon-box">
+                <ion-icon name="location-outline"></ion-icon>
+              </div>
+              <div class="contact-info">
+                <p class="contact-title">Location</p>
+                <address>Esfahan, Iran</address>
+              </div>
+            </li>
 
-            <div class="icon-box">
-              <img src="./assets/images/email.png" alt="camera icon" width="30">
-            </div>
+          </ul>
 
-            <div class="contact-info">
-              <p class="contact-title">Email</p>
+          <div class="separator"></div>
 
-              <a href="mailto:matinaminsabouri70@gmail.com" class="contact-link">matinaminsabouri70@gmail.com</a>
-            </div>
+          <ul class="social-list">
 
-          </li>
-          <li class="contact-item">
+            <li class="social-item">
+              <a href="https://github.com/MatinAminsabouri" class="social-link" aria-label="GitHub profile">
+                <ion-icon name="logo-github"></ion-icon>
+              </a>
+            </li>
+            <li class="social-item">
+              <a href="https://www.linkedin.com/in/matin-amin-sabouri-b0a6b2200/" class="social-link" aria-label="LinkedIn profile">
+                <ion-icon name="logo-linkedin"></ion-icon>
+              </a>
+            </li>
 
-            <div class="icon-box">
-              <ion-icon name="call-outline" class="cal"></ion-icon>
-            </div>
+          </ul>
 
-            <div class="contact-info">
-              <p class="contact-title">Phone</p>
-
-              <a href="tel:+989135458251" class="contact-link">(+98) 913 545 8251</a>
-            </div>
-
-          </li>
-
-          <li class="contact-item">
-
-            <div class="icon-box">
-              <img src="./assets/images/linkedin (1).png" alt="linkedinicon" width="30">
-            </div>
-
-            <div class="contact-info">
-              <p class="contact-title">Linkedin</p>
-
-              <a href="https://www.linkedin.com/in/matin-amin-sabouri-b0a6b2200/"
-                class="contact-link">linkedin.com/in/matin-amin-sabouri</a>
-            </div>
-
-          </li>
-          <li class="contact-item">
-
-            <div class="icon-box">
-              <ion-icon name="map" class="cal"></ion-icon>
-            </div>
-
-            <div class="contact-info">
-              <p class="contact-title">Location</p>
-
-              <address> Esfahan, Iran</address>
-            </div>
-
-          </li>
-
-        </ul>
-
-        <div class="separator"></div>
-
-        <ul class="social-list">
-
-          <li class="social-item">
-            <a href="https://github.com/MatinAminsabouri" class="social-link">
-              <ion-icon name="logo-github"></ion-icon>
-            </a>
-          </li>
-          <li class="social-item">
-            <a href="https://www.linkedin.com/in/matin-amin-sabouri-b0a6b2200/" class="social-link">
-              <ion-icon name="logo-linkedin"></ion-icon>
-            </a>
-          </li>
-
-        </ul>
-
+        </div>
       </div>
 
     </aside>
 
     <div class="main-content">
-      <nav class="navbar">
+
+      <nav class="navbar" aria-label="Primary">
 
         <ul class="navbar-list">
 
           <li class="navbar-item">
-            <button class="navbar-link  active" data-nav-link>About</button>
+            <button class="navbar-link active" data-nav-link aria-current="page">About</button>
           </li>
 
           <li class="navbar-item">
@@ -163,39 +166,54 @@
 
       </nav>
 
-      <article class="about  active" data-page="about">
+      <article class="about active" data-page="about">
 
         <header>
-          <h2 class="h2 article-title">About me</h2>
+          <h2 class="article-title">About me</h2>
         </header>
 
         <section class="about-text">
-          <section class="about-text">
-            <p>
-              Software Engineer with 3+ years of experience designing and implementing intelligent systems, scalable
-              web backends, and municipal/enterprise automation. Specialized in <strong>.NET Core</strong> and
-              <strong>Python</strong>, with a strong focus on RAG (Retrieval-Augmented Generation) architectures,
-              AI Agents &amp; MCP workflows, local ASR (Speech Recognition), and Persian NLP.
-            </p>
-            <p>
-              Technical Lead for <strong>'Ravin'</strong> — the first specialized municipal and urban-planning AI
-              assistant in Iran, deployed fully on-premise.
-            </p>
-          </section>
-
+          <p>
+            Software Engineer with 3+ years of experience designing and implementing intelligent systems, scalable
+            web backends, and municipal/enterprise automation. Specialized in <strong>.NET Core</strong> and
+            <strong>Python</strong>, with a strong focus on RAG (Retrieval-Augmented Generation) architectures,
+            AI Agents &amp; MCP workflows, local ASR (Speech Recognition), and Persian NLP.
+          </p>
+          <p>
+            Technical Lead for <strong>'Ravin'</strong> — the first specialized municipal and urban-planning AI
+            assistant in Iran, deployed fully on-premise.
+          </p>
         </section>
 
+        <div class="stats">
+
+          <div class="stat">
+            <span class="stat-value">3+</span>
+            <span class="stat-label">Years of Experience</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">AI Lead</span>
+            <span class="stat-label">Ravin AI Assistant</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">100%</span>
+            <span class="stat-label">On-Premise Deployments</span>
+          </div>
+
+        </div>
+
         <section class="service">
-          <h3 class="h3 service-title">What I'm Doing</h3>
+
+          <h3 class="service-title">What I'm Doing</h3>
 
           <ul class="service-list">
 
             <li class="service-item">
               <div class="service-icon-box">
-                <img src="./assets/images/communication.png" alt="AI icon" width="40">
+                <ion-icon name="sparkles-outline"></ion-icon>
               </div>
               <div class="service-content-box">
-                <h4 class="h4 service-item-title">AI Systems &amp; RAG Pipelines</h4>
+                <h4 class="service-item-title">AI Systems &amp; RAG Pipelines</h4>
                 <p class="service-item-text">
                   Designing deterministic RAG workflows, vector search, custom knowledge bases, and agentic
                   integrations (MCP).
@@ -205,10 +223,10 @@
 
             <li class="service-item">
               <div class="service-icon-box">
-                <img src="./assets/images/code.png" alt="Backend icon" width="40">
+                <ion-icon name="server-outline"></ion-icon>
               </div>
               <div class="service-content-box">
-                <h4 class="h4 service-item-title">Scalable Backend Architecture</h4>
+                <h4 class="service-item-title">Scalable Backend Architecture</h4>
                 <p class="service-item-text">
                   Building resilient RESTful APIs, distributed microservices, and database schemas with .NET Core,
                   Python, SQL Server, and MongoDB.
@@ -218,51 +236,39 @@
 
             <li class="service-item">
               <div class="service-icon-box">
-                <img src="./assets/images/sound-waves.png" alt="speech icon" width="40" style="padding-bottom: 10px;">
+                <ion-icon name="mic-outline"></ion-icon>
               </div>
               <div class="service-content-box">
-                <h4 class="wave h4 service-item-title">Speech &amp; Persian NLP (ASR)</h4>
+                <h4 class="service-item-title">Speech &amp; Persian NLP (ASR)</h4>
                 <p class="service-item-text">
                   Deploying on-premise Sherpa/Gyro ASR engines and NLP models tailored for complex Persian
                   administrative domains.
                 </p>
               </div>
             </li>
+
           </ul>
+
         </section>
-        <div class="modal-container" data-modal-container>
 
-          <div class="overlay" data-overlay></div>
-
-          <section class="testimonials-modal">
-
-            <button class="modal-close-btn" data-modal-close-btn>
-              <ion-icon name="close-outline"></ion-icon>
-            </button>
-
-            <div class="modal-img-wrapper">
-              <figure class="modal-avatar-box">
-                <img src="./assets/images/avatar-1.png" alt="Daniel lewis" width="80" data-modal-img>
-              </figure>
-
-              <img src="./assets/images/icon-quote.svg" alt="quote icon">
-            </div>
-          </section>
-
-        </div>
       </article>
-
 
       <article class="resume" data-page="resume">
 
         <header>
-          <h2 class="h2 article-title">Resume</h2>
+          <h2 class="article-title">Resume</h2>
 
-          <a href="./assets/MatinAminSabouri-Resume.pdf" target="_blank" class="resume-download-btn"
-            style="display: flex; align-items: center; justify-content: center; gap: 10px; width: max-content; max-width: 100%; margin: -5px 0 25px; padding: 13px 20px; border-radius: 14px; background: var(--bg-gradient-onyx); color: var(--orange-yellow-crayola); font-size: var(--fs-6); font-weight: var(--fw-500); box-shadow: var(--shadow-3);">
-            <ion-icon name="download-outline"></ion-icon>
-            <span>Download Resume</span>
-          </a>
+          <div class="resume-actions">
+            <a href="./assets/MatinAminSabouri-Resume.pdf" target="_blank" class="btn btn--primary">
+              <span>View Resume</span>
+              <ion-icon name="arrow-forward-outline" class="btn-arrow"></ion-icon>
+            </a>
+
+            <a href="./assets/MatinAminSabouri-Resume.pdf" download class="btn btn--ghost">
+              <ion-icon name="download-outline"></ion-icon>
+              <span>Download</span>
+            </a>
+          </div>
         </header>
 
         <section class="timeline">
@@ -271,34 +277,21 @@
             <div class="icon-box">
               <ion-icon name="book-outline"></ion-icon>
             </div>
-
-            <h3 class="h3">Education</h3>
+            <h3 class="timeline-title">Education</h3>
           </div>
 
           <ol class="timeline-list">
 
             <li class="timeline-item">
-
-              <h4 class="h4 timeline-item-title">Isfahan University Of Technology</h4>
-
+              <h4 class="timeline-item-title">Isfahan University Of Technology</h4>
               <span>2023 — Present</span>
-
-              <p class="timeline-text">
-                Studying Computer Engineering
-              </p>
-
+              <p class="timeline-text">Studying Computer Engineering</p>
             </li>
 
             <li class="timeline-item">
-
-              <h4 class="h4 timeline-item-title">Harati High school</h4>
-
+              <h4 class="timeline-item-title">Harati High school</h4>
               <span>2019 — 2022</span>
-
-              <p class="timeline-text">
-                Studied Mathematics in Harati high school
-              </p>
-
+              <p class="timeline-text">Studied Mathematics in Harati high school</p>
             </li>
 
           </ol>
@@ -309,134 +302,94 @@
 
           <div class="title-wrapper">
             <div class="icon-box">
-              <ion-icon name="book-outline"></ion-icon>
+              <ion-icon name="briefcase-outline"></ion-icon>
             </div>
-
-            <h3 class="h3">Experience</h3>
+            <h3 class="timeline-title">Experience</h3>
           </div>
 
           <ol class="timeline-list">
 
             <li class="timeline-item">
-
-              <h4 class="h4 timeline-item-title">Senior Backend &amp; AI Engineer | Project Lead (Ravin)</h4>
-
+              <h4 class="timeline-item-title">Senior Backend &amp; AI Engineer | Project Lead (Ravin)</h4>
               <span>Nov 2023 — Present</span>
+              <p class="timeline-company">Nosaz Mohaseb Safahan — Municipal Automation Systems</p>
 
-              <p class="timeline-text" style="color: var(--light-gray-70); font-size: var(--fs-7); margin-bottom: 14px;">
-                Nosaz Mohaseb Safahan — Municipal Automation Systems
-              </p>
-
-              <p class="timeline-text" style="margin-bottom: 8px;">
+              <p class="timeline-text">
                 Architected and led the development of <strong>Ravin AI Assistant</strong> for municipal and urban
                 planning workflows.
               </p>
-
-              <p class="timeline-text" style="margin-bottom: 8px;">
+              <p class="timeline-text">
                 Engineered zero-hallucination RAG pipelines with semantic search across extensive municipal
                 regulations.
               </p>
-
-              <p class="timeline-text" style="margin-bottom: 8px;">
+              <p class="timeline-text">
                 Integrated local real-time ASR (Sherpa/Gyro) for Persian speech recognition in noisy office
                 environments.
               </p>
-
-              <p class="timeline-text" style="margin-bottom: 8px;">
+              <p class="timeline-text">
                 Orchestrated fully on-premise (air-gapped) deployments ensuring data privacy and zero cloud
                 dependency.
               </p>
-
               <p class="timeline-text">
                 Implemented observability and distributed tracing with OpenTelemetry and Grafana.
               </p>
             </li>
+
           </ol>
 
         </section>
 
-        <section class="skill">
+        <section class="skills">
 
-          <h3 class="h3 skills-title">My skills</h3>
+          <h3 class="skills-title">Tech Stack</h3>
 
-          <ul class="skills-list content-card">
+          <div class="skill-group">
+            <h4 class="skill-group-title">AI / RAG &amp; Agents</h4>
+            <ul class="tag-row">
+              <li><span class="chip">RAG</span></li>
+              <li><span class="chip">AI Agents</span></li>
+              <li><span class="chip">MCP</span></li>
+              <li><span class="chip">Semantic Search</span></li>
+              <li><span class="chip">Vector DBs</span></li>
+              <li><span class="chip">PyTorch</span></li>
+              <li><span class="chip">Persian NLP</span></li>
+              <li><span class="chip">ASR · Sherpa/Gyro</span></li>
+            </ul>
+          </div>
 
-            <li class="skills-item">
+          <div class="skill-group">
+            <h4 class="skill-group-title">Backend &amp; Distributed Systems</h4>
+            <ul class="tag-row">
+              <li><span class="chip">C#</span></li>
+              <li><span class="chip">.NET Core</span></li>
+              <li><span class="chip">ASP.NET Core</span></li>
+              <li><span class="chip">Python</span></li>
+              <li><span class="chip">REST APIs</span></li>
+              <li><span class="chip">Microservices</span></li>
+              <li><span class="chip">Design Patterns</span></li>
+            </ul>
+          </div>
 
-              <div class="title-wrapper">
-                <h5 class="h5">C# &amp; .NET Core / ASP.NET Core</h5>
-                <data value="90">90%</data>
-              </div>
+          <div class="skill-group">
+            <h4 class="skill-group-title">Data &amp; Databases</h4>
+            <ul class="tag-row">
+              <li><span class="chip">MongoDB</span></li>
+              <li><span class="chip">SQL Server</span></li>
+              <li><span class="chip">Entity Framework</span></li>
+              <li><span class="chip">Data Modeling</span></li>
+            </ul>
+          </div>
 
-              <div class="skill-progress-bg">
-                <div class="skill-progress-fill" style="width: 90%;"></div>
-              </div>
-
-            </li>
-
-            <li class="skills-item">
-
-              <div class="title-wrapper">
-                <h5 class="h5">Python, PyTorch &amp; Persian NLP</h5>
-                <data value="85">85%</data>
-              </div>
-
-              <div class="skill-progress-bg">
-                <div class="skill-progress-fill" style="width: 85%;"></div>
-              </div>
-
-            </li>
-            <li class="skills-item">
-
-              <div class="title-wrapper">
-                <h5 class="h5">RAG Architecture, AI Agents &amp; MCP</h5>
-                <data value="90">90%</data>
-              </div>
-
-              <div class="skill-progress-bg">
-                <div class="skill-progress-fill" style="width: 90%;"></div>
-              </div>
-
-            </li>
-
-            <li class="skills-item">
-
-              <div class="title-wrapper">
-                <h5 class="h5">Vector DBs &amp; Semantic Search</h5>
-                <data value="85">85%</data>
-              </div>
-
-              <div class="skill-progress-bg">
-                <div class="skill-progress-fill" style="width: 85%;"></div>
-              </div>
-
-            </li>
-            <li class="skills-item">
-
-              <div class="title-wrapper">
-                <h5 class="h5">MongoDB &amp; Microsoft SQL Server</h5>
-                <data value="85">85%</data>
-              </div>
-
-              <div class="skill-progress-bg">
-                <div class="skill-progress-fill" style="width: 85%;"></div>
-              </div>
-
-            </li>
-            <li class="skills-item">
-
-              <div class="title-wrapper">
-                <h5 class="h5">Docker, OpenTelemetry &amp; Grafana</h5>
-                <data value="80">80%</data>
-              </div>
-
-              <div class="skill-progress-bg">
-                <div class="skill-progress-fill" style="width: 80%;"></div>
-              </div>
-
-            </li>
-
-          </ul>
+          <div class="skill-group">
+            <h4 class="skill-group-title">DevOps &amp; Observability</h4>
+            <ul class="tag-row">
+              <li><span class="chip">Docker</span></li>
+              <li><span class="chip">OpenTelemetry</span></li>
+              <li><span class="chip">Grafana</span></li>
+              <li><span class="chip">Linux</span></li>
+              <li><span class="chip">On-Premise Deployment</span></li>
+            </ul>
+          </div>
 
         </section>
 
@@ -445,7 +398,7 @@
       <article class="portfolio" data-page="portfolio">
 
         <header>
-          <h2 class="h2 article-title">Portfolio</h2>
+          <h2 class="article-title">Portfolio</h2>
         </header>
 
         <section class="projects">
@@ -453,59 +406,179 @@
           <div class="filter-select-box">
 
             <button class="filter-select" data-select>
-
+              <div class="select-value" data-select-value>All</div>
               <div class="select-icon">
                 <ion-icon name="chevron-down"></ion-icon>
               </div>
-
             </button>
 
             <ul class="select-list">
-
-              <li class="select-item">
-                <button data-select-item>All</button>
-              </li>
+              <li class="select-item"><button data-select-item>All</button></li>
+              <li class="select-item"><button data-select-item>AI Systems</button></li>
+              <li class="select-item"><button data-select-item>Backend</button></li>
+              <li class="select-item"><button data-select-item>Desktop</button></li>
             </ul>
 
           </div>
 
+          <ul class="filter-list" aria-label="Filter projects by category">
+
+            <li class="filter-item"><button class="active" data-filter-btn>All</button></li>
+            <li class="filter-item"><button data-filter-btn>AI Systems</button></li>
+            <li class="filter-item"><button data-filter-btn>Backend</button></li>
+            <li class="filter-item"><button data-filter-btn>Desktop</button></li>
+
+          </ul>
+
           <ul class="project-list">
 
-            <li class="project-item active" data-filter-item data-category="AI Systems / RAG">
+            <li class="project-item active" data-filter-item data-category="ai systems">
+              <article class="project-card project-card--featured">
+                <div class="project-card-head">
+                  <div class="badge-row">
+                    <span class="badge badge--warn">Enterprise</span>
+                    <span class="badge badge--info">100% Air-Gapped</span>
+                  </div>
+                  <span class="project-category">AI Systems / RAG</span>
+                </div>
 
-              <h3 class="project-title">Ravin AI Assistant</h3>
+                <h3 class="project-title">Ravin — On-Premise Municipal AI Assistant</h3>
 
-              <p class="project-category">AI Systems / RAG</p>
+                <p class="project-text">
+                  The first specialized municipal AI assistant in Iran with Persian NLP, RAG, and Speech-to-Text,
+                  deployed entirely on-premise.
+                </p>
 
-              <p class="project-text" style="color: var(--light-gray); font-size: var(--fs-6); font-weight: var(--fw-300); line-height: 1.6; margin-left: 10px; margin-top: 8px;">
-                The first specialized on-premise municipal AI assistant in Iran with Persian NLP, RAG, and
-                Speech-to-Text.
-              </p>
+                <div class="case-block">
+                  <h4 class="case-title">The Challenge &amp; Hard Constraints</h4>
+                  <p class="case-text">
+                    Municipal inquiries required interpreting complex, localized urban planning regulations with
+                    <strong>zero external cloud dependencies</strong>, no internet access (strict air-gapped
+                    security), and limited on-premise compute/VRAM.
+                  </p>
+                </div>
 
+                <div class="case-block">
+                  <h4 class="case-title">Engineered Pipeline</h4>
+                  <pre class="pipeline">Persian Voice/Text -&gt; Offline ASR (Sherpa) -&gt; Semantic Chunking &amp; Vector Search -&gt; .NET Orchestrator -&gt; Local LLM + Strict Guardrails</pre>
+                </div>
+
+                <div class="case-block">
+                  <h4 class="case-title">Key Architectural Decisions &amp; Evidence</h4>
+                  <ul class="case-list">
+                    <li>
+                      <span class="case-dec">Decoupled Execution</span>
+                      <span class="case-desc">.NET Core handles deterministic business logic &amp; API gateways; Python manages local model inference &amp; embeddings.</span>
+                    </li>
+                    <li>
+                      <span class="case-dec">Zero-Hallucination RAG</span>
+                      <span class="case-desc">Hybrid retrieval combining exact rule matching with dense vector embeddings stored in on-premise storage.</span>
+                    </li>
+                    <li>
+                      <span class="case-dec">Resilient Audio Processing</span>
+                      <span class="case-desc">Low-latency streaming ASR tuned for noisy administrative environments.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <ul class="tag-row">
+                  <li><span class="chip">C#</span></li>
+                  <li><span class="chip">Python</span></li>
+                  <li><span class="chip">RAG</span></li>
+                  <li><span class="chip">ASR</span></li>
+                  <li><span class="chip">MongoDB</span></li>
+                </ul>
+
+                <div class="project-actions">
+                  <span class="project-note">Full architecture deep-dive available on request</span>
+                </div>
+              </article>
             </li>
-            <li class="project-item active" data-filter-item data-category="Backend (.NET Core &amp; MongoDB)">
-              <a href="https://github.com/MatinAminsabouri/Leave-Management" target="_blank">
+
+            <li class="project-item active" data-filter-item data-category="backend">
+              <article class="project-card">
+                <div class="project-card-head">
+                  <div class="badge-row">
+                    <span class="badge badge--ok">Open Source</span>
+                  </div>
+                  <span class="project-category">Backend · Web Application</span>
+                </div>
+
                 <h3 class="project-title">Leave Management System</h3>
 
-                <p class="project-category">Web Application (.NET Core &amp; MongoDB)</p>
+                <p class="project-text">
+                  Employee leave management web application built on .NET Core with MongoDB persistence.
+                </p>
 
-              </a>
+                <ul class="tag-row">
+                  <li><span class="chip">.NET Core</span></li>
+                  <li><span class="chip">C#</span></li>
+                  <li><span class="chip">MongoDB</span></li>
+                </ul>
+
+                <div class="project-actions">
+                  <a href="https://github.com/MatinAminsabouri/Leave-Management" target="_blank" class="btn btn--ghost">
+                    <ion-icon name="logo-github"></ion-icon>
+                    <span>View on GitHub</span>
+                    <ion-icon name="arrow-forward-outline" class="btn-arrow"></ion-icon>
+                  </a>
+                </div>
+              </article>
             </li>
-            <li class="project-item active" data-filter-item data-category="Web Application (.NET 7 &amp; MongoDB)">
 
-              <h3 class="project-title">SibSalamat Online Pharmacy</h3>
+            <li class="project-item active" data-filter-item data-category="backend">
+              <article class="project-card">
+                <div class="project-card-head">
+                  <span class="project-category">Backend · E-Commerce</span>
+                </div>
 
-              <p class="project-category">Web Application (.NET 7 &amp; MongoDB)</p>
+                <h3 class="project-title">SibSalamat Online Pharmacy</h3>
 
+                <p class="project-text">
+                  Online pharmacy platform built with .NET 7 and MongoDB as the core persistence layer.
+                </p>
+
+                <ul class="tag-row">
+                  <li><span class="chip">.NET 7</span></li>
+                  <li><span class="chip">MongoDB</span></li>
+                </ul>
+
+                <div class="project-actions">
+                  <span class="project-note">Repository private — available on request</span>
+                </div>
+              </article>
             </li>
-            <li class="project-item active" data-filter-item data-category="GUI Desktop Application">
-              <a href="https://github.com/MatinAminsabouri/Messenger_sprites_6" target="_blank">
+
+            <li class="project-item active" data-filter-item data-category="desktop">
+              <article class="project-card">
+                <div class="project-card-head">
+                  <div class="badge-row">
+                    <span class="badge badge--ok">Open Source</span>
+                  </div>
+                  <span class="project-category">Desktop · GUI</span>
+                </div>
+
                 <h3 class="project-title">IUT Messenger</h3>
 
-                <p class="project-category">GUI Desktop Application (C++ &amp; Qt 6)</p>
+                <p class="project-text">
+                  Desktop messenger application built with C++ and Qt 6 — IUT Advanced Programming final project.
+                </p>
 
-              </a>
+                <ul class="tag-row">
+                  <li><span class="chip">C++</span></li>
+                  <li><span class="chip">Qt 6</span></li>
+                </ul>
+
+                <div class="project-actions">
+                  <a href="https://github.com/MatinAminsabouri/Messenger_sprites_6" target="_blank" class="btn btn--ghost">
+                    <ion-icon name="logo-github"></ion-icon>
+                    <span>View on GitHub</span>
+                    <ion-icon name="arrow-forward-outline" class="btn-arrow"></ion-icon>
+                  </a>
+                </div>
+              </article>
             </li>
+
           </ul>
 
         </section>
@@ -515,6 +588,7 @@
     </div>
 
   </main>
+
   <script src="./assets/js/script.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
