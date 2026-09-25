@@ -300,43 +300,17 @@ const TELEGRAM_CHANNEL = "https://t.me/KhanAcademyy";
 
 /* RSSHub instances, tried in order until one resolves.
    rsshub.app is rate-limiting public usage (403 since 2026-08);
-   rsshub.rssforever.com verified reachable. */
+   rsshub.rssforever.com verified reachable 2026-09-25 (HTTP 200). */
 const TELEGRAM_RSS_HUBS = [
   "https://rsshub.rssforever.com/telegram/channel/KhanAcademyy",
+  "https://rsshub.rssforever.com/telegram/channel/KhanAcademyy?limit=10",
   "https://rsshub.app/telegram/channel/KhanAcademyy"
 ];
 
 const logsGrid = document.querySelector("[data-logs-grid]");
 
-let logsStatus = "loading";   /* "loading" | "ready" | "fallback" | "empty" */
+let logsStatus = "loading";   /* "loading" | "ready" | "empty" */
 let logsItems = [];
-
-const FALLBACK_LOGS = {
-  en: [
-    {
-      title: "Zero-Cloud RAG on Air-Gapped Municipal Hardware",
-      excerpt: "Why hybrid retrieval — exact rule matching plus dense vectors — beats pure embedding search when every token must stay inside the building.",
-      tags: ["RAG", "On-Premise", "Vector DBs"]
-    },
-    {
-      title: "Low-Latency Persian ASR Pipeline in dotnet",
-      excerpt: "Streaming Sherpa/Gyro inference behind an ASP.NET Core orchestrator: chunking, VAD gating, and tuning for noisy office environments.",
-      tags: ["ASR", "Persian NLP", "dotnet"]
-    }
-  ],
-  fa: [
-    {
-      title: "RAG بدون ابر روی سخت‌افزار شهری ایزوله",
-      excerpt: "چرا بازیابی ترکیبی — تطبیق دقیق قواعد به‌همراه بردارهای متراکم — از جستجوی صرفاً embedding بهتر است وقتی هر توکن باید داخل ساختمان بماند.",
-      tags: ["RAG", "On-Premise", "Vector DBs"]
-    },
-    {
-      title: "پایپ‌لاین ASR فارسی با تأخیر کم در dotnet",
-      excerpt: "استنتاج جریانی Sherpa/Gyro پشت هماهنگ‌کنندهٔ ASP.NET Core: تقسیم‌بندی، گیتینگ VAD و تنظیم برای محیط‌های اداری پر سر و صدا.",
-      tags: ["ASR", "پردازش زبان فارسی", "dotnet"]
-    }
-  ]
-};
 
 /* only *.t.me links are acceptable post targets */
 const normalizeTelegramUrl = function (link) {
@@ -353,7 +327,12 @@ const normalizeTelegramUrl = function (link) {
 
 const parseLogItem = function (item) {
   const rawDesc = item.description || item.content || "";
-  const html = rawDesc.replace(/<br\s*\/?>/gi, "\n");
+
+  /* quoted replies carry the ORIGINAL post inside .rsshub-quote — drop it so
+     the card title/excerpt come from the reply text, not the quoted post */
+  const html = rawDesc
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<div class="rsshub-quote">[\s\S]*?<\/div>/gi, "");
   const div = document.createElement("div");
   div.innerHTML = html;
   const text = div.textContent.replace(/\u00a0/g, " ").trim();
@@ -387,7 +366,10 @@ const parseLogItem = function (item) {
   const uniqueTags = Array.from(new Set(hashtags.map(function (t) { return t.replace(/^#/, ""); })));
   const tags = uniqueTags.length > 0 ? uniqueTags.slice(0, 5) : ["Log"];
 
-  const date = new Date(item.pubDate);
+  /* rss2json pubDate is "YYYY-MM-DD HH:MM:SS" (no timezone) — Safari's
+     Date parser rejects the space separator, so normalize to ISO "T" */
+  const rawDate = String(item.pubDate || "").trim().replace(" ", "T");
+  const date = new Date(rawDate);
   const reading = Math.max(1, Math.round(text.split(/\s+/).length / 200));
 
   /* media-only posts ("Photo" / "Video" with no readable body) are dropped */
@@ -524,20 +506,6 @@ const renderLogs = function () {
     return;
   }
 
-  if (logsStatus === "fallback") {
-    FALLBACK_LOGS[lang].forEach(function (item) {
-      logsGrid.appendChild(buildLogCard({
-        title: item.title,
-        excerpt: item.excerpt,
-        tags: item.tags,
-        url: TELEGRAM_CHANNEL,
-        date: null,
-        reading: 4
-      }, lang));
-    });
-    return;
-  }
-
   if (logsStatus === "empty") {
     const empty = document.createElement("p");
     empty.className = "logs-empty";
@@ -557,7 +525,7 @@ const fetchTelegramLogs = async function () {
 
   for (const hub of TELEGRAM_RSS_HUBS) {
     const controller = new AbortController();
-    const timer = setTimeout(function () { controller.abort(); }, 10000);
+    const timer = setTimeout(function () { controller.abort(); }, 20000);
 
     try {
       /* cache-bust: rss2json rejects unknown TOP-LEVEL params (422), so the
@@ -611,8 +579,8 @@ const loadLogs = async function () {
     logsItems = await fetchTelegramLogs();   /* already parsed: readable posts, newest first */
     logsStatus = logsItems.length > 0 ? "ready" : "empty";
   } catch (e) {
-    console.warn("[Telegram Logs] Feed unavailable — showing fallback cards:", e);
-    logsStatus = "fallback";
+    console.warn("[Telegram Logs] Feed unavailable — showing empty state:", e);
+    logsStatus = "empty";
   }
   renderLogs();
 };
