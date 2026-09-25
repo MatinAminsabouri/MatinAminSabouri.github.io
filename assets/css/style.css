@@ -1510,6 +1510,7 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
 .logs-grid {
   display: grid;
   grid-template-columns: 1fr;
+  grid-auto-rows: 1fr;
   gap: var(--sp-4);
   min-height: 240px;   /* CLS guard while skeleton → content swaps */
 }
@@ -1526,6 +1527,7 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
   border: 1px solid var(--glass-brd);
   border-radius: var(--radius-lg);
   padding: var(--sp-5);
+  min-height: 320px;
   transition: transform var(--dur-2) var(--ease-out), border-color var(--dur-2), box-shadow var(--dur-2);
 }
 
@@ -1589,6 +1591,12 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
   border-radius: 10px;
   margin: 8px 0;
   border: 1px solid var(--glass-brd);
+  filter: brightness(0.55) saturate(0.6);
+  transition: filter var(--dur-2) var(--ease-out);
+}
+
+.logs-card:hover .logs-image {
+  filter: brightness(0.7) saturate(0.8);
 }
 
 .logs-card-actions {
