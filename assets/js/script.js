@@ -372,6 +372,15 @@ const parseLogItem = function (item) {
   const date = new Date(rawDate);
   const reading = Math.max(1, Math.round(text.split(/\s+/).length / 200));
 
+  /* extract first image from the post HTML (before stripping tags) */
+  var image = null;
+  var imgMatch = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  if (imgMatch && imgMatch[1] && /^https?:\/\//.test(imgMatch[1])) {
+    image = imgMatch[1];
+  } else if (item.thumbnail && /^https?:\/\//.test(item.thumbnail)) {
+    image = item.thumbnail;
+  }
+
   /* media-only posts ("Photo" / "Video" with no readable body) are dropped */
   if (!excerpt && /^(photo|video)$/i.test(title.trim())) return null;
 
@@ -379,6 +388,7 @@ const parseLogItem = function (item) {
     title: title,
     excerpt: excerpt,
     tags: tags,
+    image: image,
     url: normalizeTelegramUrl(item.link),
     date: isNaN(date.getTime()) ? null : date,
     reading: reading
@@ -447,6 +457,18 @@ const buildLogCard = function (item, lang) {
   excerpt.className = "logs-excerpt";
   excerpt.setAttribute("dir", "auto");   /* Persian → RTL, English snippets → LTR */
   excerpt.textContent = item.excerpt;
+
+  /* post image — only when the feed actually provides one */
+  if (item.image) {
+    const img = document.createElement("img");
+    img.className = "logs-image";
+    img.src = item.image;
+    img.alt = item.title;
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.referrerPolicy = "no-referrer";
+    card.appendChild(img);
+  }
 
   const tags = document.createElement("ul");
   tags.className = "tag-row";

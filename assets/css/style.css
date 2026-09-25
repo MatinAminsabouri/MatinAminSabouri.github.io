@@ -1582,6 +1582,15 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
   overflow: hidden;
 }
 
+.logs-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 10px;
+  margin: 8px 0;
+  border: 1px solid var(--glass-brd);
+}
+
 .logs-card-actions {
   margin-top: auto;
   display: flex;
