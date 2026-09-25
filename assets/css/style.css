@@ -1584,21 +1584,6 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
   overflow: hidden;
 }
 
-.logs-image {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  border-radius: 10px;
-  margin: 8px 0;
-  border: 1px solid var(--glass-brd);
-  filter: brightness(0.55) saturate(0.6);
-  transition: filter var(--dur-2) var(--ease-out);
-}
-
-.logs-card:hover .logs-image {
-  filter: brightness(0.7) saturate(0.8);
-}
-
 .logs-card-actions {
   margin-top: auto;
   display: flex;
