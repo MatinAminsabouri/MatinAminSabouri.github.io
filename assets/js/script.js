@@ -1,226 +1,31 @@
 'use strict';
 
 /*-----------------------------------*\
-  i18n dictionary (EN / FA)
+  script.js — logic only.
+  ALL copy lives in assets/js/data.js (window.SITE_DATA); this file
+  reads from it and renders. index.html carries structure + data-i18n
+  KEYS with empty bodies — never put visible text back into the HTML.
 \*-----------------------------------*/
 
-const I18N = {
+const DATA = window.SITE_DATA;
+const I18N = DATA.i18n;
 
-  en: {
-    meta_title: "Matin AminSabouri — AI & Backend Engineer (dotnet / AI Systems)",
-    a_prefs: "Preferences",
-    a_theme: "Toggle theme",
-    a_lang: "Language",
-    a_contacts: "Show or hide contact details",
-    a_copy_email: "Copy email address",
-    a_github: "GitHub profile",
-    a_linkedin: "LinkedIn profile",
-    a_nav: "Primary",
-    a_filter: "Filter projects by category",
-    positioning: "AI & Backend Systems Engineer building production-grade distributed backends, RAG pipelines, and on-premise AI deployments under real-world infrastructure constraints.",
-    tagline: "AI & Backend Engineer (dotnet / AI Systems)",
-    open_to_work: "Busy with learning and building",
-    show_contacts: "Show Contacts",
-    c_github: "GitHub",
-    c_email: "Email",
-    c_linkedin: "LinkedIn",
-    c_location: "Location",
-    c_location_value: "Esfahan, Iran",
-    copy_done: "Copied!",
-    nav_about: "About",
-    nav_resume: "Resume",
-    nav_portfolio: "Portfolio",
-    about_title: "About me",
-    bio_1: "Software Engineer with 3+ years of experience designing and implementing intelligent systems, scalable web backends, and municipal/enterprise automation. Specialized in <strong>dotnet Core</strong> and <strong>Python</strong>, with a strong focus on RAG (Retrieval-Augmented Generation) architectures, AI Agents & MCP workflows, local ASR (Speech Recognition), and Persian NLP.",
-    bio_2: "Technical Lead for <strong>'Ravin'</strong> — the first specialized municipal and urban-planning AI assistant in Iran, deployed fully on-premise.",
-    stat_1l: "Years of Experience",
-    stat_2v: "AI Lead",
-    stat_2l: "Ravin AI Assistant",
-    stat_3l: "On-Premise Deployments",
-    doing_title: "What I'm Doing",
-    svc_1t: "AI Systems & RAG Pipelines",
-    svc_1d: "Designing deterministic RAG workflows, vector search, custom knowledge bases, and agentic integrations (MCP).",
-    svc_2t: "Scalable Backend Architecture",
-    svc_2d: "Building resilient RESTful APIs, distributed microservices, and database schemas with dotnet Core, Python, SQL Server, and MongoDB.",
-    svc_3t: "Speech & Persian NLP (ASR)",
-    svc_3d: "Deploying on-premise Sherpa/Gyro ASR engines and NLP models tailored for complex Persian administrative domains.",
-    svc_4t: "Identity & Access Management (IAM)",
-    svc_4d: "Designing and implementing IDP & SSO systems with OAuth2, OpenID Connect, Keycloak, IdentityServer4, and OpenIddict.",
-    resume_title: "Resume",
-    view_resume: "View Resume",
-    download: "Download",
-    edu_title: "Education",
-    exp_title: "Experience",
-    edu_1t: "Isfahan University Of Technology",
-    edu_1d: "Studying Computer Engineering",
-    edu_2t: "Harati High school",
-    edu_2d: "Studied Mathematics in Harati high school",
-    exp_role: "Senior Backend & AI Engineer | Project Lead (Ravin)",
-    exp_company: "Nosaz Mohaseb Safahan — Municipal Automation Systems",
-    exp_1: "Architected and led the development of <strong>Ravin AI Assistant</strong> for municipal and urban planning workflows.",
-    exp_2: "Engineered zero-hallucination RAG pipelines with semantic search across extensive municipal regulations.",
-    exp_3: "Integrated local real-time ASR (Sherpa/Gyro) for Persian speech recognition in noisy office environments.",
-    exp_4: "Orchestrated fully on-premise (air-gapped) deployments ensuring data privacy and zero cloud dependency.",
-    exp_5: "Implemented observability and distributed tracing with OpenTelemetry and Grafana.",
-    skills_title: "Tech Stack",
-    grp_1t: "AI / RAG & Agents",
-    grp_2t: "Backend & Distributed Systems",
-    grp_3t: "Data & Databases",
-    grp_4t: "DevOps & Observability",
-    grp_5t: "Security & Identity (IAM)",
-    portfolio_title: "Portfolio",
-    filter_all: "All",
-    filter_ai: "AI Systems",
-    filter_backend: "Backend",
-    filter_desktop: "Desktop",
-    badge_enterprise: "Enterprise",
-    badge_airgap: "100% Air-Gapped",
-    badge_oss: "Open Source",
-    p_ravin_cat: "AI Systems / RAG",
-    p_ravin_title: "Ravin — On-Premise Municipal AI Assistant",
-    p_ravin_intro: "The first specialized municipal AI assistant in Iran with Persian NLP, RAG, and Speech-to-Text, deployed entirely on-premise.",
-    case_challenge: "The Challenge & Hard Constraints",
-    case_pipeline: "Engineered Pipeline",
-    case_decisions: "Key Architectural Decisions & Evidence",
-    case_read_more: "View Case Study",
-    case_show_less: "Show Less",
-    ravin_challenge: "Municipal inquiries required interpreting complex, localized urban planning regulations with <strong>zero external cloud dependencies</strong>, no internet access (strict air-gapped security), and limited on-premise compute/VRAM.",
-    dec_1t: "Decoupled Execution",
-    dec_1d: "dotnet Core handles deterministic business logic & API gateways; Python manages local model inference & embeddings.",
-    dec_2t: "Zero-Hallucination RAG",
-    dec_2d: "Hybrid retrieval combining exact rule matching with dense vector embeddings stored in on-premise storage.",
-    dec_3t: "Resilient Audio Processing",
-    dec_3d: "Low-latency streaming ASR tuned for noisy administrative environments.",
-    p_leave_cat: "Backend · Web Application",
-    p_leave_title: "Leave Management System",
-    p_leave_desc: "Employee leave management web application built on dotnet Core with MongoDB persistence.",
-    p_sib_cat: "Backend · E-Commerce",
-    p_sib_title: "SibSalamat Online Pharmacy",
-    p_sib_desc: "Online pharmacy platform built with dotnet 7 and MongoDB as the core persistence layer.",
-    p_sib_note: "Repository private — available on request",
-    p_iut_cat: "Desktop · GUI",
-    p_iut_title: "IUT Messenger",
-    p_iut_desc: "Desktop messenger application built with C++ and Qt 6 — IUT Advanced Programming final project.",
-    view_github: "View on GitHub",
-    nav_logs: "Logs",
-    logs_title: "Engineering Logs",
-    logs_sub: "Real-world architectural notes, system design trade-offs, and on-premise AI deployment insights directly synced from <a href=\"https://t.me/KhanAcademyy\" target=\"_blank\" rel=\"noopener noreferrer\">@KhanAcademyy</a>.",
-    logs_read: "Read on Telegram",
-    logs_subscribe: "Subscribe on Telegram",
-    logs_empty: "No logs yet — subscribe to catch the next engineering note."
-  },
+const rootEl = document.documentElement;
 
-  fa: {
-    meta_title: "متین امین صبوری — مهندس هوش مصنوعی و بک‌اند (dotnet / سیستم‌های هوش مصنوعی)",
-    a_prefs: "تنظیمات",
-    a_theme: "تغییر پوسته",
-    a_lang: "زبان",
-    a_contacts: "نمایش یا مخفی کردن اطلاعات تماس",
-    a_copy_email: "کپی آدرس ایمیل",
-    a_github: "پروفایل گیت‌هاب",
-    a_linkedin: "پروفایل لینکدین",
-    a_nav: "ناوبری اصلی",
-    a_filter: "فیلتر پروژه‌ها بر اساس دسته",
-    positioning: "مهندس سیستم‌های هوش مصنوعی و بک‌اند؛ سازندهٔ بک‌اندهای توزیع‌شدهٔ تولیدی، پایپلاین‌های RAG و استقرارهای On-Premise هوش مصنوعی در محدودیت‌های زیرساخت واقعی.",
-    tagline: "مهندس هوش مصنوعی و بک‌اند (dotnet / سیستم‌های هوش مصنوعی)",
-    open_to_work: "مشغول یادگیری و ساختن",
-    show_contacts: "نمایش اطلاعات تماس",
-    c_github: "گیت‌هاب",
-    c_email: "ایمیل",
-    c_linkedin: "لینکدین",
-    c_location: "موقعیت مکانی",
-    c_location_value: "اصفهان، ایران",
-    copy_done: "کپی شد!",
-    nav_about: "دربارهٔ من",
-    nav_resume: "رزومه",
-    nav_portfolio: "نمونه‌کارها",
-    about_title: "دربارهٔ من",
-    bio_1: "مهندس نرم‌افزار با بیش از ۳ سال تجربه در طراحی و پیاده‌سازی سیستم‌های هوشمند، بک‌اندهای وب مقیاس‌پذیر و اتوماسیون شهری/سازمانی؛ متخصص در <strong>dotnet Core</strong> و <strong>پایتون</strong> با تمرکز ویژه بر معماری‌های RAG (تولید افزوده با بازیابی)، عوامل هوش مصنوعی و جریان‌های کاری MCP، تشخیص گفتار محلی (ASR) و پردازش زبان فارسی.",
-    bio_2: "راهبر فنی پروژهٔ <strong>«Ravin»</strong> — نخستین دستیار هوش مصنوعی تخصصی امور شهری و شهرسازی ایران — با استقرار کاملاً On-Premise.",
-    stat_1l: "سال تجربه",
-    stat_2v: "راهبر هوش مصنوعی",
-    stat_2l: "دستیار هوش مصنوعی Ravin",
-    stat_3l: "استقرارهای On-Premise",
-    doing_title: "حوزه‌های تخصصی من",
-    svc_1t: "سیستم‌های هوش مصنوعی و پایپلاین‌های RAG",
-    svc_1d: "طراحی جریان‌های کاری RAG قطعی، جستجوی برداری، پایگاه‌های دانش سفارشی و یکپارچه‌سازی عوامل (MCP).",
-    svc_2t: "معماری بک‌اند مقیاس‌پذیر",
-    svc_2d: "ساخت APIهای REST پایدار، میکروسرویس‌های توزیع‌شده و طراحی اسکیماهای داده با dotnet Core، پایتون، SQL Server و MongoDB.",
-    svc_3t: "تشخیص گفتار و پردازش زبان فارسی (ASR)",
-    svc_3d: "استقرار موتورهای ASR محلی Sherpa/Gyro و مدل‌های NLP متناسب با حوزه‌های اداری پیچیدهٔ فارسی.",
-    svc_4t: "مدیریت هویت و دسترسی (IAM)",
-    svc_4d: "طراحی و پیاده‌سازی سیستم‌های IDP و SSO با OAuth2، OpenID Connect، Keycloak، IdentityServer4 و OpenIddict.",
-    resume_title: "رزومه",
-    view_resume: "مشاهدهٔ رزومه",
-    download: "دانلود",
-    edu_title: "تحصیلات",
-    exp_title: "تجربهٔ کاری",
-    edu_1t: "دانشگاه صنعتی اصفهان",
-    edu_1d: "دانشجوی مهندسی کامپیوتر",
-    edu_2t: "دبیرستان هراتی",
-    edu_2d: "تحصیل در رشتهٔ ریاضی فیزیک — دبیرستان هراتی",
-    exp_role: "مهندس ارشد بک‌اند و هوش مصنوعی | راهبر پروژه (Ravin)",
-    exp_company: "نوساز محاسب صفاهان — سامانه‌های اتوماسیون شهری",
-    exp_1: "معماری و رهبری توسعهٔ <strong>دستیار هوش مصنوعی Ravin</strong> برای جریان‌های کاری شهری و شهرسازی.",
-    exp_2: "طراحی پایپلاین‌های RAG بدون توهم با جستجوی معنایی در گسترهٔ مقررات شهری.",
-    exp_3: "یکپارچه‌سازی ASR بلادرنگ محلی (Sherpa/Gyro) برای تشخیص گفتار فارسی در محیط‌های اداری پرسر و صدا.",
-    exp_4: "مدیریت استقرارهای کاملاً On-Premise (ایزوله از اینترنت) برای تضمین حریم داده‌ها و وابستگی صفر به ابر.",
-    exp_5: "پیاده‌سازی مشاهده‌پذیری و ردیابی توزیع‌شده با OpenTelemetry و Grafana.",
-    skills_title: "پشتهٔ فناوری",
-    grp_1t: "هوش مصنوعی / RAG و عوامل",
-    grp_2t: "بک‌اند و سیستم‌های توزیع‌شده",
-    grp_3t: "داده و پایگاه‌های داده",
-    grp_4t: "دوآپس و مشاهده‌پذیری",
-    grp_5t: "امنیت و هویت (IAM)",
-    portfolio_title: "نمونه‌کارها",
-    filter_all: "همه",
-    filter_ai: "سیستم‌های هوش مصنوعی",
-    filter_backend: "بک‌اند",
-    filter_desktop: "دسکتاپ",
-    badge_enterprise: "سازمانی",
-    badge_airgap: "۱۰۰٪ ایزوله از اینترنت",
-    badge_oss: "متن‌باز",
-    p_ravin_cat: "سیستم‌های هوش مصنوعی / RAG",
-    p_ravin_title: "Ravin — دستیار هوش مصنوعی شهری On-Premise",
-    p_ravin_intro: "نخستین دستیار هوش مصنوعی تخصصی شهری ایران با پردازش زبان فارسی، RAG و تبدیل گفتار به متن؛ با استقرار کاملاً On-Premise.",
-    case_challenge: "چالش و محدودیت‌های سخت‌گیرانه",
-    case_pipeline: "خط لولهٔ مهندسی‌شده",
-    case_decisions: "تصمیم‌های کلیدی معماری و شواهد",
-    case_read_more: "مشاهدهٔ مطالعهٔ موردی",
-    case_show_less: "نمایش کمتر",
-    ravin_challenge: "پاسخ به پرسش‌های شهری مستلزم تفسیر مقررات پیچیده و بومی شهرسازی با <strong>وابستگی صفر به سرویس‌های ابری</strong>، بدون دسترسی به اینترنت (امنیت سخت‌گیرانهٔ ایزوله) و با منابع پردازشی و VRAM محدود On-Premise بود.",
-    dec_1t: "اجرای جداسازی‌شده",
-    dec_1d: "dotnet Core منطق کسب‌وکار قطعی و دروازه‌های API را مدیریت می‌کند و پایتون استنتاج مدل و Embeddingهای محلی را بر عهده دارد.",
-    dec_2t: "RAG بدون توهم",
-    dec_2d: "بازیابی ترکیبی از تطبیق دقیق قواعد و بردارهای متراکم ذخیره‌شده در فضای ذخیره‌سازی On-Premise.",
-    dec_3t: "پردازش مقاوم صوتی",
-    dec_3d: "ASR جریانی با تأخیر کم، تنظیم‌شده برای محیط‌های اداری پر سر و صدا.",
-    p_leave_cat: "بک‌اند · برنامهٔ وب",
-    p_leave_title: "سامانهٔ مدیریت مرخصی",
-    p_leave_desc: "برنامهٔ وب مدیریت مرخصی کارکنان مبتنی بر dotnet Core با ذخیره‌سازی MongoDB.",
-    p_sib_cat: "بک‌اند · تجارت الکترونیک",
-    p_sib_title: "داروخانهٔ آنلاین سیب‌سلمات",
-    p_sib_desc: "پلتفرم داروخانهٔ آنلاین ساخته‌شده با dotnet 7 و MongoDB به‌عنوان لایهٔ اصلی ذخیره‌سازی.",
-    p_sib_note: "مخزن خصوصی — در صورت درخواست",
-    p_iut_cat: "دسکتاپ · رابط گرافیکی",
-    p_iut_title: "پیام‌رسان IUT",
-    p_iut_desc: "برنامهٔ پیام‌رسان دسکتاپ با C++ و Qt 6 — پروژهٔ پایانی برنامه‌نویسی پیشرفتهٔ دانشگاه صنعتی اصفهان.",
-    view_github: "مشاهده در گیت‌هاب",
-    nav_logs: "یادداشت‌ها",
-    logs_title: "یادداشت‌های مهندسی",
-    logs_sub: "نکته‌های واقعی معماری، مصالحه‌های طراحی سیستم و بینش‌های استقرار هوش مصنوعی On-Premise — مستقیماً از <a href=\"https://t.me/KhanAcademyy\" target=\"_blank\" rel=\"noopener noreferrer\">@KhanAcademyy</a> همگام‌سازی شده.",
-    logs_read: "مطالعه در تلگرام",
-    logs_subscribe: "عضویت در تلگرام",
-    logs_empty: "هنوز یادداشتی منتشر نشده — برای مطالعهٔ یادداشت‌های بعدی عضو شوید."
-  }
+const curLang = function () {
+  return rootEl.getAttribute("lang") === "fa" ? "fa" : "en";
+};
 
+/* resolve a content field: plain string (same in both languages)
+   or bilingual object { en, fa } */
+const L = function (field, lang) {
+  return typeof field === "string" ? field : field[lang];
 };
 
 /*-----------------------------------*\
   theme engine (light / dark)
 \*-----------------------------------*/
 
-const rootEl = document.documentElement;
 const themeToggle = document.querySelector("[data-theme-toggle]");
 const themeMeta = document.querySelector('meta[name="theme-color"]');
 
@@ -243,27 +48,289 @@ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", fun
 });
 
 /*-----------------------------------*\
+  renderers — content sections built from SITE_DATA
+
+  TRUST: SITE_DATA is author-written static content, so these renderers
+  use innerHTML intentionally. Never feed remote or model-generated
+  strings through them without escaping first.
+\*-----------------------------------*/
+
+const contactsList = document.querySelector("[data-contacts]");
+const socialsList = document.querySelector("[data-socials]");
+const aboutBody = document.querySelector("[data-about-body]");
+const resumeBody = document.querySelector("[data-resume-body]");
+const select = document.querySelector("[data-select]");
+const selectValue = document.querySelector("[data-select-value]");
+const selectList = document.querySelector("[data-select-list]");
+const filterList = document.querySelector("[data-filter-list]");
+const projectList = document.querySelector("[data-project-list]");
+
+/* interaction state preserved across re-renders (language switches) */
+const uiState = { filter: "all", caseOpen: false };
+
+const chipRow = function (tags) {
+  return '<ul class="tag-row">' +
+    tags.map(function (t) { return '<li><span class="chip">' + t + "</span></li>"; }).join("") +
+    "</ul>";
+};
+
+const renderContacts = function (lang) {
+  const t = I18N[lang];
+
+  contactsList.innerHTML = DATA.profile.contacts.map(function (c) {
+    const valueHtml = c.href
+      ? '<a href="' + c.href + '" class="contact-link">' + c.text + "</a>"
+      : "<address>" + L(c.address, lang) + "</address>";
+
+    const copyHtml = c.copy
+      ? '<button class="copy-btn" data-copy="' + c.copy + '" aria-label="' + t.a_copy_email + '">' +
+          '<ion-icon name="copy-outline" class="copy-ic"></ion-icon>' +
+          '<ion-icon name="checkmark-outline" class="check-ic"></ion-icon>' +
+          '<span class="copy-tooltip" aria-hidden="true">' + t.copy_done + "</span>" +
+        "</button>"
+      : "";
+
+    return '<li class="contact-item">' +
+      '<div class="icon-box"><ion-icon name="' + c.icon + '"></ion-icon></div>' +
+      '<div class="contact-info">' +
+        '<p class="contact-title">' + L(c.label, lang) + "</p>" +
+        valueHtml +
+      "</div>" +
+      copyHtml +
+      "</li>";
+  }).join("");
+};
+
+const renderSocials = function (lang) {
+  socialsList.innerHTML = DATA.profile.socials.map(function (s) {
+    return '<li class="social-item">' +
+      '<a href="' + s.href + '" class="social-link" aria-label="' + L(s.label, lang) + '">' +
+        '<ion-icon name="' + s.icon + '"></ion-icon>' +
+      "</a>" +
+      "</li>";
+  }).join("");
+};
+
+const renderAbout = function (lang) {
+  const a = DATA.about;
+  const t = I18N[lang];
+
+  aboutBody.innerHTML =
+    '<section class="about-text">' +
+      a.bio.map(function (b) { return "<p>" + L(b, lang) + "</p>"; }).join("") +
+    "</section>" +
+
+    '<div class="stats">' +
+      a.stats.map(function (s) {
+        return '<div class="stat">' +
+          '<span class="stat-value">' + L(s.value, lang) + "</span>" +
+          '<span class="stat-label">' + L(s.label, lang) + "</span>" +
+          "</div>";
+      }).join("") +
+    "</div>" +
+
+    '<section class="service">' +
+      '<h3 class="service-title">' + t.doing_title + "</h3>" +
+      '<ul class="service-list">' +
+        a.services.map(function (s) {
+          return '<li class="service-item">' +
+            '<div class="service-icon-box"><ion-icon name="' + s.icon + '"></ion-icon></div>' +
+            '<div class="service-content-box">' +
+              '<h4 class="service-item-title">' + L(s.title, lang) + "</h4>" +
+              '<p class="service-item-text">' + L(s.text, lang) + "</p>" +
+            "</div>" +
+            "</li>";
+        }).join("") +
+      "</ul>" +
+    "</section>";
+};
+
+const renderResume = function (lang) {
+  const r = DATA.resume;
+  const t = I18N[lang];
+
+  const timeline = function (icon, title, itemsHtml) {
+    return '<section class="timeline">' +
+      '<div class="title-wrapper">' +
+        '<div class="icon-box"><ion-icon name="' + icon + '"></ion-icon></div>' +
+        '<h3 class="timeline-title">' + title + "</h3>" +
+      "</div>" +
+      '<ol class="timeline-list">' + itemsHtml + "</ol>" +
+      "</section>";
+  };
+
+  const eduItems = r.education.map(function (e) {
+    return '<li class="timeline-item">' +
+      '<h4 class="timeline-item-title">' + L(e.title, lang) + "</h4>" +
+      "<span>" + e.period + "</span>" +
+      '<p class="timeline-text">' + L(e.desc, lang) + "</p>" +
+      "</li>";
+  }).join("");
+
+  const expItems = r.experience.map(function (e) {
+    return '<li class="timeline-item">' +
+      '<h4 class="timeline-item-title">' + L(e.role, lang) + "</h4>" +
+      "<span>" + e.period + "</span>" +
+      '<p class="timeline-company">' + L(e.company, lang) + "</p>" +
+      e.bullets.map(function (b) { return '<p class="timeline-text">' + L(b, lang) + "</p>"; }).join("") +
+      "</li>";
+  }).join("");
+
+  const skills =
+    '<section class="skills">' +
+      '<h3 class="skills-title">' + t.skills_title + "</h3>" +
+      r.skills.map(function (g) {
+        return '<div class="skill-group">' +
+          '<h4 class="skill-group-title">' + L(g.title, lang) + "</h4>" +
+          chipRow(g.tags) +
+          "</div>";
+      }).join("") +
+    "</section>";
+
+  resumeBody.innerHTML =
+    timeline("book-outline", t.edu_title, eduItems) +
+    timeline("briefcase-outline", t.exp_title, expItems) +
+    skills;
+};
+
+const renderFilters = function (lang) {
+  const filters = DATA.filters;
+  const active = filters.find(function (f) { return f.value === uiState.filter; }) || filters[0];
+
+  selectList.innerHTML = filters.map(function (f) {
+    return '<li class="select-item">' +
+      '<button data-select-item data-filter-value="' + f.value + '">' + L(f.label, lang) + "</button>" +
+      "</li>";
+  }).join("");
+
+  filterList.innerHTML = filters.map(function (f) {
+    const isActive = f.value === uiState.filter;
+    return '<li class="filter-item">' +
+      '<button class="' + (isActive ? "active" : "") + '" data-filter-btn data-filter-value="' + f.value + '">' +
+        L(f.label, lang) +
+      "</button>" +
+      "</li>";
+  }).join("");
+
+  selectValue.textContent = L(active.label, lang);
+};
+
+const buildProjectCard = function (p, lang) {
+  const t = I18N[lang];
+
+  const badges = p.badges.length
+    ? '<div class="badge-row">' +
+        p.badges.map(function (b) {
+          return '<span class="badge badge--' + b.tone + '">' + L(b.label, lang) + "</span>";
+        }).join("") +
+      "</div>"
+    : "";
+
+  const head =
+    '<div class="project-card-head">' +
+      badges +
+      '<span class="project-category">' + L(p.category_label, lang) + "</span>" +
+    "</div>";
+
+  let caseStudyHtml = "";
+  let toggleHtml = "";
+
+  if (p.case_study) {
+    const cs = p.case_study;
+
+    const blocks = cs.blocks.map(function (b) {
+      if (b.type === "pipeline") {
+        return '<div class="case-block">' +
+          '<h4 class="case-title">' + L(b.title, lang) + "</h4>" +
+          '<pre class="pipeline">' + b.text + "</pre>" +
+          "</div>";
+      }
+      if (b.type === "decisions") {
+        return '<div class="case-block">' +
+          '<h4 class="case-title">' + L(b.title, lang) + "</h4>" +
+          '<ul class="case-list">' +
+            b.items.map(function (i) {
+              return "<li>" +
+                '<span class="case-dec">' + L(i.title, lang) + "</span>" +
+                '<span class="case-desc">' + L(i.desc, lang) + "</span>" +
+                "</li>";
+            }).join("") +
+          "</ul>" +
+          "</div>";
+      }
+      /* type: "text" */
+      return '<div class="case-block">' +
+        '<h4 class="case-title">' + L(b.title, lang) + "</h4>" +
+        '<p class="case-text">' + L(b.html, lang) + "</p>" +
+        "</div>";
+    }).join("");
+
+    caseStudyHtml =
+      '<div class="case-study" id="' + cs.id + '" data-case-study>' +
+        '<div class="case-study-inner">' + blocks + "</div>" +
+      "</div>";
+
+    toggleHtml =
+      '<button class="btn btn--ghost case-toggle" data-case-toggle ' +
+        'aria-expanded="' + (uiState.caseOpen ? "true" : "false") + '" aria-controls="' + cs.id + '">' +
+        '<span class="case-toggle-label">' + (uiState.caseOpen ? t.case_show_less : t.case_read_more) + "</span>" +
+        '<ion-icon name="chevron-down" class="case-toggle-icon"></ion-icon>' +
+      "</button>";
+  }
+
+  let linkHtml = "";
+  if (p.link) {
+    linkHtml =
+      '<a href="' + p.link + '" target="_blank" rel="noopener noreferrer" class="btn btn--ghost">' +
+        '<ion-icon name="logo-github"></ion-icon>' +
+        "<span>" + t.view_github + "</span>" +
+        '<ion-icon name="arrow-forward-outline" class="btn-arrow"></ion-icon>' +
+      "</a>";
+  }
+
+  const noteHtml = p.note ? '<span class="project-note">' + L(p.note, lang) + "</span>" : "";
+
+  return '<article class="project-card' +
+      (p.featured ? " project-card--featured" : "") +
+      (uiState.caseOpen && p.case_study ? " open" : "") +
+    '">' +
+    head +
+    '<h3 class="project-title">' + L(p.title, lang) + "</h3>" +
+    '<p class="project-text">' + L(p.desc, lang) + "</p>" +
+    caseStudyHtml +
+    chipRow(p.tags) +
+    '<div class="project-actions">' + toggleHtml + linkHtml + noteHtml + "</div>" +
+    "</article>";
+};
+
+const renderProjects = function (lang) {
+  projectList.innerHTML = DATA.projects.map(function (p) {
+    const visible = uiState.filter === "all" || uiState.filter === p.category;
+    return '<li class="project-item' + (visible ? " active" : "") + '" data-filter-item data-category="' + p.category + '">' +
+      buildProjectCard(p, lang) +
+      "</li>";
+  }).join("");
+};
+
+/*-----------------------------------*\
   language engine (EN / FA)
 \*-----------------------------------*/
 
 const langBtns = document.querySelectorAll("[data-lang]");
-const i18nNodes = document.querySelectorAll("[data-i18n]");
-const i18nAriaNodes = document.querySelectorAll("[data-i18n-aria]");
-const caseToggle = document.querySelector("[data-case-toggle]");
-const caseToggleLabel = caseToggle ? caseToggle.querySelector(".case-toggle-label") : null;
 
 const applyLang = function (lang) {
-  const dict = I18N[lang] || I18N.en;
+  const dict = I18N[lang];
 
   rootEl.setAttribute("lang", lang);
   rootEl.setAttribute("dir", lang === "fa" ? "rtl" : "ltr");
 
-  i18nNodes.forEach(function (el) {
+  /* chrome strings: elements hold data-i18n KEYS with empty bodies */
+  document.querySelectorAll("[data-i18n]").forEach(function (el) {
     const key = el.dataset.i18n;
     if (dict[key] != null) el.innerHTML = dict[key];
   });
 
-  i18nAriaNodes.forEach(function (el) {
+  document.querySelectorAll("[data-i18n-aria]").forEach(function (el) {
     const key = el.dataset.i18nAria;
     if (dict[key]) el.setAttribute("aria-label", dict[key]);
   });
@@ -274,11 +341,13 @@ const applyLang = function (lang) {
     b.setAttribute("aria-pressed", active ? "true" : "false");
   });
 
-  /* keep the collapsible case-study toggle label in sync with the current language */
-  if (caseToggle) {
-    const opened = caseToggle.getAttribute("aria-expanded") === "true";
-    caseToggleLabel.textContent = dict[opened ? "case_show_less" : "case_read_more"];
-  }
+  /* content sections (state-aware: filter + case-study open survive) */
+  renderContacts(lang);
+  renderSocials(lang);
+  renderAbout(lang);
+  renderResume(lang);
+  renderFilters(lang);
+  renderProjects(lang);
 
   /* re-render the engineering logs in the current language */
   renderLogs();
@@ -335,7 +404,7 @@ const parseLogItem = function (item) {
     .replace(/<div class="rsshub-quote">[\s\S]*?<\/div>/gi, "");
   const div = document.createElement("div");
   div.innerHTML = html;
-  const text = div.textContent.replace(/\u00a0/g, " ").trim();
+  const text = div.textContent.replace(/ /g, " ").trim();
 
   /* no strict hashtag filter — every post with readable text is a log;
      drop only fully empty / media-only entries */
@@ -486,7 +555,7 @@ const buildLogCard = function (item, lang) {
 
 const renderLogs = function () {
   if (!logsGrid) return;
-  const lang = rootEl.getAttribute("lang") === "fa" ? "fa" : "en";
+  const lang = curLang();
   logsGrid.textContent = "";
 
   if (logsStatus === "loading") {
@@ -543,10 +612,6 @@ const fetchTelegramLogs = async function () {
 
       const parsed = data.items.map(parseLogItem).filter(Boolean);
 
-      console.log("[Telegram Logs] Raw items fetched:", data.items.length);
-      console.log("[Telegram Logs] Readable text posts:", parsed.length);
-      console.log("[Telegram Logs] Source:", hub);
-
       if (parsed.length === 0) {
         console.warn("[Telegram Logs] No readable posts in this copy — the feed layer may still be catching up.");
         lastEmpty = parsed;
@@ -599,7 +664,7 @@ sidebarBtn.addEventListener("click", function () {
 });
 
 /*-----------------------------------*\
-  page navigation (About / Resume / Portfolio)
+  page navigation (About / Resume / Portfolio / Logs)
 \*-----------------------------------*/
 
 const navLinks = document.querySelectorAll("[data-nav-link]");
@@ -631,16 +696,15 @@ navLinks.forEach(function (link) {
 
 /*-----------------------------------*\
   portfolio filtering (mobile select + desktop chips)
+  Options are rendered from DATA.filters into both UIs — one source,
+  so the mobile select and desktop chips can never drift apart.
 \*-----------------------------------*/
 
-const select = document.querySelector("[data-select]");
-const selectValue = document.querySelector("[data-select-value]");
-const selectItems = document.querySelectorAll("[data-select-item]");
-const filterBtns = document.querySelectorAll("[data-filter-btn]");
-const filterItems = document.querySelectorAll("[data-filter-item]");
+const setFilter = function (value) {
+  uiState.filter = value;
+  renderFilters(curLang());
 
-const filterBy = function (value) {
-  filterItems.forEach(function (item) {
+  projectList.querySelectorAll("[data-filter-item]").forEach(function (item) {
     item.classList.toggle("active", value === "all" || value === item.dataset.category);
   });
 };
@@ -649,32 +713,18 @@ select.addEventListener("click", function () {
   select.classList.toggle("active");
 });
 
-selectItems.forEach(function (item) {
-  item.addEventListener("click", function () {
-
-    const value = item.dataset.filterValue || "all";
-    if (selectValue) selectValue.textContent = item.textContent.trim();
-
-    select.classList.remove("active");
-    filterBy(value);
-
-  });
+/* delegated: filter option nodes are re-created on every language switch */
+selectList.addEventListener("click", function (event) {
+  const btn = event.target.closest("[data-select-item]");
+  if (!btn) return;
+  setFilter(btn.dataset.filterValue || "all");
+  select.classList.remove("active");
 });
 
-filterBtns.forEach(function (btn) {
-  btn.addEventListener("click", function () {
-
-    const value = btn.dataset.filterValue || "all";
-
-    filterBtns.forEach(function (b) {
-      b.classList.toggle("active", b === btn);
-    });
-
-    if (selectValue) selectValue.textContent = btn.textContent.trim();
-
-    filterBy(value);
-
-  });
+filterList.addEventListener("click", function (event) {
+  const btn = event.target.closest("[data-filter-btn]");
+  if (!btn) return;
+  setFilter(btn.dataset.filterValue || "all");
 });
 
 /* close mobile select on outside click */
@@ -685,58 +735,58 @@ document.addEventListener("click", function (event) {
 });
 
 /*-----------------------------------*\
-  copy-to-clipboard micro-interaction
+  copy-to-clipboard micro-interaction (delegated — contacts re-render on lang switch)
 \*-----------------------------------*/
 
-const copyBtns = document.querySelectorAll("[data-copy]");
+contactsList.addEventListener("click", function (event) {
+  const btn = event.target.closest("[data-copy]");
+  if (!btn) return;
 
-copyBtns.forEach(function (btn) {
-  btn.addEventListener("click", function () {
+  const text = btn.dataset.copy;
 
-    const text = btn.dataset.copy;
+  const writeClipboard = function () {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    // fallback for older browsers / non-secure contexts (e.g. local files)
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    return Promise.resolve();
+  };
 
-    const writeClipboard = function () {
-      if (navigator.clipboard && window.isSecureContext) {
-        return navigator.clipboard.writeText(text);
-      }
-      // fallback for older browsers / non-secure contexts (e.g. local files)
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-      return Promise.resolve();
-    };
-
-    writeClipboard().then(function () {
-      btn.classList.add("copied");
-      clearTimeout(btn._copyTimer);
-      btn._copyTimer = setTimeout(function () {
-        btn.classList.remove("copied");
-      }, 1600);
-    });
-
+  writeClipboard().then(function () {
+    btn.classList.add("copied");
+    clearTimeout(btn._copyTimer);
+    btn._copyTimer = setTimeout(function () {
+      btn.classList.remove("copied");
+    }, 1600);
   });
+
 });
 
 /*-----------------------------------*\
-  collapsible case study (Ravin "Read More")
+  collapsible case study (Ravin "Read More", delegated)
 \*-----------------------------------*/
 
-if (caseToggle) {
-  const caseCard = caseToggle.closest(".project-card");
+projectList.addEventListener("click", function (event) {
+  const toggle = event.target.closest("[data-case-toggle]");
+  if (!toggle) return;
 
-  caseToggle.addEventListener("click", function () {
-    const opened = caseCard.classList.toggle("open");
-    caseToggle.setAttribute("aria-expanded", opened ? "true" : "false");
-    const lang = rootEl.getAttribute("lang") === "fa" ? "fa" : "en";
-    caseToggleLabel.textContent = I18N[lang][opened ? "case_show_less" : "case_read_more"];
-  });
-}
+  uiState.caseOpen = !uiState.caseOpen;
+
+  const card = toggle.closest(".project-card");
+  card.classList.toggle("open", uiState.caseOpen);
+  toggle.setAttribute("aria-expanded", uiState.caseOpen ? "true" : "false");
+  toggle.querySelector(".case-toggle-label").textContent =
+    I18N[curLang()][uiState.caseOpen ? "case_show_less" : "case_read_more"];
+});
 
 /* sync UI with the boot-time language (from the inline <head> script).
    Runs last so every renderer above (incl. the logs engine) is initialized. */
-applyLang(rootEl.getAttribute("lang") === "fa" ? "fa" : "en");
+applyLang(curLang());
