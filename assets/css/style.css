@@ -203,13 +203,17 @@ article.active {
   animation: pageIn var(--dur-3) var(--ease-out);
 }
 
-/* navbar — floating glass pill (mobile: fixed bottom) */
+/* navbar — floating glass pill (mobile: fixed bottom).
+   display:flex so the preferences controls can join it on desktop. */
 .navbar {
   position: fixed;
   bottom: var(--sp-4);
   left: 50%;
   transform: translateX(-50%);
   z-index: var(--z-nav);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
   width: max-content;
   max-width: calc(100% - 2rem);
   background: var(--nav-bg);
@@ -1287,14 +1291,23 @@ article.active {
 
   .sidebar-info_more { grid-template-rows: 1fr; }
 
-  .controls { grid-column: 1 / -1; }
-
   .navbar {
     position: static;
     transform: none;
     width: max-content;
     margin: 0 0 var(--sp-5) auto;
     padding: var(--sp-2);
+  }
+
+  /* inside the nav pill the controls lose their own pill chrome —
+     one cohesive header unit instead of a floating island */
+  .navbar .controls {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
   }
 
 }
@@ -1323,13 +1336,16 @@ article.active {
   #12 CONTROLS WIDGET (theme + language)
 \*-----------------------------------*/
 
+/* preferences pill — lives inside the sidebar card by default (mobile);
+   on desktop script.js moves it into the nav pill (single header unit) */
 .controls {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
   gap: var(--sp-2);
-  width: 100%;
-  margin-bottom: var(--sp-3);   /* breathing room below the docked bar */
+  width: fit-content;
+  margin-inline: auto;
+  margin-top: var(--sp-1);
   padding: 6px;
   border-radius: 999px;
   background: var(--nav-bg);

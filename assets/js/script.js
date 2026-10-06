@@ -378,8 +378,28 @@ const TELEGRAM_RSS_HUBS = [
 
 const logsGrid = document.querySelector("[data-logs-grid]");
 
-let logsStatus = "loading";   /* "loading" | "ready" | "empty" */
-let logsItems = [];
+const truncateText = function (s, n) {
+  return s.length > n ? s.slice(0, n).trimEnd() + "…" : s;
+};
+
+/* Fallback notes from SITE_DATA.notes — rendered instantly so the tab is
+   never empty; a successful live fetch below replaces them automatically. */
+const staticNotes = ((DATA.notes && DATA.notes.posts) || []).map(function (p) {
+  const text = p.text.replace(/\s+/g, " ").trim();
+  const date = new Date(p.date);
+  return {
+    title: p.title,
+    excerpt: truncateText(text, 220),
+    tags: p.tags,
+    url: p.url,
+    badgeUrl: p.url,   /* archived channel page — the live channel is gone */
+    date: isNaN(date.getTime()) ? null : date,
+    reading: Math.max(1, Math.round(text.split(/\s+/).length / 200))
+  };
+});
+
+let logsStatus = staticNotes.length ? "ready" : "loading";   /* "loading" | "ready" | "empty" */
+let logsItems = staticNotes;
 
 /* only *.t.me links are acceptable post targets */
 const normalizeTelegramUrl = function (link) {
@@ -416,19 +436,15 @@ const parseLogItem = function (item) {
     .map(function (l) { return l.replace(/^(Photo|Video)\s+/i, "").trim(); })
     .filter(Boolean);
 
-  const truncate = function (s, n) {
-    return s.length > n ? s.slice(0, n).trimEnd() + "…" : s;
-  };
-
   /* first line = title (skipping the channel / "Forwarded From" signature
      lines rsshub prepends, so titles are the post's own first sentence) */
   const titleLines = lines.filter(function (l) {
     return !/^(Khan Academy!|Forwarded From)[:：]/.test(l);
   });
-  const title = truncate((titleLines[0] || lines[0] || fallbackTitle || "Log").trim(), 90);
+  const title = truncateText((titleLines[0] || lines[0] || fallbackTitle || "Log").trim(), 90);
 
   const rest = lines.slice(1).join(" ").trim();
-  const excerpt = truncate((rest || text).replace(/\s+/g, " ").slice(0, 220), 220);
+  const excerpt = truncateText((rest || text).replace(/\s+/g, " ").slice(0, 220), 220);
 
   /* hashtags → chips; default #Log chip when the post has none */
   const hashtags = (text + " " + fallbackTitle).match(/#[\p{L}\p{N}_]+/gu) || [];
@@ -501,7 +517,7 @@ const buildLogCard = function (item, lang) {
 
   const badge = document.createElement("a");
   badge.className = "logs-badge";
-  badge.href = TELEGRAM_CHANNEL;
+  badge.href = item.badgeUrl || TELEGRAM_CHANNEL;
   badge.target = "_blank";
   badge.rel = "noopener noreferrer";
   badge.textContent = "t.me/KhanAcademyy";
@@ -638,14 +654,20 @@ const fetchTelegramLogs = async function () {
 };
 
 const loadLogs = async function () {
-  logsStatus = "loading";
-  renderLogs();
+  /* fallback notes (if any) stay visible while the live source is tried;
+     skeletons only when there is nothing to show yet */
+  const hasFallback = logsItems.length > 0;
+  if (!hasFallback) {
+    logsStatus = "loading";
+    renderLogs();
+  }
   try {
-    logsItems = await fetchTelegramLogs();   /* already parsed: readable posts, newest first */
+    const live = await fetchTelegramLogs();   /* already parsed: readable posts, newest first */
+    if (live.length) logsItems = live;        /* live source wins over fallback */
     logsStatus = logsItems.length > 0 ? "ready" : "empty";
   } catch (e) {
-    console.warn("[Telegram Logs] Feed unavailable — showing empty state:", e);
-    logsStatus = "empty";
+    console.warn("[Telegram Logs] Feed unavailable — keeping fallback notes:", e);
+    logsStatus = logsItems.length > 0 ? "ready" : "empty";
   }
   renderLogs();
 };
@@ -662,6 +684,40 @@ const sidebarBtn = document.querySelector("[data-sidebar-btn]");
 sidebarBtn.addEventListener("click", function () {
   sidebar.classList.toggle("active");
 });
+
+/*-----------------------------------*\
+  preferences placement — theme/lang controls join the nav pill on
+  desktop (one cohesive header unit) and sit inside the sidebar card
+  on mobile, so they never float alone as an island.
+  Moving the node keeps its listeners, so buttons stay wired.
+\*-----------------------------------*/
+
+const controlsEl = document.querySelector(".controls");
+const sidebarInfoEl = document.querySelector(".sidebar-info");
+const desktopMQ = window.matchMedia("(min-width: 1024px)");
+
+const placeControls = function () {
+  if (!controlsEl || !sidebarInfoEl) return;
+  const target = desktopMQ.matches
+    ? document.querySelector(".navbar")
+    : sidebarInfoEl;
+  if (!target || controlsEl.parentElement === target) return;
+  if (target === sidebarInfoEl) {
+    target.insertBefore(controlsEl, sidebarBtn);   /* above "Show Contacts" */
+  } else {
+    target.appendChild(controlsEl);                /* after the nav list */
+  }
+};
+
+placeControls();
+desktopMQ.addEventListener("change", placeControls);
+window.addEventListener("resize", placeControls);
+/* body width changes whenever the viewport crosses the breakpoint —
+   ResizeObserver fires even where window/matchMedia events don't */
+new ResizeObserver(placeControls).observe(document.body);
+/* belt-and-braces: some embedded webviews suppress every resize event;
+   the check is a cheap no-op when nothing changed */
+setInterval(placeControls, 1000);
 
 /*-----------------------------------*\
   page navigation (About / Resume / Portfolio / Logs)

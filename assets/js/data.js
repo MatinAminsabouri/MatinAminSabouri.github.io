@@ -56,7 +56,7 @@ window.SITE_DATA = {
       logs_sub: "Real-world architectural notes, system design trade-offs, and on-premise AI deployment insights directly synced from <a href=\"https://t.me/KhanAcademyy\" target=\"_blank\" rel=\"noopener noreferrer\">@KhanAcademyy</a>.",
       logs_read: "Read on Telegram",
       logs_subscribe: "Subscribe on Telegram",
-      logs_empty: "No logs yet — subscribe to catch the next engineering note."
+      logs_empty: "No notes yet — subscribe to catch the next one."
     },
 
     fa: {
@@ -406,6 +406,152 @@ window.SITE_DATA = {
       link: "https://github.com/MatinAminsabouri/Messenger_sprites_6"
     }
 
-  ]
+  ],
+  /*-----------------------------------*\
+    Notes tab — fallback posts
+    The live Telegram source for this channel is currently unavailable, so
+    a few real posts are kept here (archived via the Wayback Machine) and
+    shown instantly on load. If the live feed resolves again, script.js
+    replaces these automatically.
+  \*-----------------------------------*/
+
+  notes: {
+
+    posts: [
+      {
+        id: 241,
+        date: "2025-07-14T20:40:43Z",
+        title: "چرا اول requirements.txt در Dockerfile؟",
+        tags: ["Docker", "Dockerfile", "Caching"],
+        url: "https://web.archive.org/web/20250807072000/https://t.me/s/khanAcademyy/232",
+        text: `امشب یکی از نکات ریز ولی خیلی جالب در داکر بررسی میکنیم. 
+
+گفتیم که هر خط در داکر فایل در واقع به یک لایه نگاشت میشه
+
+اما چیزی که به وفور خواهید دید این هست که همیشه توی داکرفایل ها اول requirements هامون کپی میکنیم
+
+خب چرا تو داکرفایل اول requirements رو کپی می‌کنیم؟ 
+
+ما تو داکرفایل‌ها برای ساخت image اپلیکیشن‌هامون، یه ترفند مهم داریم: اول فایل requirements.txt رو کپی می‌کنیم، بعد پکیج‌ها رو نصب می‌کنیم، و در آخر سورس کد رو کپی می‌کنیم. اما چرا؟ دلیلش برمی‌گرده به کشینگ لایه‌های داکر که باعث می‌شه ساخت ایمیج سریع‌تر و بهینه‌تر بشه! 
+
+چرا این ترتیب مهمه؟ 
+بازهم یادآوری میکنم که
+داکر هر خط داکرفایل رو به یک لایه (Layer) تبدیل می‌کنه و لایه‌ها رو کش می‌کنه. اگه یه لایه تغییر نکنه، داکر از کش استفاده می‌کنه و دوباره اجراش نمی‌کنه. 
+- چرا اول requirements.txt؟ 
+ فایل requirements.txt معمولاً کمتر تغییر می‌کنه (مثلاً یه بار Flask رو مشخص می‌کنی). با کپی این فایل و نصب پکیج‌ها، لایه نصب پکیج‌ها کش می‌شه. اگه سورس کدمون تغییر کنه، داکر نیازی به نصب دوباره پکیج‌ها نداره ( اگر هر سری بخواین نصب کنید با اینترنت ایران که نمیشه اصلا راه نداره )
+- چرا سورس کد آخر؟ 
+ سورس کد ( توی مثال فرضی ما app.py (http://app.py/)) معمولاً زیاد تغییر می‌کنه. اگه اول کپی بشه، هر تغییر کوچیک تو کد، کش لایه‌های بعدی (مثل نصب پکیج‌ها) رو باطل می‌کنه و منطقا ساخت ایمیج کند می‌شه.`
+      },
+      {
+        id: 232,
+        date: "2025-07-09T20:00:13Z",
+        title: "شبکه‌سازی در داکر و انواع شبکه‌های داکر",
+        tags: ["Docker", "Networking"],
+        url: "https://web.archive.org/web/20250807210310/https://t.me/s/khanAcademyy/229",
+        text: `شبکه سازی در داکر و انواع شبکه‌های داکر
+ 
+ خب همونطور که تا اینجا ما میدونیم تو داکر از کانتینرها برای اجرای اپلیکیشن‌ها استفاده می‌کنیم،
+
+همینطور گفتیم که داکر به ذات ایزولس و کانتینر یعنی یک محیط مستقل و ایزوله
+
+ اما این کانتینرها باید بتونن باهم یا با دنیای بیرون (مثل کاربر یا سرور) هم ارتباط برقرار کنن
+
+ شبکه‌سازی امکان اتصال ایزوله و امن بین کانتینرها، هاست و شبکه‌های خارجی رو برای ما فراهم می‌کنه.
+
+#docker6_1`
+      },
+      {
+        id: 221,
+        date: "2025-07-04T20:49:14Z",
+        title: "بررسی خط به خط Dockerfile",
+        tags: ["Docker", "Dockerfile"],
+        url: "https://web.archive.org/web/20250827234949/https://t.me/s/khanAcademyy/211",
+        text: `FROM python:3.9-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app.py .
+EXPOSE 5000
+CMD ["python", "app.py"]
+ بررسی خط به خط 🔍:
+FROM python:3.9-slim
+ایمیج پایه رو مشخص کردیم
+. اینجا از نسخه سبک پایتون ۳.۹ استفاده کردیم که حجمش کمه (حدود ۸۰ مگابایت). 
+
+WORKDIR /app
+یه پوشه به اسم /app تو کانتینر میسازیم و دیگه بقیه دستورات رو از اونجا اجرا میکنیم. 
+
+COPY requirements.txt 
+فایل requirements.txt از سیستم تو رو کپی میکنیم به پوشه /app تو ایمیج. این فایل لیست پکیج‌های مورد نیاز (مثل Flask) رو داره.
+
+RUN pip install --no-cache-dir -r requirements.txt
+پکیج‌های توی requirements.txt رو نصب می‌کنه. گزینه --no-cache-dir فایل‌های موقت نصب رو نگه نمی‌داره تا ایمیج سبک بمونه
+COPY app.py (http://app.py/) 
+فایل اصلی اپ (app.py (http://app.py/)) رو به پوشه /app تو ایمیج کپی کنیم
+
+EXPOSE 5000
+به داکر اعلام میکنیم که اپ ما روی پورت ۵۰۰۰ کار می‌کنه 
+
+CMD ["python", "app.py (http://app.py/)"]
+دستور پیش‌فرض برای اجرای کانتینر رو مشخص می‌کنه. 
+
+حالا برای اجرا کردنش میگیم 
+docker build -t my-flask-app:1.0 .
+docker run -d -p 5000:5000 my-flask-app:1.0
+
+#docker4_3`
+      },
+      {
+        id: 208,
+        date: "2025-06-30T21:43:32Z",
+        title: "کانتینر چیه؟",
+        tags: ["Docker", "Containers"],
+        url: "https://web.archive.org/web/20250902023749/https://t.me/s/khanAcademyy/203",
+        text: `کانتینر چیه؟
+کانتینر یه نمونه اجرا شده از ایمیجه. وقتی می‌زنیم 
+docker run python:3.9-slim
+ داکر میاد و یه کانتینر می‌سازه که برنامه ما داخل یه محیط ایزوله اجرا می‌شه
+خب یه سوال خوبی که پرسیده میشه اینکه فرقش با image چیه؟
+
+اینطور بگم که image مثل یه roadmap، 
+و کانتینر یک محصول ساخته‌شده از اون roadmap
+.حالا چطور کار می‌کنه؟: داکر یه لایه قابل نوشتن (Writable Layer) به ایمیج اضافه می‌کنه تا تغییرات (مثل لاگ‌ها یا فایل‌های موقت) ذخیره بشن. این لایه به صورت دیفالت با حذف کانتینر پاک می‌شه (مگر اینکه والیوم استفاده کنی که در اینده حسابی راجبش حرف میزنیم).
+یک نکته دیگه اینکه کانتینرها میان و از ویژگی لینوکس مثل Namespaces استفاده می‌کنن تا CPU، حافظه و شبکه رو ایزوله کنن. برای همین سبک‌تر از ماشین‌های مجازی (VM) هستن
+
+#Docker2_2`
+      },
+      {
+        id: 197,
+        date: "2025-06-28T04:30:19Z",
+        title: "معرفی Gemini CLI",
+        tags: ["AI", "Gemini CLI"],
+        url: "https://web.archive.org/web/20250902023749/https://t.me/s/khanAcademyy/203",
+        text: `گوگل همین چند روز پیش از جمنای CLI پرده برداری کرد که خیلیا الان دیگه میتونن ازش در محیط ترمینال استفاده کنند. خیلی کاربردیه مخصوصا برای دولوپرها https://github.com/google-gemini/gemini-cli @DevTwitter |`
+      },
+      {
+        id: 194,
+        date: "2025-06-24T20:26:47Z",
+        title: "نکته‌ای در پترن Repository",
+        tags: ["Architecture", "Repository Pattern"],
+        url: "https://web.archive.org/web/20250902023749/https://t.me/s/khanAcademyy/203",
+        text: `یک نکته جالبی امروز دیدم خیلی جالب بود :
+
+اینکه توسعه دهنده ها میان متود های پترن Repository رو خیلی تو منطق برنامه به صورت share استفاده میکنن زیادم جالب نیست
+
+مخصوصا وقتی بین ۲۰ تا متود حداقل ۵ تاشون UPDATE میخورن و مثلا ۱۵ تای دیگه GET 
+
+هر کیس باید جداگونه بررسی شه و حدالامکان بهینه ترین و درست ترین پیاده سازی براش کرد حتی اگر حجم کد خیلی زیاد شه 
+
+خیلی این چیزا تو اپدیت ها دست و پا گیره
+
+کلا هر چی فریمورک ها پخته تر میشن و میرن جلو سخت گیر تر میشن روی کار با دیتابیس
+پس ORM کلا خیلی مثل قبل دست توسعه دهنده رو باز نمیزاره 
+بلکه هدف فقط کارایی خوبه
+
+خیلی خلاصش اینه که لایه Repository اصلا توش کلی گرایی نمیشه کرد یگی خب اینا که همه میرن سراغ این تبیل و این کارو میکنن بزار همشونو یه شکل کنم`
+      }
+    ],
+
+  },
 
 };
