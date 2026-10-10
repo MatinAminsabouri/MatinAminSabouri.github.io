@@ -368,6 +368,16 @@ langBtns.forEach(function (b) {
 const TELEGRAM_CHANNEL = "https://t.me/KhanAcademyy";
 const TELEGRAM_CHANNEL_PREVIEW = "https://t.me/s/KhanAcademyy";
 
+/* RSSHub feed URLs for the channel, tried in order until one resolves.
+   The https:// scheme is kept separate so the URL can be rebuilt safely
+   even when a hub path already carries its own query string. */
+const TELEGRAM_FEED_PATHS = [
+  { host: "https://rsshub.rssforever.com", path: "/telegram/channel/KhanAcademyy" },
+  { host: "https://rsshub.rssforever.com", path: "/telegram/channel/@KhanAcademyy" },
+  { host: "https://rsshub.app", path: "/telegram/channel/KhanAcademyy" },
+  { host: "https://rsshub.app", path: "/telegram/channel/@KhanAcademyy" }
+];
+
 const logsGrid = document.querySelector("[data-logs-grid]");
 const logsRefreshBtn = document.querySelector("[data-logs-refresh]");
 
@@ -599,32 +609,47 @@ const renderLogs = function () {
   });
 };
 
+/* Fetch one RSSHub feed through rss2json and return parsed posts.
+   Returns [] when the endpoint resolves but has no readable posts,
+   and throws when the endpoint itself failed. */
+const tryRssHubFeed = async function (host, path) {
+  const controller = new AbortController();
+  const timer = setTimeout(function () { controller.abort(); }, 25000);
+
+  try {
+    /* cache-bust: timestamp inside rss_url busts both rss2json and RSSHub
+       caches. "?" vs "&" is chosen based on the path's own query string —
+       a second "?" produces an invalid URL the fetch layer rejects. */
+    const feedUrl = host + path +
+      (path.indexOf("?") === -1 ? "?" : "&") + "_t=" + Date.now();
+    const url = "https://api.rss2json.com/v1/api.json?rss_url=" +
+      encodeURIComponent(feedUrl);
+
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    if (!data || data.status !== "ok" || !Array.isArray(data.items)) {
+      throw new Error("invalid payload: " + (data && data.message ? data.message : "unknown"));
+    }
+
+    return data.items.map(parseLogItem).filter(Boolean);
+  } finally {
+    clearTimeout(timer);
+  }
+};
+
 const fetchTelegramLogs = async function () {
   let lastError = null;
-  let lastEmpty = null;
+  let sawEmptyFeed = false;
 
-  for (const hub of TELEGRAM_RSS_HUBS) {
-    const controller = new AbortController();
-    const timer = setTimeout(function () { controller.abort(); }, 25000);
-
+  for (const feed of TELEGRAM_FEED_PATHS) {
     try {
-      /* cache-bust: timestamp inside rss_url busts both rss2json and RSSHub caches */
-      const url = "https://api.rss2json.com/v1/api.json?rss_url=" +
-        encodeURIComponent(hub + "?_t=" + Date.now());
-
-      const res = await fetch(url, { signal: controller.signal });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      const data = await res.json();
-      if (!data || data.status !== "ok" || !Array.isArray(data.items)) {
-        throw new Error("invalid payload from " + hub);
-      }
-
-      const parsed = data.items.map(parseLogItem).filter(Boolean);
+      const parsed = await tryRssHubFeed(feed.host, feed.path);
 
       if (parsed.length === 0) {
-        console.warn("[Telegram Logs] No readable posts from:", hub);
-        lastEmpty = parsed;
-        continue;
+        console.warn("[Telegram Logs] No readable posts from:", feed.host + feed.path);
+        sawEmptyFeed = true;
+        continue;   /* try the next feed — a fresher copy may include the posts */
       }
 
       /* newest first, take latest 10 */
@@ -632,13 +657,12 @@ const fetchTelegramLogs = async function () {
         return (b.date ? b.date.getTime() : 0) - (a.date ? a.date.getTime() : 0);
       });
 
-      console.log("[Telegram Logs] Successfully fetched", parsed.length, "posts from:", hub);
+      console.log("[Telegram Logs] Successfully fetched", parsed.length, "posts from:", feed.host + feed.path);
+      lastFetchTime = Date.now();
       return parsed.slice(0, 10);
     } catch (e) {
       lastError = e;
-      console.warn("[Telegram Logs] Hub failed:", hub, e.message || e);
-    } finally {
-      clearTimeout(timer);
+      console.warn("[Telegram Logs] Feed failed:", feed.host + feed.path, e.message || e);
     }
   }
 
@@ -647,14 +671,16 @@ const fetchTelegramLogs = async function () {
     const directPosts = await fetchTelegramPreviewDirect();
     if (directPosts && directPosts.length > 0) {
       console.log("[Telegram Logs] Fallback to direct preview worked:", directPosts.length, "posts");
+      lastFetchTime = Date.now();
       return directPosts.slice(0, 10);
     }
   } catch (e) {
     console.warn("[Telegram Logs] Direct preview fallback failed:", e.message || e);
   }
 
-  if (lastEmpty) return lastEmpty;
-  throw lastError || new Error("all RSS hubs failed");
+  if (sawEmptyFeed) return [];
+
+  throw lastError || new Error("all Telegram feeds failed");
 };
 
 /* Direct fetch from Telegram web preview (t.me/s/channel) — no API key needed.
