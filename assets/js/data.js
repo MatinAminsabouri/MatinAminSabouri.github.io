@@ -56,6 +56,7 @@ window.SITE_DATA = {
       logs_sub: "Real-world architectural notes, system design trade-offs, and on-premise AI deployment insights directly synced from <a href=\"https://t.me/KhanAcademyy\" target=\"_blank\" rel=\"noopener noreferrer\">@KhanAcademyy</a>.",
       logs_read: "Read on Telegram",
       logs_subscribe: "Subscribe on Telegram",
+      logs_refresh: "Refresh",
       logs_empty: "No notes yet — subscribe to catch the next one."
     },
 
@@ -93,6 +94,7 @@ window.SITE_DATA = {
       logs_sub: "نکته‌های واقعی معماری، مصالحه‌های طراحی سیستم و بینش‌های استقرار هوش مصنوعی On-Premise — مستقیماً از <a href=\"https://t.me/KhanAcademyy\" target=\"_blank\" rel=\"noopener noreferrer\">@KhanAcademyy</a> همگام‌سازی شده.",
       logs_read: "مطالعه در تلگرام",
       logs_subscribe: "عضویت در تلگرام",
+      logs_refresh: "بروزرسانی",
       logs_empty: "هنوز یادداشتی منتشر نشده — برای مطالعهٔ یادداشت‌های بعدی عضو شوید."
     }
 
@@ -164,7 +166,7 @@ window.SITE_DATA = {
     stats: [
       { value: "3+",   label: { en: "Years of Experience",     fa: "سال تجربه" } },
       { value: { en: "AI Lead", fa: "راهبر هوش مصنوعی" }, label: { en: "Ravin AI Assistant", fa: "دستیار هوش مصنوعی Ravin" } },
-      { value: "100%", label: { en: "On-Premise Deployments",  fa: "استقرارهای On-Premise" } }
+      { value: { en: "1st", fa: "نخستین" }, label: { en: "Municipal AI Assistant in Iran", fa: "دستیار هوش مصنوعی شهری در ایران" } }
     ],
 
     services: [

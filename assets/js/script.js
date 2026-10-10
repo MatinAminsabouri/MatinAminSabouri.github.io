@@ -366,17 +366,10 @@ langBtns.forEach(function (b) {
 \*-----------------------------------*/
 
 const TELEGRAM_CHANNEL = "https://t.me/KhanAcademyy";
-
-/* RSSHub instances, tried in order until one resolves.
-   rsshub.app is rate-limiting public usage (403 since 2026-08);
-   rsshub.rssforever.com verified reachable 2026-09-25 (HTTP 200). */
-const TELEGRAM_RSS_HUBS = [
-  "https://rsshub.rssforever.com/telegram/channel/KhanAcademyy",
-  "https://rsshub.rssforever.com/telegram/channel/KhanAcademyy?limit=10",
-  "https://rsshub.app/telegram/channel/KhanAcademyy"
-];
+const TELEGRAM_CHANNEL_PREVIEW = "https://t.me/s/KhanAcademyy";
 
 const logsGrid = document.querySelector("[data-logs-grid]");
+const logsRefreshBtn = document.querySelector("[data-logs-refresh]");
 
 const truncateText = function (s, n) {
   return s.length > n ? s.slice(0, n).trimEnd() + "…" : s;
@@ -392,7 +385,7 @@ const staticNotes = ((DATA.notes && DATA.notes.posts) || []).map(function (p) {
     excerpt: truncateText(text, 220),
     tags: p.tags,
     url: p.url,
-    badgeUrl: p.url,   /* archived channel page — the live channel is gone */
+    badgeUrl: p.url,
     date: isNaN(date.getTime()) ? null : date,
     reading: Math.max(1, Math.round(text.split(/\s+/).length / 200))
   };
@@ -400,6 +393,8 @@ const staticNotes = ((DATA.notes && DATA.notes.posts) || []).map(function (p) {
 
 let logsStatus = staticNotes.length ? "ready" : "loading";   /* "loading" | "ready" | "empty" */
 let logsItems = staticNotes;
+let lastFetchTime = 0;
+const FETCH_COOLDOWN = 30000; // 30 seconds cooldown between manual refreshes
 
 /* only *.t.me links are acceptable post targets */
 const normalizeTelegramUrl = function (link) {
@@ -606,16 +601,14 @@ const renderLogs = function () {
 
 const fetchTelegramLogs = async function () {
   let lastError = null;
-  let lastEmpty = null;   /* first successful payload even if it had 0 matches */
+  let lastEmpty = null;
 
   for (const hub of TELEGRAM_RSS_HUBS) {
     const controller = new AbortController();
-    const timer = setTimeout(function () { controller.abort(); }, 20000);
+    const timer = setTimeout(function () { controller.abort(); }, 25000);
 
     try {
-      /* cache-bust: rss2json rejects unknown TOP-LEVEL params (422), so the
-         timestamp goes INSIDE rss_url — it also busts the RSSHub instance's
-         own cache key, forcing a fresh Telegram scrape per load */
+      /* cache-bust: timestamp inside rss_url busts both rss2json and RSSHub caches */
       const url = "https://api.rss2json.com/v1/api.json?rss_url=" +
         encodeURIComponent(hub + "?_t=" + Date.now());
 
@@ -629,50 +622,160 @@ const fetchTelegramLogs = async function () {
       const parsed = data.items.map(parseLogItem).filter(Boolean);
 
       if (parsed.length === 0) {
-        console.warn("[Telegram Logs] No readable posts in this copy — the feed layer may still be catching up.");
+        console.warn("[Telegram Logs] No readable posts from:", hub);
         lastEmpty = parsed;
-        continue;   /* try the next hub — a fresher copy may include the posts */
+        continue;
       }
 
-      /* newest first */
+      /* newest first, take latest 10 */
       parsed.sort(function (a, b) {
         return (b.date ? b.date.getTime() : 0) - (a.date ? a.date.getTime() : 0);
       });
 
-      return parsed;
+      console.log("[Telegram Logs] Successfully fetched", parsed.length, "posts from:", hub);
+      return parsed.slice(0, 10);
     } catch (e) {
       lastError = e;
-      console.warn("[Telegram Logs] Hub failed:", hub, e);
+      console.warn("[Telegram Logs] Hub failed:", hub, e.message || e);
     } finally {
       clearTimeout(timer);
     }
   }
 
-  if (lastEmpty) return lastEmpty;
+  /* As a last resort, try scraping the Telegram web preview page directly */
+  try {
+    const directPosts = await fetchTelegramPreviewDirect();
+    if (directPosts && directPosts.length > 0) {
+      console.log("[Telegram Logs] Fallback to direct preview worked:", directPosts.length, "posts");
+      return directPosts.slice(0, 10);
+    }
+  } catch (e) {
+    console.warn("[Telegram Logs] Direct preview fallback failed:", e.message || e);
+  }
 
+  if (lastEmpty) return lastEmpty;
   throw lastError || new Error("all RSS hubs failed");
 };
 
-const loadLogs = async function () {
-  /* fallback notes (if any) stay visible while the live source is tried;
-     skeletons only when there is nothing to show yet */
+/* Direct fetch from Telegram web preview (t.me/s/channel) — no API key needed.
+   Parses the HTML for message bubbles. Used as last-resort fallback. */
+const fetchTelegramPreviewDirect = async function () {
+  const controller = new AbortController();
+  const timer = setTimeout(function () { controller.abort(); }, 20000);
+
+  try {
+    const res = await fetch(TELEGRAM_CHANNEL_PREVIEW + "?_t=" + Date.now(), {
+      signal: controller.signal,
+      headers: { "Accept": "text/html,application/xhtml+xml" }
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const html = await res.text();
+
+    /* Parse message bubbles from t.me/s/channel HTML */
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    const messages = doc.querySelectorAll(".tgme_widget_message_wrap, .tgme_widget_message");
+
+    const posts = [];
+    messages.forEach(function (msgWrap) {
+      const msg = msgWrap.querySelector(".tgme_widget_message") || msgWrap;
+      const textEl = msg.querySelector(".tgme_widget_message_text");
+      const dateEl = msg.querySelector(".tgme_widget_message_date time, .tgme_widget_message_date a time");
+      const linkEl = msg.querySelector(".tgme_widget_message_date a, .tgme_widget_message_owner a");
+
+      if (!textEl) return;
+
+      const text = textEl.textContent.trim().replace(/\s+/g, " ");
+      if (!text || text.length < 10) return; // skip very short/empty
+
+      const dateStr = dateEl?.getAttribute("datetime") || dateEl?.textContent?.trim();
+      const date = dateStr ? new Date(dateStr) : null;
+
+      const link = linkEl?.href || TELEGRAM_CHANNEL;
+
+      /* Extract hashtags */
+      const hashtags = text.match(/#[\p{L}\p{N}_]+/gu) || [];
+      const uniqueTags = Array.from(new Set(hashtags.map(function (t) { return t.replace(/^#/, ""); })));
+      const tags = uniqueTags.length > 0 ? uniqueTags.slice(0, 5) : ["Log"];
+
+      /* Title = first line, excerpt = rest */
+      const lines = text.split("\n").map(function (l) { return l.trim(); }).filter(Boolean);
+      const title = truncateText(lines[0] || "Log", 90);
+      const rest = lines.slice(1).join(" ").trim();
+      const excerpt = truncateText((rest || text).slice(0, 220), 220);
+
+      const reading = Math.max(1, Math.round(text.split(/\s+/).length / 200));
+
+      posts.push({
+        title: title,
+        excerpt: excerpt,
+        tags: tags,
+        url: normalizeTelegramUrl(link),
+        date: (date && !isNaN(date.getTime())) ? date : null,
+        reading: reading
+      });
+    });
+
+    return posts;
+  } catch (e) {
+    throw e;
+  } finally {
+    clearTimeout(timer);
+  }
+};
+
+const loadLogs = async function (isManualRefresh = false) {
+  /* Respect cooldown for manual refresh */
+  if (isManualRefresh) {
+    const now = Date.now();
+    if (now - lastFetchTime < FETCH_COOLDOWN) {
+      console.log("[Telegram Logs] Refresh cooldown active, skipping");
+      return;
+    }
+    lastFetchTime = now;
+  }
+
   const hasFallback = logsItems.length > 0;
-  if (!hasFallback) {
+  if (!hasFallback && !isManualRefresh) {
     logsStatus = "loading";
     renderLogs();
   }
-  try {
-    const live = await fetchTelegramLogs();   /* already parsed: readable posts, newest first */
-    if (live.length) logsItems = live;        /* live source wins over fallback */
-    logsStatus = logsItems.length > 0 ? "ready" : "empty";
-  } catch (e) {
-    console.warn("[Telegram Logs] Feed unavailable — keeping fallback notes:", e);
-    logsStatus = logsItems.length > 0 ? "ready" : "empty";
+
+  if (isManualRefresh && logsRefreshBtn) {
+    logsRefreshBtn.classList.add("refreshing");
+    logsRefreshBtn.disabled = true;
   }
+
+  try {
+    const live = await fetchTelegramLogs();
+    if (live.length) {
+      logsItems = live;
+      logsStatus = "ready";
+    } else if (hasFallback) {
+      /* keep fallback if live fetch returned nothing */
+      logsStatus = "ready";
+    } else {
+      logsStatus = "empty";
+    }
+  } catch (e) {
+    console.warn("[Telegram Logs] Feed unavailable — keeping fallback notes:", e.message || e);
+    if (hasFallback) logsStatus = "ready";
+    else logsStatus = "empty";
+  }
+
+  if (isManualRefresh && logsRefreshBtn) {
+    logsRefreshBtn.classList.remove("refreshing");
+    logsRefreshBtn.disabled = false;
+  }
+
   renderLogs();
 };
 
+/* Initial load */
 loadLogs();
+
+/* Expose manual refresh for the refresh button */
+window.refreshTelegramLogs = function () { loadLogs(true); };
 
 /*-----------------------------------*\
   sidebar toggle (mobile)
@@ -824,6 +927,117 @@ contactsList.addEventListener("click", function (event) {
     }, 1600);
   });
 
+});
+
+/*-----------------------------------*\
+  lightbox — Avatar enlargement
+\*-----------------------------------*/
+
+const avatarTrigger = document.querySelector("[data-avatar-trigger]");
+const lightbox = document.getElementById("avatarLightbox");
+const lightboxImg = lightbox ? lightbox.querySelector(".lightbox-img") : null;
+const lightboxCaption = lightbox ? lightbox.querySelector(".lightbox-caption") : null;
+const lightboxClose = lightbox ? lightbox.querySelector(".lightbox-close") : null;
+const lightboxBackdrop = lightbox ? lightbox.querySelector(".lightbox-backdrop") : null;
+
+let lastFocusedElement = null;
+
+const openLightbox = function () {
+  if (!lightbox || !lightboxImg) return;
+  
+  lastFocusedElement = document.activeElement;
+  
+  lightboxImg.src = avatarTrigger.src;
+  lightboxImg.alt = avatarTrigger.alt;
+  lightboxCaption.textContent = avatarTrigger.alt || "Profile picture";
+  
+  lightbox.hidden = false;
+  document.body.style.overflow = "hidden";
+  
+  // Focus management for accessibility
+  setTimeout(function () {
+    lightboxClose?.focus();
+  }, 50);
+  
+  // Trap focus
+  document.addEventListener("keydown", handleLightboxKeydown);
+};
+
+const closeLightbox = function () {
+  if (!lightbox) return;
+  
+  lightbox.hidden = true;
+  document.body.style.overflow = "";
+  lightboxImg.src = "";
+  
+  document.removeEventListener("keydown", handleLightboxKeydown);
+  
+  // Restore focus
+  if (lastFocusedElement) {
+    lastFocusedElement.focus();
+  }
+};
+
+const handleLightboxKeydown = function (event) {
+  if (event.key === "Escape") {
+    closeLightbox();
+  }
+  
+  // Focus trap - Tab and Shift+Tab
+  if (event.key === "Tab") {
+    const focusableElements = lightbox.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    
+    if (event.shiftKey && document.activeElement === firstElement) {
+      event.preventDefault();
+      lastElement.focus();
+    } else if (!event.shiftKey && document.activeElement === lastElement) {
+      event.preventDefault();
+      firstElement.focus();
+    }
+  }
+};
+
+// Event listeners
+if (avatarTrigger && lightbox) {
+  avatarTrigger.addEventListener("click", openLightbox);
+  avatarTrigger.addEventListener("keydown", function (event) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openLightbox();
+    }
+  });
+}
+
+if (lightboxClose) {
+  lightboxClose.addEventListener("click", closeLightbox);
+}
+
+if (lightboxBackdrop) {
+  lightboxBackdrop.addEventListener("click", closeLightbox);
+}
+
+// Close on backdrop click (outside the figure)
+if (lightbox) {
+  lightbox.addEventListener("click", function (event) {
+    if (event.target === lightbox) {
+      closeLightbox();
+    }
+  });
+}
+
+/*-----------------------------------*\
+  logs refresh button (delegated — logs re-render on lang switch)
+\*-----------------------------------*/
+
+document.addEventListener("click", function (event) {
+  const refreshBtn = event.target.closest("[data-logs-refresh]");
+  if (refreshBtn) {
+    window.refreshTelegramLogs();
+  }
 });
 
 /*-----------------------------------*\

@@ -1518,6 +1518,32 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
 
 .logs-sub a:hover { color: var(--accent-2); }
 
+.logs-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-3);
+}
+
+.logs-header .article-title { margin-bottom: 0; }
+
+.btn--sm {
+  padding: 6px 12px;
+  font-size: 0.7rem;
+}
+
+.refresh-ic { transition: transform var(--dur-2) var(--ease-out); }
+
+.btn--sm.refreshing .refresh-ic {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .logs-feed {
   display: grid;
   gap: var(--sp-5);
@@ -1720,4 +1746,137 @@ html[lang="fa"] .timeline-text {
 [dir="rtl"] .chip,
 [dir="rtl"] .logs-badge {
   direction: ltr;
+}
+
+/*-----------------------------------*\
+  #17 LIGHTBOX — Avatar Enlargement
+\*-----------------------------------*/
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur-2) var(--ease-out), visibility var(--dur-2) var(--ease-out);
+}
+
+.lightbox:not([hidden]) {
+  opacity: 1;
+  visibility: visible;
+}
+
+.lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 11, 18, 0.92);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+
+.lightbox-close {
+  position: fixed;
+  top: var(--sp-5);
+  inset-inline-end: var(--sp-5);
+  z-index: 1001;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-brd);
+  color: var(--text-2);
+  font-size: 22px;
+  box-shadow: 0 8px 24px -8px rgba(2, 6, 23, 0.6);
+  transition: color var(--dur-1), border-color var(--dur-1), background var(--dur-1), transform var(--dur-1);
+}
+
+.lightbox-close:hover {
+  color: var(--accent-1);
+  border-color: rgba(34, 211, 238, 0.35);
+  background: var(--bg-2);
+  transform: scale(1.05);
+}
+
+.lightbox-close:focus-visible {
+  outline: 2px solid var(--accent-1);
+  outline-offset: 3px;
+}
+
+.lightbox-figure {
+  position: relative;
+  z-index: 1000;
+  max-width: 60vw;
+  max-height: 65vh;
+  text-align: center;
+  transform: scale(0.92);
+  opacity: 0;
+  transition: transform var(--dur-3) var(--ease-out), opacity var(--dur-2) var(--ease-out);
+}
+
+.lightbox:not([hidden]) .lightbox-figure {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.lightbox-img {
+  max-width: 100%;
+  max-height: 60vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 48px -16px rgba(2, 6, 23, 0.8);
+  border: 1px solid var(--glass-brd);
+}
+
+.lightbox-caption {
+  margin-top: var(--sp-3);
+  font-family: var(--ff-mono);
+  font-size: var(--fs-small);
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
+/* cursor hint on avatar */
+.avatar-box img[data-avatar-trigger] {
+  cursor: zoom-in;
+  transition: transform var(--dur-2) var(--ease-out);
+}
+
+.avatar-box img[data-avatar-trigger]:hover {
+  transform: scale(1.02);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .lightbox,
+  .lightbox-backdrop,
+  .lightbox-close,
+  .lightbox-figure,
+  .avatar-box img[data-avatar-trigger] {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* mobile adjustments */
+@media (max-width: 480px) {
+  .lightbox-close {
+    top: var(--sp-3);
+    inset-inline-end: var(--sp-3);
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  
+  .lightbox-img {
+    max-height: 70vh;
+  }
 }
