@@ -1,25 +1,20 @@
 'use strict';
 
 /*-----------------------------------*\
-  script.js — logic only.
-  ALL copy lives in assets/js/data.js (window.SITE_DATA); this file
-  reads from it and renders. index.html carries structure + data-i18n
-  KEYS with empty bodies — never put visible text back into the HTML.
+  script.js — behaviour only.
+  ALL copy lives in assets/js/data.js (window.SITE_DATA); markup comes
+  from assets/js/render.js so the build script can prerender the exact
+  same HTML. This file binds events and owns UI state.
 \*-----------------------------------*/
 
 const DATA = window.SITE_DATA;
 const I18N = DATA.i18n;
+const R = window.SITE_RENDER;
 
 const rootEl = document.documentElement;
 
 const curLang = function () {
   return rootEl.getAttribute("lang") === "fa" ? "fa" : "en";
-};
-
-/* resolve a content field: plain string (same in both languages)
-   or bilingual object { en, fa } */
-const L = function (field, lang) {
-  return typeof field === "string" ? field : field[lang];
 };
 
 /*-----------------------------------*\
@@ -29,16 +24,28 @@ const L = function (field, lang) {
 const themeToggle = document.querySelector("[data-theme-toggle]");
 const themeMeta = document.querySelector('meta[name="theme-color"]');
 
+const syncThemeToggle = function () {
+  if (!themeToggle) return;
+  const theme = rootEl.getAttribute("data-theme");
+  const t = I18N[curLang()];
+  /* aria-pressed reports the state the button switches TO (dark is the
+     default surface), so assistive tech announces the action correctly */
+  themeToggle.setAttribute("aria-pressed", theme === "light" ? "true" : "false");
+  themeToggle.setAttribute("aria-label", theme === "light" ? t.a_theme_dark : t.a_theme_light);
+};
+
 const applyTheme = function (theme) {
   rootEl.setAttribute("data-theme", theme);
   try { localStorage.setItem("theme", theme); } catch (e) { }
   if (themeMeta) themeMeta.setAttribute("content", theme === "light" ? "#F8FAFC" : "#070B12");
+  syncThemeToggle();
 };
 
-themeToggle.addEventListener("click", function () {
-  const next = rootEl.getAttribute("data-theme") === "light" ? "dark" : "light";
-  applyTheme(next);
-});
+if (themeToggle) {
+  themeToggle.addEventListener("click", function () {
+    applyTheme(rootEl.getAttribute("data-theme") === "light" ? "dark" : "light");
+  });
+}
 
 /* follow system preference only while the user hasn't chosen explicitly */
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (e) {
@@ -48,11 +55,7 @@ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", fun
 });
 
 /*-----------------------------------*\
-  renderers — content sections built from SITE_DATA
-
-  TRUST: SITE_DATA is author-written static content, so these renderers
-  use innerHTML intentionally. Never feed remote or model-generated
-  strings through them without escaping first.
+  element refs
 \*-----------------------------------*/
 
 const contactsList = document.querySelector("[data-contacts]");
@@ -64,252 +67,48 @@ const selectValue = document.querySelector("[data-select-value]");
 const selectList = document.querySelector("[data-select-list]");
 const filterList = document.querySelector("[data-filter-list]");
 const projectList = document.querySelector("[data-project-list]");
+const logsGrid = document.querySelector("[data-logs-grid]");
+const logsStatusEl = document.querySelector("[data-logs-status]");
+const logsRefreshBtn = document.querySelector("[data-logs-refresh]");
 
 /* interaction state preserved across re-renders (language switches) */
-const uiState = { filter: "all", caseOpen: false };
+const uiState = { filter: "all", caseOpen: false, page: "about" };
 
-const chipRow = function (tags) {
-  return '<ul class="tag-row">' +
-    tags.map(function (t) { return '<li><span class="chip">' + t + "</span></li>"; }).join("") +
-    "</ul>";
-};
+const PAGES = ["about", "resume", "portfolio", "logs"];
+
+/*-----------------------------------*\
+  renderers
+\*-----------------------------------*/
 
 const renderContacts = function (lang) {
-  const t = I18N[lang];
-
-  contactsList.innerHTML = DATA.profile.contacts.map(function (c) {
-    const valueHtml = c.href
-      ? '<a href="' + c.href + '" class="contact-link">' + c.text + "</a>"
-      : "<address>" + L(c.address, lang) + "</address>";
-
-    const copyHtml = c.copy
-      ? '<button class="copy-btn" data-copy="' + c.copy + '" aria-label="' + t.a_copy_email + '">' +
-          '<ion-icon name="copy-outline" class="copy-ic"></ion-icon>' +
-          '<ion-icon name="checkmark-outline" class="check-ic"></ion-icon>' +
-          '<span class="copy-tooltip" aria-hidden="true">' + t.copy_done + "</span>" +
-        "</button>"
-      : "";
-
-    return '<li class="contact-item">' +
-      '<div class="icon-box"><ion-icon name="' + c.icon + '"></ion-icon></div>' +
-      '<div class="contact-info">' +
-        '<p class="contact-title">' + L(c.label, lang) + "</p>" +
-        valueHtml +
-      "</div>" +
-      copyHtml +
-      "</li>";
-  }).join("");
+  contactsList.innerHTML = R.renderContacts(DATA, lang, I18N[lang]);
 };
 
 const renderSocials = function (lang) {
-  socialsList.innerHTML = DATA.profile.socials.map(function (s) {
-    return '<li class="social-item">' +
-      '<a href="' + s.href + '" class="social-link" aria-label="' + L(s.label, lang) + '">' +
-        '<ion-icon name="' + s.icon + '"></ion-icon>' +
-      "</a>" +
-      "</li>";
-  }).join("");
+  socialsList.innerHTML = R.renderSocials(DATA, lang);
 };
 
 const renderAbout = function (lang) {
-  const a = DATA.about;
-  const t = I18N[lang];
-
-  aboutBody.innerHTML =
-    '<section class="about-text">' +
-      a.bio.map(function (b) { return "<p>" + L(b, lang) + "</p>"; }).join("") +
-    "</section>" +
-
-    '<div class="stats">' +
-      a.stats.map(function (s) {
-        return '<div class="stat">' +
-          '<span class="stat-value">' + L(s.value, lang) + "</span>" +
-          '<span class="stat-label">' + L(s.label, lang) + "</span>" +
-          "</div>";
-      }).join("") +
-    "</div>" +
-
-    '<section class="service">' +
-      '<h3 class="service-title">' + t.doing_title + "</h3>" +
-      '<ul class="service-list">' +
-        a.services.map(function (s) {
-          return '<li class="service-item">' +
-            '<div class="service-icon-box"><ion-icon name="' + s.icon + '"></ion-icon></div>' +
-            '<div class="service-content-box">' +
-              '<h4 class="service-item-title">' + L(s.title, lang) + "</h4>" +
-              '<p class="service-item-text">' + L(s.text, lang) + "</p>" +
-            "</div>" +
-            "</li>";
-        }).join("") +
-      "</ul>" +
-    "</section>";
+  aboutBody.innerHTML = R.renderAbout(DATA, lang, I18N[lang]);
 };
 
 const renderResume = function (lang) {
-  const r = DATA.resume;
-  const t = I18N[lang];
-
-  const timeline = function (icon, title, itemsHtml) {
-    return '<section class="timeline">' +
-      '<div class="title-wrapper">' +
-        '<div class="icon-box"><ion-icon name="' + icon + '"></ion-icon></div>' +
-        '<h3 class="timeline-title">' + title + "</h3>" +
-      "</div>" +
-      '<ol class="timeline-list">' + itemsHtml + "</ol>" +
-      "</section>";
-  };
-
-  const eduItems = r.education.map(function (e) {
-    return '<li class="timeline-item">' +
-      '<h4 class="timeline-item-title">' + L(e.title, lang) + "</h4>" +
-      "<span>" + e.period + "</span>" +
-      '<p class="timeline-text">' + L(e.desc, lang) + "</p>" +
-      "</li>";
-  }).join("");
-
-  const expItems = r.experience.map(function (e) {
-    return '<li class="timeline-item">' +
-      '<h4 class="timeline-item-title">' + L(e.role, lang) + "</h4>" +
-      "<span>" + e.period + "</span>" +
-      '<p class="timeline-company">' + L(e.company, lang) + "</p>" +
-      e.bullets.map(function (b) { return '<p class="timeline-text">' + L(b, lang) + "</p>"; }).join("") +
-      "</li>";
-  }).join("");
-
-  const skills =
-    '<section class="skills">' +
-      '<h3 class="skills-title">' + t.skills_title + "</h3>" +
-      r.skills.map(function (g) {
-        return '<div class="skill-group">' +
-          '<h4 class="skill-group-title">' + L(g.title, lang) + "</h4>" +
-          chipRow(g.tags) +
-          "</div>";
-      }).join("") +
-    "</section>";
-
-  resumeBody.innerHTML =
-    timeline("book-outline", t.edu_title, eduItems) +
-    timeline("briefcase-outline", t.exp_title, expItems) +
-    skills;
+  resumeBody.innerHTML = R.renderResume(DATA, lang, I18N[lang]);
 };
 
 const renderFilters = function (lang) {
-  const filters = DATA.filters;
-  const active = filters.find(function (f) { return f.value === uiState.filter; }) || filters[0];
+  selectList.innerHTML = R.renderSelectOptions(DATA, lang, uiState.filter);
+  filterList.innerHTML = R.renderFilterChips(DATA, lang, uiState.filter);
 
-  selectList.innerHTML = filters.map(function (f) {
-    return '<li class="select-item">' +
-      '<button data-select-item data-filter-value="' + f.value + '">' + L(f.label, lang) + "</button>" +
-      "</li>";
-  }).join("");
-
-  filterList.innerHTML = filters.map(function (f) {
-    const isActive = f.value === uiState.filter;
-    return '<li class="filter-item">' +
-      '<button class="' + (isActive ? "active" : "") + '" data-filter-btn data-filter-value="' + f.value + '">' +
-        L(f.label, lang) +
-      "</button>" +
-      "</li>";
-  }).join("");
-
-  selectValue.textContent = L(active.label, lang);
-};
-
-const buildProjectCard = function (p, lang) {
-  const t = I18N[lang];
-
-  const badges = p.badges.length
-    ? '<div class="badge-row">' +
-        p.badges.map(function (b) {
-          return '<span class="badge badge--' + b.tone + '">' + L(b.label, lang) + "</span>";
-        }).join("") +
-      "</div>"
-    : "";
-
-  const head =
-    '<div class="project-card-head">' +
-      badges +
-      '<span class="project-category">' + L(p.category_label, lang) + "</span>" +
-    "</div>";
-
-  let caseStudyHtml = "";
-  let toggleHtml = "";
-
-  if (p.case_study) {
-    const cs = p.case_study;
-
-    const blocks = cs.blocks.map(function (b) {
-      if (b.type === "pipeline") {
-        return '<div class="case-block">' +
-          '<h4 class="case-title">' + L(b.title, lang) + "</h4>" +
-          '<pre class="pipeline">' + b.text + "</pre>" +
-          "</div>";
-      }
-      if (b.type === "decisions") {
-        return '<div class="case-block">' +
-          '<h4 class="case-title">' + L(b.title, lang) + "</h4>" +
-          '<ul class="case-list">' +
-            b.items.map(function (i) {
-              return "<li>" +
-                '<span class="case-dec">' + L(i.title, lang) + "</span>" +
-                '<span class="case-desc">' + L(i.desc, lang) + "</span>" +
-                "</li>";
-            }).join("") +
-          "</ul>" +
-          "</div>";
-      }
-      /* type: "text" */
-      return '<div class="case-block">' +
-        '<h4 class="case-title">' + L(b.title, lang) + "</h4>" +
-        '<p class="case-text">' + L(b.html, lang) + "</p>" +
-        "</div>";
-    }).join("");
-
-    caseStudyHtml =
-      '<div class="case-study" id="' + cs.id + '" data-case-study>' +
-        '<div class="case-study-inner">' + blocks + "</div>" +
-      "</div>";
-
-    toggleHtml =
-      '<button class="btn btn--ghost case-toggle" data-case-toggle ' +
-        'aria-expanded="' + (uiState.caseOpen ? "true" : "false") + '" aria-controls="' + cs.id + '">' +
-        '<span class="case-toggle-label">' + (uiState.caseOpen ? t.case_show_less : t.case_read_more) + "</span>" +
-        '<ion-icon name="chevron-down" class="case-toggle-icon"></ion-icon>' +
-      "</button>";
-  }
-
-  let linkHtml = "";
-  if (p.link) {
-    linkHtml =
-      '<a href="' + p.link + '" target="_blank" rel="noopener noreferrer" class="btn btn--ghost">' +
-        '<ion-icon name="logo-github"></ion-icon>' +
-        "<span>" + t.view_github + "</span>" +
-        '<ion-icon name="arrow-forward-outline" class="btn-arrow"></ion-icon>' +
-      "</a>";
-  }
-
-  const noteHtml = p.note ? '<span class="project-note">' + L(p.note, lang) + "</span>" : "";
-
-  return '<article class="project-card' +
-      (p.featured ? " project-card--featured" : "") +
-      (uiState.caseOpen && p.case_study ? " open" : "") +
-    '">' +
-    head +
-    '<h3 class="project-title">' + L(p.title, lang) + "</h3>" +
-    '<p class="project-text">' + L(p.desc, lang) + "</p>" +
-    caseStudyHtml +
-    chipRow(p.tags) +
-    '<div class="project-actions">' + toggleHtml + linkHtml + noteHtml + "</div>" +
-    "</article>";
+  const active = DATA.filters.find(function (f) { return f.value === uiState.filter; }) || DATA.filters[0];
+  selectValue.textContent = R.L(active.label, lang);
 };
 
 const renderProjects = function (lang) {
-  projectList.innerHTML = DATA.projects.map(function (p) {
-    const visible = uiState.filter === "all" || uiState.filter === p.category;
-    return '<li class="project-item' + (visible ? " active" : "") + '" data-filter-item data-category="' + p.category + '">' +
-      buildProjectCard(p, lang) +
-      "</li>";
-  }).join("");
+  projectList.innerHTML = R.renderProjects(DATA, lang, I18N[lang], {
+    filter: uiState.filter,
+    caseOpen: uiState.caseOpen
+  });
 };
 
 /*-----------------------------------*\
@@ -318,7 +117,15 @@ const renderProjects = function (lang) {
 
 const langBtns = document.querySelectorAll("[data-lang]");
 
-const applyLang = function (lang) {
+const syncUrl = function (lang) {
+  const url = new URL(location.href);
+  if (lang === "fa") url.searchParams.set("lang", "fa");
+  else url.searchParams.delete("lang");
+  url.hash = uiState.page === "about" ? "" : uiState.page;
+  history.replaceState({ page: uiState.page, lang: lang }, "", url);
+};
+
+const applyLang = function (lang, options) {
   const dict = I18N[lang];
 
   rootEl.setAttribute("lang", lang);
@@ -348,11 +155,15 @@ const applyLang = function (lang) {
   renderResume(lang);
   renderFilters(lang);
   renderProjects(lang);
-
-  /* re-render the engineering logs in the current language */
   renderLogs();
+  setLogsStatus(logsStatusText(lang));
 
   document.title = dict.meta_title;
+  const desc = document.querySelector('meta[name="description"]');
+  if (desc && dict.meta_desc) desc.setAttribute("content", dict.meta_desc);
+
+  syncThemeToggle();
+  if (!options || options.updateUrl !== false) syncUrl(lang);
 
   try { localStorage.setItem("lang", lang); } catch (e) { }
 };
@@ -362,446 +173,204 @@ langBtns.forEach(function (b) {
 });
 
 /*-----------------------------------*\
-  engineering logs (Telegram feed)
+  notes — local JSON, synced at build time
+
+  assets/data/notes.json is written by `npm run sync:notes` (a GitHub
+  Action runs it on a schedule). Loading it locally means: no CORS, no
+  third-party RSS proxy, no 20s hang when Telegram is unreachable.
+  If the file is missing or empty, SITE_DATA.notes is used.
 \*-----------------------------------*/
 
-const TELEGRAM_CHANNEL = "https://t.me/KhanAcademyy";
-const TELEGRAM_CHANNEL_PREVIEW = "https://t.me/s/KhanAcademyy";
+const NOTES_URL = "./assets/data/notes.json";
 
-/* RSSHub feed URLs for the channel, tried in order until one resolves.
-   The https:// scheme is kept separate so the URL can be rebuilt safely
-   even when a hub path already carries its own query string. */
-const TELEGRAM_FEED_PATHS = [
-  { host: "https://rsshub.rssforever.com", path: "/telegram/channel/KhanAcademyy" },
-  { host: "https://rsshub.rssforever.com", path: "/telegram/channel/@KhanAcademyy" },
-  { host: "https://rsshub.app", path: "/telegram/channel/KhanAcademyy" },
-  { host: "https://rsshub.app", path: "/telegram/channel/@KhanAcademyy" }
-];
-
-const logsGrid = document.querySelector("[data-logs-grid]");
-const logsRefreshBtn = document.querySelector("[data-logs-refresh]");
-
-const truncateText = function (s, n) {
-  return s.length > n ? s.slice(0, n).trimEnd() + "…" : s;
-};
-
-/* Fallback notes from SITE_DATA.notes — rendered instantly so the tab is
-   never empty; a successful live fetch below replaces them automatically. */
 const staticNotes = ((DATA.notes && DATA.notes.posts) || []).map(function (p) {
-  const text = p.text.replace(/\s+/g, " ").trim();
-  const date = new Date(p.date);
-  return {
-    title: p.title,
-    excerpt: truncateText(text, 220),
-    tags: p.tags,
-    url: p.url,
-    badgeUrl: p.url,
-    date: isNaN(date.getTime()) ? null : date,
-    reading: Math.max(1, Math.round(text.split(/\s+/).length / 200))
-  };
+  return R.normalizeNote(p, curLang());
 });
 
-let logsStatus = staticNotes.length ? "ready" : "loading";   /* "loading" | "ready" | "empty" */
 let logsItems = staticNotes;
-let lastFetchTime = 0;
-const FETCH_COOLDOWN = 30000; // 30 seconds cooldown between manual refreshes
+let logsSource = staticNotes.length ? "fallback" : "empty";   /* fallback | live | empty */
+let logsBusy = false;
+let logsSyncedAt = null;   /* ISO timestamp from notes.json */
+let logsFromFallback = false;
 
-/* only *.t.me links are acceptable post targets */
-const normalizeTelegramUrl = function (link) {
-  try {
-    const u = new URL(link);
-    if (!u.hostname.endsWith("t.me") && !u.hostname.endsWith("telegram.me")) {
-      return TELEGRAM_CHANNEL;
-    }
-    return u.href.replace("/s/", "/");
-  } catch (e) {
-    return TELEGRAM_CHANNEL;
-  }
+const setLogsStatus = function (message) {
+  if (logsStatusEl) logsStatusEl.textContent = message || "";
 };
 
-const parseLogItem = function (item) {
-  const rawDesc = item.description || item.content || "";
+/* "checked 12 minutes ago" is the honest signal here: the file is
+   regenerated by CI, so a refresh can only tell the visitor how fresh the
+   published copy is, not fetch Telegram itself. */
+const describeAge = function (iso, lang) {
+  const when = new Date(iso);
+  if (isNaN(when.getTime())) return "";
 
-  /* quoted replies carry the ORIGINAL post inside .rsshub-quote — drop it so
-     the card title/excerpt come from the reply text, not the quoted post */
-  const html = rawDesc
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<div class="rsshub-quote">[\s\S]*?<\/div>/gi, "");
-  const div = document.createElement("div");
-  div.innerHTML = html;
-  const text = div.textContent.replace(/ /g, " ").trim();
+  const t = I18N[lang];
+  const num = function (n) { return lang === "fa" ? R.persianDigits(n) : String(n); };
+  const pick = function (key, n) { return t[key].replace("{n}", num(n)); };
 
-  /* no strict hashtag filter — every post with readable text is a log;
-     drop only fully empty / media-only entries */
-  const fallbackTitle = (item.title || "").trim();
-  if (!text && !fallbackTitle) return null;
+  const minutes = Math.max(0, Math.round((Date.now() - when.getTime()) / 60000));
 
-  /* strip rsshub media markers, then split into lines */
-  const lines = text.split("\n")
-    .map(function (l) { return l.replace(/^(Photo|Video)\s+/i, "").trim(); })
-    .filter(Boolean);
+  if (minutes < 2) return t.logs_synced_just_now;
+  if (minutes < 60) return pick("logs_synced_min", minutes);
 
-  /* first line = title (skipping the channel / "Forwarded From" signature
-     lines rsshub prepends, so titles are the post's own first sentence) */
-  const titleLines = lines.filter(function (l) {
-    return !/^(Khan Academy!|Forwarded From)[:：]/.test(l);
-  });
-  const title = truncateText((titleLines[0] || lines[0] || fallbackTitle || "Log").trim(), 90);
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return pick(hours === 1 ? "logs_synced_hour" : "logs_synced_hours", hours);
 
-  const rest = lines.slice(1).join(" ").trim();
-  const excerpt = truncateText((rest || text).replace(/\s+/g, " ").slice(0, 220), 220);
-
-  /* hashtags → chips; default #Log chip when the post has none */
-  const hashtags = (text + " " + fallbackTitle).match(/#[\p{L}\p{N}_]+/gu) || [];
-  const uniqueTags = Array.from(new Set(hashtags.map(function (t) { return t.replace(/^#/, ""); })));
-  const tags = uniqueTags.length > 0 ? uniqueTags.slice(0, 5) : ["Log"];
-
-  /* rss2json pubDate is "YYYY-MM-DD HH:MM:SS" (no timezone) — Safari's
-     Date parser rejects the space separator, so normalize to ISO "T" */
-  const rawDate = String(item.pubDate || "").trim().replace(" ", "T");
-  const date = new Date(rawDate);
-  const reading = Math.max(1, Math.round(text.split(/\s+/).length / 200));
-
-  /* media-only posts ("Photo" / "Video" with no readable body) are dropped */
-  if (!excerpt && /^(photo|video)$/i.test(title.trim())) return null;
-
-  return {
-    title: title,
-    excerpt: excerpt,
-    tags: tags,
-    url: normalizeTelegramUrl(item.link),
-    date: isNaN(date.getTime()) ? null : date,
-    reading: reading
-  };
-};
-
-const buildLogCard = function (item, lang) {
-  const dict = I18N[lang];
-  const card = document.createElement("article");
-  card.className = "logs-card";
-
-  const meta = document.createElement("div");
-  meta.className = "logs-meta";
-
-  if (item.date) {
-    const time = document.createElement("time");
-    time.dateTime = item.date.toISOString();
-
-    if (lang === "fa") {
-      /* Manual Jalali formatting: extract day/month/year separately so the
-         output is always day-month-year with proper Persian numerals,
-         regardless of browser locale ordering quirks. */
-      const parts = item.date.toLocaleDateString("fa-IR", {
-        year: "numeric", month: "numeric", day: "numeric"
-      }).split("/").map(function (s) { return s.trim(); });
-      const monthName = item.date.toLocaleDateString("fa-IR", { month: "long" })
-        .replace(/\s*\d+.*$/, "");       /* strip trailing digits if any */
-      const persianDigits = ["۰","۱","۲","۳","۴","۵","۶","۷","۸","۹"];
-      var toFa = function (s) {
-        return String(s).replace(/\d/g, function (d) { return persianDigits[d]; });
-      };
-      time.textContent = toFa(parts[2]) + " " + monthName + " " + toFa(parts[0]);
-    } else {
-      time.textContent = item.date.toLocaleDateString("en-GB", {
-        year: "numeric", month: "short", day: "numeric"
-      });
-    }
-
-    meta.appendChild(time);
-    const dot = document.createElement("span");
-    dot.className = "dot";
-    dot.setAttribute("aria-hidden", "true");
-    meta.appendChild(dot);
-  }
-
-  const reading = document.createElement("span");
-  reading.textContent = lang === "fa"
-    ? "مطالعهٔ " + item.reading + " دقیقه‌ای"
-    : item.reading + " min read";
-  meta.appendChild(reading);
-
-  const badge = document.createElement("a");
-  badge.className = "logs-badge";
-  badge.href = item.badgeUrl || TELEGRAM_CHANNEL;
-  badge.target = "_blank";
-  badge.rel = "noopener noreferrer";
-  badge.textContent = "t.me/KhanAcademyy";
-  meta.appendChild(badge);
-
-  const title = document.createElement("h4");
-  title.className = "logs-title";
-  title.setAttribute("dir", "auto");   /* Persian → RTL, English snippets → LTR */
-  title.textContent = item.title;
-
-  const excerpt = document.createElement("p");
-  excerpt.className = "logs-excerpt";
-  excerpt.setAttribute("dir", "auto");   /* Persian → RTL, English snippets → LTR */
-  excerpt.textContent = item.excerpt;
-
-  const tags = document.createElement("ul");
-  tags.className = "tag-row";
-  item.tags.forEach(function (t) {
-    const li = document.createElement("li");
-    const chip = document.createElement("span");
-    chip.className = "chip";
-    chip.textContent = "#" + t;
-    li.appendChild(chip);
-    tags.appendChild(li);
-  });
-
-  const actions = document.createElement("div");
-  actions.className = "logs-card-actions";
-  const btn = document.createElement("a");
-  btn.className = "btn btn--ghost";
-  btn.href = item.url;
-  btn.target = "_blank";
-  btn.rel = "noopener noreferrer";
-  const label = document.createElement("span");
-  label.textContent = dict.logs_read;
-  const arrow = document.createElement("ion-icon");
-  arrow.setAttribute("name", "arrow-forward-outline");
-  arrow.className = "btn-arrow";
-  btn.appendChild(label);
-  btn.appendChild(arrow);
-  actions.appendChild(btn);
-
-  card.appendChild(meta);
-  card.appendChild(title);
-  card.appendChild(excerpt);
-  card.appendChild(tags);
-  card.appendChild(actions);
-
-  return card;
+  const days = Math.round(hours / 24);
+  return pick(days === 1 ? "logs_synced_day" : "logs_synced_days", days);
 };
 
 const renderLogs = function () {
   if (!logsGrid) return;
-  const lang = curLang();
-  logsGrid.textContent = "";
 
-  if (logsStatus === "loading") {
-    for (let i = 0; i < 4; i++) {
-      const s = document.createElement("div");
-      s.className = "skeleton-card";
-      s.setAttribute("aria-hidden", "true");
-      s.innerHTML =
-        '<div class="skel skel-meta" style="width:45%"></div>' +
-        '<div class="skel skel-title" style="width:75%"></div>' +
-        '<div class="skel skel-line"></div>' +
-        '<div class="skel skel-line" style="width:85%"></div>' +
-        '<div class="skel skel-line" style="width:55%"></div>' +
-        '<div class="skel skel-chips" style="width:60%"></div>';
-      logsGrid.appendChild(s);
-    }
+  if (!logsItems.length) {
+    logsGrid.innerHTML = '<p class="logs-empty">' + R.esc(I18N[curLang()].logs_empty) + "</p>";
     return;
   }
 
-  if (logsStatus === "empty") {
-    const empty = document.createElement("p");
-    empty.className = "logs-empty";
-    empty.textContent = I18N[lang].logs_empty;
-    logsGrid.appendChild(empty);
-    return;
-  }
+  logsGrid.innerHTML = logsItems.map(function (item) {
+    return R.renderNoteCard(item, curLang(), I18N[curLang()]);
+  }).join("");
+};
 
-  logsItems.forEach(function (item) {
-    logsGrid.appendChild(buildLogCard(item, lang));
+/* Fallback copies of notes.json, tried only when the local file has never
+   been synced. This exists for local development: the dev machine may be
+   behind a network that blocks Telegram, while CI regenerates the published
+   file hourly. On the live site the local file IS the published file, so no
+   cross-origin request is ever made there.
+
+   raw.githubusercontent sends Access-Control-Allow-Origin: *, so this works
+   cross-origin. */
+const NOTES_REMOTE_URLS = [
+  "https://raw.githubusercontent.com/MatinAminsabouri/MatinAminSabouri.github.io/main/assets/data/notes.json",
+  "https://matinaminsabouri.github.io/assets/data/notes.json"
+];
+
+const IS_PRODUCTION = /(^|\.)matinaminsabouri\.github\.io$/.test(location.hostname);
+
+const parseNotesPayload = function (data) {
+  const posts = Array.isArray(data) ? data : (data && data.posts);
+  if (!Array.isArray(posts) || !posts.length) throw new Error("empty notes file");
+
+  /* "source" tells the UI whether this data ever came from Telegram:
+     "fallback" means it was seeded from data.js and never synced, so we
+     must not claim freshness */
+  const source = (data && data.source) || "telegram";
+  return {
+    posts: posts,
+    syncedAt: source === "fallback" ? null : ((data && data.updated) || null),
+    fromFallback: source === "fallback"
+  };
+};
+
+const fetchJson = async function (url) {
+  const res = await fetch(url + (url.indexOf("?") === -1 ? "?" : "&") + "_t=" + Date.now(), {
+    cache: "no-store"
   });
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  return res.json();
 };
 
-/* Fetch one RSSHub feed through rss2json and return parsed posts.
-   Returns [] when the endpoint resolves but has no readable posts,
-   and throws when the endpoint itself failed. */
-const tryRssHubFeed = async function (host, path) {
-  const controller = new AbortController();
-  const timer = setTimeout(function () { controller.abort(); }, 25000);
+const loadNotes = async function () {
+  const local = await fetchJson(NOTES_URL);
+  const parsed = parseNotesPayload(local);
 
-  try {
-    /* cache-bust: timestamp inside rss_url busts both rss2json and RSSHub
-       caches. "?" vs "&" is chosen based on the path's own query string —
-       a second "?" produces an invalid URL the fetch layer rejects. */
-    const feedUrl = host + path +
-      (path.indexOf("?") === -1 ? "?" : "&") + "_t=" + Date.now();
-    const url = "https://api.rss2json.com/v1/api.json?rss_url=" +
-      encodeURIComponent(feedUrl);
+  /* a local fallback copy means "never synced". Only a development origin
+     may reach for the published file; the live site never makes an extra
+     request, so it stays dependency-free and console-clean. */
+  if (!parsed.fromFallback || IS_PRODUCTION) return parsed;
 
-    const res = await fetch(url, { signal: controller.signal });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const data = await res.json();
-    if (!data || data.status !== "ok" || !Array.isArray(data.items)) {
-      throw new Error("invalid payload: " + (data && data.message ? data.message : "unknown"));
-    }
-
-    return data.items.map(parseLogItem).filter(Boolean);
-  } finally {
-    clearTimeout(timer);
-  }
-};
-
-const fetchTelegramLogs = async function () {
-  let lastError = null;
-  let sawEmptyFeed = false;
-
-  for (const feed of TELEGRAM_FEED_PATHS) {
+  for (const url of NOTES_REMOTE_URLS) {
     try {
-      const parsed = await tryRssHubFeed(feed.host, feed.path);
-
-      if (parsed.length === 0) {
-        console.warn("[Telegram Logs] No readable posts from:", feed.host + feed.path);
-        sawEmptyFeed = true;
-        continue;   /* try the next feed — a fresher copy may include the posts */
+      const remote = parseNotesPayload(await fetchJson(url));
+      if (!remote.fromFallback) {
+        console.info("[Notes] local copy is unsynced; using published notes from", new URL(url).host);
+        return remote;
       }
-
-      /* newest first, take latest 10 */
-      parsed.sort(function (a, b) {
-        return (b.date ? b.date.getTime() : 0) - (a.date ? a.date.getTime() : 0);
-      });
-
-      console.log("[Telegram Logs] Successfully fetched", parsed.length, "posts from:", feed.host + feed.path);
-      lastFetchTime = Date.now();
-      return parsed.slice(0, 10);
     } catch (e) {
-      lastError = e;
-      console.warn("[Telegram Logs] Feed failed:", feed.host + feed.path, e.message || e);
+      console.info("[Notes] published notes not available at", new URL(url).host);
     }
   }
 
-  /* As a last resort, try scraping the Telegram web preview page directly */
-  try {
-    const directPosts = await fetchTelegramPreviewDirect();
-    if (directPosts && directPosts.length > 0) {
-      console.log("[Telegram Logs] Fallback to direct preview worked:", directPosts.length, "posts");
-      lastFetchTime = Date.now();
-      return directPosts.slice(0, 10);
-    }
-  } catch (e) {
-    console.warn("[Telegram Logs] Direct preview fallback failed:", e.message || e);
-  }
-
-  if (sawEmptyFeed) return [];
-
-  throw lastError || new Error("all Telegram feeds failed");
+  return parsed;
 };
 
-/* Direct fetch from Telegram web preview (t.me/s/channel) — no API key needed.
-   Parses the HTML for message bubbles. Used as last-resort fallback. */
-const fetchTelegramPreviewDirect = async function () {
-  const controller = new AbortController();
-  const timer = setTimeout(function () { controller.abort(); }, 20000);
-
-  try {
-    const res = await fetch(TELEGRAM_CHANNEL_PREVIEW + "?_t=" + Date.now(), {
-      signal: controller.signal,
-      headers: { "Accept": "text/html,application/xhtml+xml" }
-    });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const html = await res.text();
-
-    /* Parse message bubbles from t.me/s/channel HTML */
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-    const messages = doc.querySelectorAll(".tgme_widget_message_wrap, .tgme_widget_message");
-
-    const posts = [];
-    messages.forEach(function (msgWrap) {
-      const msg = msgWrap.querySelector(".tgme_widget_message") || msgWrap;
-      const textEl = msg.querySelector(".tgme_widget_message_text");
-      const dateEl = msg.querySelector(".tgme_widget_message_date time, .tgme_widget_message_date a time");
-      const linkEl = msg.querySelector(".tgme_widget_message_date a, .tgme_widget_message_owner a");
-
-      if (!textEl) return;
-
-      const text = textEl.textContent.trim().replace(/\s+/g, " ");
-      if (!text || text.length < 10) return; // skip very short/empty
-
-      const dateStr = dateEl?.getAttribute("datetime") || dateEl?.textContent?.trim();
-      const date = dateStr ? new Date(dateStr) : null;
-
-      const link = linkEl?.href || TELEGRAM_CHANNEL;
-
-      /* Extract hashtags */
-      const hashtags = text.match(/#[\p{L}\p{N}_]+/gu) || [];
-      const uniqueTags = Array.from(new Set(hashtags.map(function (t) { return t.replace(/^#/, ""); })));
-      const tags = uniqueTags.length > 0 ? uniqueTags.slice(0, 5) : ["Log"];
-
-      /* Title = first line, excerpt = rest */
-      const lines = text.split("\n").map(function (l) { return l.trim(); }).filter(Boolean);
-      const title = truncateText(lines[0] || "Log", 90);
-      const rest = lines.slice(1).join(" ").trim();
-      const excerpt = truncateText((rest || text).slice(0, 220), 220);
-
-      const reading = Math.max(1, Math.round(text.split(/\s+/).length / 200));
-
-      posts.push({
-        title: title,
-        excerpt: excerpt,
-        tags: tags,
-        url: normalizeTelegramUrl(link),
-        date: (date && !isNaN(date.getTime())) ? date : null,
-        reading: reading
-      });
-    });
-
-    return posts;
-  } catch (e) {
-    throw e;
-  } finally {
-    clearTimeout(timer);
-  }
+const applyNotes = function (parsed) {
+  logsItems = parsed.posts.map(function (p) { return R.normalizeNote(p, curLang()); });
+  logsSyncedAt = parsed.syncedAt;
+  logsFromFallback = parsed.fromFallback;
+  logsSource = logsItems.length ? "live" : "empty";
 };
 
-const loadLogs = async function (isManualRefresh = false) {
-  /* Respect cooldown for manual refresh */
+const logsStatusText = function (lang) {
+  const t = I18N[lang];
+  if (logsSource === "empty") return t.logs_empty;
+
+  if (logsFromFallback) return t.logs_static;
+
+  const age = logsSyncedAt ? describeAge(logsSyncedAt, lang) : "";
+  return age || t.logs_live;
+};
+
+const loadLogs = async function (isManualRefresh) {
+  if (logsBusy) return;
+  logsBusy = true;
+
+  const previousNewest = logsItems.length
+    ? Math.max.apply(null, logsItems.map(function (i) { return i.date ? i.date.getTime() : 0; }))
+    : 0;
+
   if (isManualRefresh) {
-    const now = Date.now();
-    if (now - lastFetchTime < FETCH_COOLDOWN) {
-      console.log("[Telegram Logs] Refresh cooldown active, skipping");
-      return;
+    if (logsRefreshBtn) {
+      logsRefreshBtn.classList.add("refreshing");
+      logsRefreshBtn.disabled = true;
+      logsRefreshBtn.setAttribute("aria-busy", "true");
     }
-    lastFetchTime = now;
+    setLogsStatus(I18N[curLang()].logs_checking);
   }
 
-  const hasFallback = logsItems.length > 0;
-  if (!hasFallback && !isManualRefresh) {
-    logsStatus = "loading";
+  try {
+    applyNotes(await loadNotes());
+  } catch (e) {
+    logsSource = staticNotes.length ? "fallback" : "empty";
+    logsSyncedAt = null;
+    logsFromFallback = true;
+  } finally {
+    logsBusy = false;
+    if (logsRefreshBtn) {
+      logsRefreshBtn.classList.remove("refreshing");
+      logsRefreshBtn.disabled = false;
+      logsRefreshBtn.removeAttribute("aria-busy");
+    }
+
+    if (isManualRefresh) {
+      /* say what actually changed, instead of silently re-rendering */
+      const t = I18N[curLang()];
+      const newest = logsItems.length
+        ? Math.max.apply(null, logsItems.map(function (i) { return i.date ? i.date.getTime() : 0; }))
+        : 0;
+      const gained = newest > previousNewest;
+
+      setLogsStatus(
+        (gained ? t.logs_new_posts : t.logs_no_change) + " · " + logsStatusText(curLang())
+      );
+    } else {
+      setLogsStatus(logsStatusText(curLang()));
+    }
+
     renderLogs();
   }
-
-  if (isManualRefresh && logsRefreshBtn) {
-    logsRefreshBtn.classList.add("refreshing");
-    logsRefreshBtn.disabled = true;
-  }
-
-  try {
-    const live = await fetchTelegramLogs();
-    if (live.length) {
-      logsItems = live;
-      logsStatus = "ready";
-    } else if (hasFallback) {
-      /* keep fallback if live fetch returned nothing */
-      logsStatus = "ready";
-    } else {
-      logsStatus = "empty";
-    }
-  } catch (e) {
-    console.warn("[Telegram Logs] Feed unavailable — keeping fallback notes:", e.message || e);
-    if (hasFallback) logsStatus = "ready";
-    else logsStatus = "empty";
-  }
-
-  if (isManualRefresh && logsRefreshBtn) {
-    logsRefreshBtn.classList.remove("refreshing");
-    logsRefreshBtn.disabled = false;
-  }
-
-  renderLogs();
 };
 
-/* Initial load */
-loadLogs();
+/* Keep the tab honest about *when* it was last synced: the page can only
+   reload the published JSON, so the button is labelled for what it does and
+   the age of the data is always on screen. */
+const refreshLogsStatusClock = function () {
+  if (!logsStatusEl || !logsSyncedAt) return;
+  logsStatusEl.textContent = logsStatusText(curLang());
+};
 
-/* Expose manual refresh for the refresh button */
-window.refreshTelegramLogs = function () { loadLogs(true); };
+setInterval(refreshLogsStatusClock, 60000);
 
 /*-----------------------------------*\
   sidebar toggle (mobile)
@@ -810,9 +379,12 @@ window.refreshTelegramLogs = function () { loadLogs(true); };
 const sidebar = document.querySelector("[data-sidebar]");
 const sidebarBtn = document.querySelector("[data-sidebar-btn]");
 
-sidebarBtn.addEventListener("click", function () {
-  sidebar.classList.toggle("active");
-});
+if (sidebarBtn) {
+  sidebarBtn.addEventListener("click", function () {
+    const open = sidebar.classList.toggle("active");
+    sidebarBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+}
 
 /*-----------------------------------*\
   preferences placement — theme/lang controls join the nav pill on
@@ -840,50 +412,88 @@ const placeControls = function () {
 
 placeControls();
 desktopMQ.addEventListener("change", placeControls);
-window.addEventListener("resize", placeControls);
 /* body width changes whenever the viewport crosses the breakpoint —
    ResizeObserver fires even where window/matchMedia events don't */
 new ResizeObserver(placeControls).observe(document.body);
-/* belt-and-braces: some embedded webviews suppress every resize event;
-   the check is a cheap no-op when nothing changed */
-setInterval(placeControls, 1000);
 
 /*-----------------------------------*\
   page navigation (About / Resume / Portfolio / Logs)
+
+  Pages are addressable: #resume, #portfolio, #logs. Browser back/forward
+  work, links can be shared, and each page exposes its own title.
 \*-----------------------------------*/
 
 const navLinks = document.querySelectorAll("[data-nav-link]");
 const pages = document.querySelectorAll("[data-page]");
 
+const pageFromHash = function () {
+  const h = (location.hash || "").replace("#", "");
+  return PAGES.indexOf(h) !== -1 ? h : "about";
+};
+
+const showPage = function (page, options) {
+  uiState.page = page;
+
+  navLinks.forEach(function (l) {
+    const isActive = l.dataset.navTarget === page;
+    l.classList.toggle("active", isActive);
+    if (isActive) {
+      l.setAttribute("aria-current", "page");
+    } else {
+      l.removeAttribute("aria-current");
+    }
+  });
+
+  pages.forEach(function (p) {
+    p.classList.toggle("active", p.dataset.page === page);
+  });
+
+  const lang = curLang();
+  document.title = I18N[lang].meta_title;
+
+  if (!options || options.scroll !== false) {
+    window.scrollTo(0, 0);
+  }
+
+  if (!options || options.focus !== false) {
+    const article = document.querySelector('article[data-page="' + page + '"]');
+    if (article) article.focus({ preventScroll: true });
+  }
+
+  if (!options || options.history !== false) {
+    const url = new URL(location.href);
+    url.hash = page === "about" ? "" : page;
+    history.pushState({ page: page }, "", url);
+  }
+
+  syncUrl(lang);
+};
+
 navLinks.forEach(function (link) {
   link.addEventListener("click", function () {
-
     const target = link.dataset.navTarget;
-
-    navLinks.forEach(function (l) {
-      const isActive = (l === link);
-      l.classList.toggle("active", isActive);
-      if (isActive) {
-        l.setAttribute("aria-current", "page");
-      } else {
-        l.removeAttribute("aria-current");
-      }
-    });
-
-    pages.forEach(function (p) {
-      p.classList.toggle("active", p.dataset.page === target);
-    });
-
-    window.scrollTo(0, 0);
-
+    if (target === uiState.page) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    showPage(target);
   });
+});
+
+window.addEventListener("popstate", function (event) {
+  const page = (event.state && event.state.page) || pageFromHash();
+  showPage(page, { history: false, focus: false });
 });
 
 /*-----------------------------------*\
   portfolio filtering (mobile select + desktop chips)
-  Options are rendered from DATA.filters into both UIs — one source,
-  so the mobile select and desktop chips can never drift apart.
 \*-----------------------------------*/
+
+const closeSelect = function () {
+  if (!select) return;
+  select.classList.remove("active");
+  select.setAttribute("aria-expanded", "false");
+};
 
 const setFilter = function (value) {
   uiState.filter = value;
@@ -894,16 +504,20 @@ const setFilter = function (value) {
   });
 };
 
-select.addEventListener("click", function () {
-  select.classList.toggle("active");
-});
+if (select) {
+  select.addEventListener("click", function () {
+    const open = select.classList.toggle("active");
+    select.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+}
 
 /* delegated: filter option nodes are re-created on every language switch */
 selectList.addEventListener("click", function (event) {
   const btn = event.target.closest("[data-select-item]");
   if (!btn) return;
   setFilter(btn.dataset.filterValue || "all");
-  select.classList.remove("active");
+  closeSelect();
+  if (select) select.focus();
 });
 
 filterList.addEventListener("click", function (event) {
@@ -912,10 +526,17 @@ filterList.addEventListener("click", function (event) {
   setFilter(btn.dataset.filterValue || "all");
 });
 
-/* close mobile select on outside click */
+/* close mobile select on outside click / Escape */
 document.addEventListener("click", function (event) {
-  if (select.classList.contains("active") && !select.parentElement.contains(event.target)) {
-    select.classList.remove("active");
+  if (select && select.classList.contains("active") && !select.parentElement.contains(event.target)) {
+    closeSelect();
+  }
+});
+
+document.addEventListener("keydown", function (event) {
+  if (event.key === "Escape" && select && select.classList.contains("active")) {
+    closeSelect();
+    select.focus();
   }
 });
 
@@ -952,11 +573,10 @@ contactsList.addEventListener("click", function (event) {
       btn.classList.remove("copied");
     }, 1600);
   });
-
 });
 
 /*-----------------------------------*\
-  lightbox — Avatar enlargement
+  lightbox — avatar enlargement
 \*-----------------------------------*/
 
 const avatarTrigger = document.querySelector("[data-avatar-trigger]");
@@ -968,55 +588,20 @@ const lightboxBackdrop = lightbox ? lightbox.querySelector(".lightbox-backdrop")
 
 let lastFocusedElement = null;
 
-const openLightbox = function () {
-  if (!lightbox || !lightboxImg) return;
-  
-  lastFocusedElement = document.activeElement;
-  
-  lightboxImg.src = avatarTrigger.src;
-  lightboxImg.alt = avatarTrigger.alt;
-  lightboxCaption.textContent = avatarTrigger.alt || "Profile picture";
-  
-  lightbox.hidden = false;
-  document.body.style.overflow = "hidden";
-  
-  // Focus management for accessibility
-  setTimeout(function () {
-    lightboxClose?.focus();
-  }, 50);
-  
-  // Trap focus
-  document.addEventListener("keydown", handleLightboxKeydown);
-};
-
-const closeLightbox = function () {
-  if (!lightbox) return;
-  
-  lightbox.hidden = true;
-  document.body.style.overflow = "";
-  lightboxImg.src = "";
-  
-  document.removeEventListener("keydown", handleLightboxKeydown);
-  
-  // Restore focus
-  if (lastFocusedElement) {
-    lastFocusedElement.focus();
-  }
-};
-
 const handleLightboxKeydown = function (event) {
   if (event.key === "Escape") {
     closeLightbox();
+    return;
   }
-  
-  // Focus trap - Tab and Shift+Tab
+
+  /* focus trap - Tab and Shift+Tab */
   if (event.key === "Tab") {
     const focusableElements = lightbox.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
-    
+
     if (event.shiftKey && document.activeElement === firstElement) {
       event.preventDefault();
       lastElement.focus();
@@ -1027,44 +612,60 @@ const handleLightboxKeydown = function (event) {
   }
 };
 
-// Event listeners
+const openLightbox = function () {
+  if (!lightbox || !lightboxImg || !avatarTrigger) return;
+
+  lastFocusedElement = document.activeElement;
+
+  const img = avatarTrigger.querySelector("img");
+  lightboxImg.src = img.currentSrc || img.src;
+  lightboxImg.alt = img.alt || "";
+  lightboxCaption.textContent = img.alt || "";
+
+  lightbox.hidden = false;
+  document.body.style.overflow = "hidden";
+
+  /* focus the close button synchronously: a timer here loses the race with
+     the visibility transition and focus silently stays behind the dialog */
+  if (lightboxClose) lightboxClose.focus();
+
+  document.addEventListener("keydown", handleLightboxKeydown);
+};
+
+function closeLightbox() {
+  if (!lightbox) return;
+
+  lightbox.hidden = true;
+  document.body.style.overflow = "";
+  lightboxImg.removeAttribute("src");
+
+  document.removeEventListener("keydown", handleLightboxKeydown);
+
+  if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+    lastFocusedElement.focus();
+  }
+}
+
 if (avatarTrigger && lightbox) {
   avatarTrigger.addEventListener("click", openLightbox);
-  avatarTrigger.addEventListener("keydown", function (event) {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      openLightbox();
-    }
-  });
 }
 
-if (lightboxClose) {
-  lightboxClose.addEventListener("click", closeLightbox);
-}
+if (lightboxClose) lightboxClose.addEventListener("click", closeLightbox);
+if (lightboxBackdrop) lightboxBackdrop.addEventListener("click", closeLightbox);
 
-if (lightboxBackdrop) {
-  lightboxBackdrop.addEventListener("click", closeLightbox);
-}
-
-// Close on backdrop click (outside the figure)
 if (lightbox) {
   lightbox.addEventListener("click", function (event) {
-    if (event.target === lightbox) {
-      closeLightbox();
-    }
+    if (event.target === lightbox) closeLightbox();
   });
 }
 
 /*-----------------------------------*\
-  logs refresh button (delegated — logs re-render on lang switch)
+  logs refresh button
 \*-----------------------------------*/
 
-document.addEventListener("click", function (event) {
-  const refreshBtn = event.target.closest("[data-logs-refresh]");
-  if (refreshBtn) {
-    window.refreshTelegramLogs();
-  }
-});
+if (logsRefreshBtn) {
+  logsRefreshBtn.addEventListener("click", function () { loadLogs(true); });
+}
 
 /*-----------------------------------*\
   collapsible case study (Ravin "Read More", delegated)
@@ -1083,6 +684,10 @@ projectList.addEventListener("click", function (event) {
     I18N[curLang()][uiState.caseOpen ? "case_show_less" : "case_read_more"];
 });
 
-/* sync UI with the boot-time language (from the inline <head> script).
-   Runs last so every renderer above (incl. the logs engine) is initialized. */
-applyLang(curLang());
+/*-----------------------------------*\
+  boot — sync UI with the URL/boot-time language, then hydrate notes
+\*-----------------------------------*/
+
+applyLang(curLang(), { updateUrl: false });
+showPage(pageFromHash(), { history: false, focus: false, scroll: false });
+loadLogs(false);

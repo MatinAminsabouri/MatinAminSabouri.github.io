@@ -1,0 +1,19 @@
+# dependencies (none at runtime, but keep npm artifacts out)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.idea/
+.vscode/
+
+# local scratch
+*.local
+.tmp/
+
+# e2e artifacts
+scripts/e2e/shots/

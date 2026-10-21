@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>رزومه متین امین صبوری</title>
+<style>
+  @font-face {
+    font-family: 'Vazirmatn';
+    font-weight: 400 700;
+    src: url('../../assets/fonts/Vazirmatn-var-arabic.woff2') format('woff2');
+    unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+FB50-FDFF, U+FE70-FEFC;
+  }
+  @font-face {
+    font-family: 'Vazirmatn';
+    font-weight: 400 700;
+    src: url('../../assets/fonts/Vazirmatn-var-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+2000-206F;
+  }
+
+  @page { size: A4; margin: 0; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 9pt;
+    line-height: 1.75;
+    color: #23262e;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    width: 210mm;
+    padding: 0 0 14mm;
+    position: relative;
+  }
+  .body { padding: 0 14mm; }
+
+  /* let content flow across pages instead of forcing a page break: the
+     sections are short, so a hard break leaves a mostly-empty third page */
+  .sec { break-inside: avoid; page-break-inside: avoid; }
+  .entry, .project { break-inside: avoid; page-break-inside: avoid; }
+
+  /* ---------- header ---------- */
+  .head {
+    position: relative;
+    min-height: 50mm;
+    background: #262e40;
+    color: #fff;
+    overflow: hidden;
+    margin-bottom: 7mm;
+  }
+  .head::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(255,255,255,.05) 0 1px, transparent 1px 9px),
+      repeating-linear-gradient(-45deg, rgba(255,255,255,.05) 0 1px, transparent 1px 9px);
+  }
+  .head-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 50mm;
+    padding: 5mm 14mm;
+  }
+  .head-name { font-size: 19pt; font-weight: 700; letter-spacing: -.2pt; }
+  .head-role { font-size: 9.5pt; color: #d6dcea; margin-top: 1mm; direction: ltr; text-align: right; }
+  .head-meta {
+    margin-top: 3mm;
+    padding-top: 2.2mm;
+    border-top: 1px dashed rgba(255,255,255,.35);
+    font-size: 7.8pt;
+    color: #c9d1e0;
+    display: grid;
+    gap: .6mm;
+  }
+  .head-meta b { color: #fff; font-weight: 600; }
+  .head-contact {
+    margin-top: 2.4mm;
+    display: flex;
+    gap: 5mm;
+    flex-wrap: wrap;
+    font-size: 7.6pt;
+    color: #c9d1e0;
+    direction: ltr;
+  }
+  .head-contact span { display: inline-flex; align-items: center; gap: 1.5mm; }
+  .head-photo {
+    width: 34mm;
+    height: 34mm;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2.5px solid rgba(255,255,255,.55);
+    flex-shrink: 0;
+  }
+
+  /* ---------- section ---------- */
+  .sec { margin-bottom: 5mm; }
+  .sec-title {
+    display: flex;
+    align-items: center;
+    gap: 2.5mm;
+    font-size: 11.5pt;
+    font-weight: 700;
+    color: #262e40;
+    margin-bottom: 2mm;
+  }
+  .sec-title::before {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: repeating-linear-gradient(90deg, #c9cfda 0 3px, transparent 3px 6px);
+    order: 2;
+  }
+  .sec-title .ic { order: 1; font-size: 12pt; }
+  .sec-title span { order: 0; }
+
+  .summary { font-size: 8.5pt; line-height: 1.85; color: #33383f; text-align: justify; }
+
+  /* ---------- entries ---------- */
+  .entry { margin-bottom: 3mm; }
+  .entry-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4mm;
+  }
+  .entry-title { font-size: 9.6pt; font-weight: 700; color: #1d2330; }
+  .entry-date { font-size: 7.6pt; color: #6b7280; white-space: nowrap; }
+  .entry-sub { font-size: 8.2pt; color: #4b5563; margin-top: .4mm; }
+  .entry-sub .k { color: #6b7280; }
+
+  ul.bullets { margin: 1.5mm 4mm 0 0; }
+  ul.bullets li {
+    position: relative;
+    padding-right: 3.5mm;
+    margin-bottom: .9mm;
+    font-size: 8.4pt;
+    line-height: 1.8;
+    color: #33383f;
+  }
+  ul.bullets li::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 2.4mm;
+    width: 1.4mm;
+    height: 1.4mm;
+    border-radius: 50%;
+    background: #262e40;
+  }
+  ul.bullets li.en { direction: ltr; text-align: left; padding-right: 0; padding-left: 3.5mm; }
+  ul.bullets li.en::before { right: auto; left: 0; }
+
+  /* ---------- skills ---------- */
+  .skills {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 10mm;
+    row-gap: .8mm;
+  }
+  .skill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3mm;
+    font-size: 8.2pt;
+    padding: .5mm 0;
+    border-bottom: 1px solid #eef0f4;
+  }
+  .skill .name { direction: ltr; text-align: left; flex: 1; color: #33383f; }
+  .dots { display: inline-flex; gap: .7mm; flex-shrink: 0; direction: ltr; }
+  .dots i { width: 1.9mm; height: 1.9mm; border-radius: 50%; background: #d7dbe3; display: block; }
+  .dots i.on { background: #262e40; }
+
+  /* ---------- projects ---------- */
+  .project { margin-bottom: 3.2mm; }
+  .project-title { font-size: 9.4pt; font-weight: 700; color: #1d2330; }
+  .project-meta { font-size: 7.6pt; color: #6b7280; margin: .3mm 0 1mm; }
+  .project-text { font-size: 8.1pt; line-height: 1.8; color: #33383f; }
+  .project-text.en { direction: ltr; text-align: left; }
+  .project-link {
+    display: inline-block;
+    margin-top: 1mm;
+    font-size: 7.8pt;
+    color: #0b56b8;
+    direction: ltr;
+    text-decoration: none;
+  }
+
+  .contact-row { display: flex; gap: 8mm; font-size: 8.2pt; color: #33383f; }
+  .contact-row a { color: #0b56b8; text-decoration: none; direction: ltr; }
+  .contact-row .lbl { color: #6b7280; }
+
+  .muted { color: #6b7280; font-size: 7.8pt; }
+</style>
+</head>
+<body>
+
+<!-- ================= PAGE 1 ================= -->
+<section class="page">
+  <header class="head">
+    <div class="head-inner">
+      <div>
+        <div class="head-name">متین امین صبوری</div>
+        <div class="head-role">AI &amp; Backend Engineer (.NET / AI Systems)</div>
+        <div class="head-meta">
+          <div><b>متولد:</b> ۱۳۸۲/۱۰/۱۰</div>
+          <div><b>وضعیت تأهل:</b> مجرد</div>
+          <div><b>وضعیت سربازی:</b> معافیت تحصیلی</div>
+        </div>
+        <div class="head-contact">
+          <span>matinaminsabouri70@gmail.com</span>
+          <span>(+98) 913 545 8251</span>
+          <span>Isfahan, Iran</span>
+        </div>
+      </div>
+      <img class="head-photo" src="photo.jpg" alt="">
+    </div>
+  </header>
+
+  <div class="body">
+    <section class="sec">
+      <h2 class="sec-title"><span class="ic">&#9679;</span><span>خلاصه رزومه</span></h2>
+      <p class="summary">
+        مهندس نرم‌افزار با ۳ سال سابقه طراحی و پیاده‌سازی سامانه‌های هوشمند، سرویس‌های تحت وب و سیستم‌های اتوماسیون اداری و دولتی.
+        مسلط به <b>NET Core.</b> و <b>Python</b> و با سابقه کار در زمینه معماری <b>RAG</b>، سیستم‌های مبتنی بر <b>AI Agents</b> و <b>MCP</b>،
+        پردازش گفتار <b>(ASR)</b> و مدل‌های <b>NLP</b> فارسی. همراه با تجربه در مدیریت فنی و پیاده‌سازی محصول «راوین»
+        (اولین دستیار هوشمند تخصصی شهرداری‌ها و شهرسازی‌های کشور).
+      </p>
+    </section>
+
+    <section class="sec">
+      <h2 class="sec-title"><span class="ic">&#9679;</span><span>سوابق تحصیلی</span></h2>
+      <div class="entry">
+        <div class="entry-head">
+          <div class="entry-title">کارشناسی مهندسی کامپیوتر</div>
+          <div class="entry-date">مهر ۱۴۰۱ - اکنون</div>
+        </div>
+        <div class="entry-sub"><span class="k">موسسه/دانشگاه:</span> دانشگاه صنعتی اصفهان</div>
+        <div class="entry-sub"><span class="k">اصفهان</span> · <span class="k">معدل:</span> ۱۷</div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2 class="sec-title"><span class="ic">&#9679;</span><span>سوابق شغلی</span></h2>
+      <div class="entry">
+        <div class="entry-head">
+          <div class="entry-title">توسعه‌دهنده</div>
+          <div class="entry-date">آبان ۱۴۰۲ - اکنون</div>
+        </div>
+        <div class="entry-sub"><span class="k">نوساز محاسب صفاهان</span> · اصفهان</div>
+
+        <div class="entry-sub" style="margin-top:2.5mm"><b>مدیر پروژه دستیار هوشمند «راوین» برای سامانه‌های شهرداری</b></div>
+        <ul class="bullets">
+          <li>طراحی و پیاده‌سازی یک دستیار هوش مصنوعی متن‌محور و صوت‌محور جهت راهنمایی کاربران در فرآیندهای شهرسازی و پاسخ‌گویی به سوالات تخصصی. شامل:</li>
+          <li>توسعه و بکاربردن ماژول ASR برای تشخیص گفتار فارسی در محیط‌های اداری</li>
+          <li>طراحی معماری NLP برای تفسیر قوانین و فرآیندهای شهرداری</li>
+          <li>پیاده‌سازی سیستم RAG برای بازیابی دقیق قوانین، بخشنامه‌ها و ضوابط هر شهرداری</li>
+          <li>تولید پاسخ‌های مستند بر اساس پایگاه دانش سازمان</li>
+          <li>یکپارچه‌سازی کامل با سامانه‌های داخلی و استقرار به‌صورت کاملاً لوکال بدون نیاز به اینترنت</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+</section>
+
+<!-- ================= PAGE 2 ================= -->
+<section class="page">
+  <div class="body">
+    <section class="sec">
+      <h2 class="sec-title"><span class="ic">&#9679;</span><span>مهارت‌ها</span></h2>
+      <div class="skills">
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="name">Microsoft ASP.NET</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="name">Vector DBs &amp; Semantic Search</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span class="name">Node.js</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span class="name">C#</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="name">git and github</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span class="name">JavaScript</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span class="name">Microsoft SQL Server</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="name">Docker</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span class="name">MongoDB</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span class="name">OpenTelemetry</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span class="name">Microservice Design</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span class="name">Monitoring / Grafana</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="name">Microsoft ASP.NET Core MVC</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="name">Sherpa / Gyro ASR</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span class="name">Natural Language Processing - Persian NLP</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="name">Retrieval-Augmented Generation (RAG)</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="name">Model Fine-Tuning</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="name">PyTorch</span></div>
+        <div class="skill"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="name">Knowledge Base Construction</span></div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2 class="sec-title"><span class="ic">&#9679;</span><span>زبان</span></h2>
+      <div class="entry-sub">انگلیسی: <b>پیشرفته</b></div>
+    </section>
+
+    <section class="sec">
+      <h2 class="sec-title"><span class="ic">&#9679;</span><span>پروژه‌ها</span></h2>
+
+      <div class="project">
+        <div class="project-title">Cpp QT6 Messenger</div>
+        <div class="project-meta">کارفرما / درخواست‌کننده: IUT · تیر ۱۴۰۲</div>
+        <p class="project-text en">
+          Sprites is a messenger app built using Qt 6.3.1. It allows you to connect and chat with your
+          friends in an IUT server. The app provides a set of features, including user messaging, group
+          and channel conversations, storing chats for offline mode and changing profile. Create or join
+          groups to chat with multiple friends at once.
+        </p>
+        <a class="project-link" href="https://github.com/MatinAminsabouri/Messenger_sprites_6">github.com/MatinAminsabouri/Messenger_sprites_6</a>
+      </div>
+
+      <div class="project">
+        <div class="project-title">CPU Simulator</div>
+        <div class="project-meta">کارفرما / درخواست‌کننده: KNTU · دی ۱۴۰۱</div>
+        <a class="project-link" href="https://github.com/MatinAminsabouri/CPU_simulator_-FP4011">github.com/MatinAminsabouri/CPU_simulator_-FP4011</a>
+      </div>
+
+      <div class="project">
+        <div class="project-title">Vidly — Cinema Rental</div>
+        <div class="project-meta">کارفرما / درخواست‌کننده: codewithmosh · تیر ۱۴۰۲</div>
+        <p class="project-text en">Node.js and MongoDB cinema rental application.</p>
+        <a class="project-link" href="https://github.com/MatinAminsabouri/vidly">github.com/MatinAminsabouri/vidly</a>
+      </div>
+
+      <div class="project">
+        <div class="project-title">Employee Leave Manager</div>
+        <div class="project-meta">مرداد ۱۴۰۲</div>
+        <p class="project-text en">
+          This project is a web application designed for leave management within organizations. It allows
+          employees to submit leave requests, view their request status, and provides administrators with
+          a panel to manage and respond to these requests. The application is built using the .NET Core
+          framework, utilizes MongoDB for the database, and incorporates responsive design using Bootstrap.
+        </p>
+        <a class="project-link" href="https://github.com/MatinAminsabouri/Leave-Management">github.com/MatinAminsabouri/Leave-Management</a>
+      </div>
+
+      <div class="project">
+        <div class="project-title">SibSalamat Online Pharmacy</div>
+        <div class="project-meta">شهریور ۱۴۰۲</div>
+        <p class="project-text en">
+          This project is built using the .NET 7 framework and MongoDB for data storage. The front-end
+          utilizes Bootstrap for responsive design and incorporates AJAX and jQuery for dynamic interactions.
+        </p>
+        <p class="muted">مخزن خصوصی — در صورت درخواست</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2 class="sec-title"><span class="ic">&#9679;</span><span>شبکه اجتماعی</span></h2>
+      <div class="contact-row">
+        <span><span class="lbl">GitHub:</span> <a href="https://github.com/MatinAminsabouri">github.com/MatinAminsabouri</a></span>
+        <span><span class="lbl">LinkedIn:</span> <a href="https://www.linkedin.com/in/matin-amin-sabouri-b0a6b2200/">linkedin.com/in/matin-amin-sabouri</a></span>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2 class="sec-title"><span class="ic">&#9679;</span><span>فعالیت‌های داوطلبانه</span></h2>
+      <div class="entry-head">
+        <div class="entry-title">هد هسته بک‌اند تک‌استک</div>
+        <div class="entry-date">۱۴۰۳/۰۴/۰۱</div>
+      </div>
+    </section>
+  </div>
+</section>
+
+</body>
+</html>

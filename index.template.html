@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070B12">
+  <title>Matin AminSabouri — AI &amp; Backend Engineer (dotnet / AI Systems)</title>
+  <meta name="description" content="Portfolio of Matin AminSabouri — Software Engineer specializing in dotnet Core, Python, RAG architectures, AI agents, MCP, Persian NLP, and scalable backend systems.">
+  <meta name="author" content="Matin AminSabouri">
+  <link rel="canonical" href="https://matinaminsabouri.github.io/">
+  <link rel="alternate" hreflang="en" href="https://matinaminsabouri.github.io/">
+  <link rel="alternate" hreflang="fa" href="https://matinaminsabouri.github.io/?lang=fa">
+  <link rel="alternate" hreflang="x-default" href="https://matinaminsabouri.github.io/">
+
+  <meta property="og:site_name" content="Matin AminSabouri">
+  <meta property="og:title" content="Matin AminSabouri — AI &amp; Backend Engineer">
+  <meta property="og:description" content="Software &amp; AI Systems Engineer with 3+ years experience building RAG, ASR, and enterprise backend architectures.">
+  <meta property="og:type" content="profile">
+  <meta property="og:url" content="https://matinaminsabouri.github.io/">
+  <meta property="og:image" content="https://matinaminsabouri.github.io/assets/images/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Matin AminSabouri — AI &amp; Backend Engineer">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="fa_IR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Matin AminSabouri — AI &amp; Backend Engineer">
+  <meta name="twitter:description" content="Software &amp; AI Systems Engineer building production RAG, ASR, and enterprise backends.">
+  <meta name="twitter:image" content="https://matinaminsabouri.github.io/assets/images/og-card.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Matin AminSabouri",
+    "alternateName": "متین امین صبوری",
+    "jobTitle": "AI & Backend Engineer",
+    "description": "Software engineer specializing in dotnet Core, Python, RAG architectures, AI agents, Persian NLP, and scalable backend systems.",
+    "url": "https://matinaminsabouri.github.io/",
+    "image": "https://matinaminsabouri.github.io/assets/images/myPic.jpg",
+    "email": "mailto:matinaminsabouri70@gmail.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Isfahan",
+      "addressCountry": "IR"
+    },
+    "alumniOf": {
+      "@type": "CollegeOrUniversity",
+      "name": "Isfahan University of Technology"
+    },
+    "worksFor": {
+      "@type": "Organization",
+      "name": "Nosaz Mohaseb Safahan"
+    },
+    "knowsAbout": [
+      "Retrieval-Augmented Generation",
+      "AI Agents",
+      "Model Context Protocol",
+      "Automatic Speech Recognition",
+      "Persian NLP",
+      "ASP.NET Core",
+      "MongoDB",
+      "OpenTelemetry",
+      "OAuth2",
+      "OpenID Connect"
+    ],
+    "sameAs": [
+      "https://github.com/MatinAminsabouri",
+      "https://www.linkedin.com/in/matin-amin-sabouri-b0a6b2200/",
+      "https://t.me/KhanAcademyy"
+    ]
+  }
+  </script>
+
+  <script>
+    (function () {
+      /* FOUC-free boot: apply persisted (or system) theme + language before
+         first paint. Language is URL-driven (?lang=fa) so a Persian link can
+         be shared, then falls back to the stored choice. */
+      try {
+        var t = localStorage.getItem('theme');
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute('content', t === 'light' ? '#F8FAFC' : '#070B12');
+
+        var q = new URLSearchParams(location.search).get('lang');
+        var l = (q === 'fa' || q === 'en') ? q : (localStorage.getItem('lang') === 'fa' ? 'fa' : 'en');
+        document.documentElement.setAttribute('lang', l);
+        document.documentElement.setAttribute('dir', l === 'fa' ? 'rtl' : 'ltr');
+      } catch (e) { }
+    })();
+  </script>
+
+  <link rel="shortcut icon" href="./assets/images/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="./assets/images/favicon.png">
+  <link rel="preload" href="./assets/fonts/Inter-var-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./assets/fonts/Vazirmatn-var-arabic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+
+<body>
+
+  <a class="skip-link" href="#main-content" data-i18n="a_skip"></a>
+
+  <!-- Icon sprite: inlined so the site has no third-party icon CDN.
+       Regenerate with: node scripts/build-icons.mjs -->
+  <!--BUILD:ICONS-->
+            <!--/BUILD:ICONS-->
+
+  <!-- Structure-only shell: all copy lives in assets/js/data.js and is
+       rendered by script.js. Elements below hold data-i18n KEYS with
+       intentionally empty bodies so content can never drift again.
+       The BUILD: markers hold prerendered markup produced by
+       `npm run build` so crawlers and no-JS visitors still get content. -->
+  <noscript>
+    <style>
+      /* without JS the tabs cannot switch — stack every article instead */
+      article[data-page] { display: block !important; }
+      article[data-page] + article[data-page] { margin-top: var(--sp-5); }
+      .navbar, .info_more-btn, [data-logs-refresh], .filter-select-box { display: none !important; }
+      .case-study { grid-template-rows: 1fr !important; }
+      .case-study-inner { opacity: 1 !important; }
+      .sidebar-info_more { grid-template-rows: 1fr !important; }
+      .sidebar-info_more-inner { visibility: visible !important; }
+    </style>
+  </noscript>
+
+  <main id="main-content">
+
+    <aside class="sidebar" data-sidebar>
+
+      <div class="sidebar-info">
+
+        <figure class="avatar-box">
+          <button class="avatar-btn" type="button" data-avatar-trigger aria-haspopup="dialog" aria-controls="avatarLightbox" aria-label="Enlarge profile picture" data-i18n-aria="a_avatar">
+            <img class="pic" src="./assets/images/myPic.jpg" alt="Matin AminSabouri" width="720" height="720" decoding="async">
+          </button>
+        </figure>
+
+        <div class="info-content">
+          <h1 class="name" title="Matin AminSabouri">Matin AminSabouri</h1>
+          <p class="persian-name" lang="fa" dir="rtl">متین امین صبوری</p>
+
+          <p class="title" data-i18n="tagline"></p>
+
+          <p class="positioning" data-i18n="positioning"></p>
+
+          <div class="status-row">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span class="status-text" data-i18n="open_to_work"></span>
+          </div>
+        </div>
+
+        <div class="controls" role="group" aria-label="Preferences" data-i18n-aria="a_prefs">
+
+          <button class="controls-btn" type="button" data-theme-toggle aria-label="Toggle theme" aria-pressed="false" data-i18n-aria="a_theme">
+            <svg class="icon ic-moon" aria-hidden="true" focusable="false"><use href="#i-moon-outline"></use></svg>
+            <svg class="icon ic-sun" aria-hidden="true" focusable="false"><use href="#i-sunny-outline"></use></svg>
+          </button>
+
+          <div class="lang-switch" role="group" aria-label="Language" data-i18n-aria="a_lang">
+            <button class="lang-btn active" type="button" data-lang="en" aria-pressed="true" lang="en">EN</button>
+            <button class="lang-btn" type="button" data-lang="fa" aria-pressed="false" lang="fa">FA</button>
+          </div>
+
+        </div>
+
+        <button class="info_more-btn" type="button" data-sidebar-btn aria-label="Show or hide contact details" aria-expanded="false" aria-controls="sidebar-more" data-i18n-aria="a_contacts">
+          <span data-i18n="show_contacts"></span>
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevron-down"></use></svg>
+        </button>
+
+      </div>
+
+      <div class="sidebar-info_more" id="sidebar-more">
+        <div class="sidebar-info_more-inner">
+
+          <div class="separator"></div>
+
+          <ul class="contacts-list" data-contacts>
+            <!--BUILD:CONTACTS-->
+            <!--/BUILD:CONTACTS-->
+          </ul>
+
+          <div class="separator"></div>
+
+          <ul class="social-list" data-socials>
+            <!--BUILD:SOCIALS-->
+            <!--/BUILD:SOCIALS-->
+          </ul>
+
+        </div>
+      </div>
+
+    </aside>
+
+    <div class="main-content">
+
+      <nav class="navbar" aria-label="Primary" data-i18n-aria="a_nav">
+
+        <ul class="navbar-list">
+
+          <li class="navbar-item">
+            <button class="navbar-link active" type="button" data-nav-link data-nav-target="about" data-i18n="nav_about" aria-current="page"></button>
+          </li>
+
+          <li class="navbar-item">
+            <button class="navbar-link" type="button" data-nav-link data-nav-target="resume" data-i18n="nav_resume"></button>
+          </li>
+
+          <li class="navbar-item">
+            <button class="navbar-link" type="button" data-nav-link data-nav-target="portfolio" data-i18n="nav_portfolio"></button>
+          </li>
+
+          <li class="navbar-item">
+            <button class="navbar-link" type="button" data-nav-link data-nav-target="logs" data-i18n="nav_logs"></button>
+          </li>
+
+        </ul>
+
+      </nav>
+
+      <article class="about active" id="about" data-page="about" tabindex="-1">
+
+        <header>
+          <h2 class="article-title" data-i18n="about_title"></h2>
+        </header>
+
+        <div data-about-body>
+          <!--BUILD:ABOUT-->
+            <!--/BUILD:ABOUT-->
+        </div>
+
+      </article>
+
+      <article class="resume" id="resume" data-page="resume" tabindex="-1">
+
+        <header>
+          <h2 class="article-title" data-i18n="resume_title"></h2>
+
+          <div class="resume-actions">
+            <a href="./assets/MatinAminSabouri-Resume.pdf" target="_blank" rel="noopener noreferrer" class="btn btn--primary">
+              <span data-i18n="view_resume"></span>
+              <svg class="icon btn-arrow" aria-hidden="true" focusable="false"><use href="#i-arrow-forward-outline"></use></svg>
+            </a>
+
+            <a href="./assets/MatinAminSabouri-Resume.pdf" download class="btn btn--ghost">
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-download-outline"></use></svg>
+              <span data-i18n="download"></span>
+            </a>
+          </div>
+        </header>
+
+        <div data-resume-body>
+          <!--BUILD:RESUME-->
+            <!--/BUILD:RESUME-->
+        </div>
+
+      </article>
+
+      <article class="portfolio" id="portfolio" data-page="portfolio" tabindex="-1">
+
+        <header>
+          <h2 class="article-title" data-i18n="portfolio_title"></h2>
+        </header>
+
+        <section class="projects">
+
+          <div class="filter-select-box">
+
+            <button class="filter-select" type="button" data-select aria-expanded="false" aria-controls="filter-select-list">
+              <div class="select-value" data-select-value></div>
+              <div class="select-icon" aria-hidden="true">
+                <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevron-down"></use></svg>
+              </div>
+            </button>
+
+            <!-- a disclosure list of buttons, not a listbox: a real listbox
+                 needs roving focus and aria-activedescendant, and a plain
+                 menu of buttons is already fully keyboard operable -->
+            <ul class="select-list" id="filter-select-list" data-select-list></ul>
+
+          </div>
+
+          <ul class="filter-list" aria-label="Filter projects by category" data-i18n-aria="a_filter" data-filter-list>
+            <!--BUILD:FILTERS-->
+            <!--/BUILD:FILTERS-->
+          </ul>
+
+          <ul class="project-list" data-project-list>
+            <!--BUILD:PROJECTS-->
+            <!--/BUILD:PROJECTS-->
+          </ul>
+
+        </section>
+
+      </article>
+
+      <article class="logs" id="logs" data-page="logs" tabindex="-1">
+
+        <header>
+          <div class="logs-header">
+            <h2 class="article-title" data-i18n="logs_title"></h2>
+            <button class="btn btn--ghost btn--sm" type="button" data-logs-refresh aria-label="Check for newer notes" title="Check for newer notes">
+              <svg class="icon refresh-ic" aria-hidden="true" focusable="false"><use href="#i-refresh-outline"></use></svg>
+              <span class="refresh-label" data-i18n="logs_refresh"></span>
+            </button>
+          </div>
+
+          <p class="logs-sub" data-i18n="logs_sub"></p>
+        </header>
+
+        <section class="logs-feed">
+          <p class="logs-status" data-logs-status role="status" aria-live="polite" aria-label="Notes status" data-i18n-aria="a_notes_status"></p>
+
+          <div class="logs-grid" data-logs-grid>
+            <!--BUILD:NOTES-->
+            <!--/BUILD:NOTES-->
+          </div>
+
+          <div class="logs-footer">
+            <a href="https://t.me/KhanAcademyy" target="_blank" rel="noopener noreferrer" class="btn btn--ghost">
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-paper-plane-outline"></use></svg>
+              <span data-i18n="logs_subscribe"></span>
+              <svg class="icon btn-arrow" aria-hidden="true" focusable="false"><use href="#i-arrow-forward-outline"></use></svg>
+            </a>
+          </div>
+        </section>
+
+      </article>
+
+    </div>
+
+  </main>
+
+  <!-- Lightbox modal for avatar enlargement -->
+  <div class="lightbox" id="avatarLightbox" role="dialog" aria-modal="true" aria-label="Profile picture enlarged view" hidden>
+    <div class="lightbox-backdrop"></div>
+    <button class="lightbox-close" type="button" aria-label="Close enlarged view">
+      <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-close-outline"></use></svg>
+    </button>
+    <figure class="lightbox-figure">
+      <img class="lightbox-img" src="" alt="">
+      <figcaption class="lightbox-caption"></figcaption>
+    </figure>
+  </div>
+
+  <script src="./assets/js/data.js"></script>
+  <script src="./assets/js/render.js"></script>
+  <script src="./assets/js/script.js"></script>
+
+</body>
+
+</html>

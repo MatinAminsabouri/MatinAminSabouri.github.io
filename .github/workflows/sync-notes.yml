@@ -1,0 +1,52 @@
+name: Sync Telegram notes
+
+on:
+  schedule:
+    # hourly — the channel posts a few times a week, so this keeps the
+    # Notes tab within an hour of the source
+    - cron: '7 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-notes
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch latest posts from Telegram
+        id: fetch
+        run: |
+          if node scripts/sync-notes.mjs; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Telegram sync failed; notes.json left unchanged."
+          fi
+
+      - name: Rebuild prerendered page
+        if: steps.fetch.outputs.ok == 'true'
+        run: npm run build
+
+      - name: Commit changes
+        if: steps.fetch.outputs.ok == 'true'
+        run: |
+          if git diff --quiet -- assets/data/notes.json index.html; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/data/notes.json index.html
+          git commit -m "chore: sync Telegram notes"
+          git push

@@ -24,18 +24,26 @@ window.SITE_DATA = {
 
     en: {
       meta_title: "Matin AminSabouri — AI & Backend Engineer (dotnet / AI Systems)",
+      meta_desc: "Portfolio of Matin AminSabouri — Software Engineer specializing in dotnet Core, Python, RAG architectures, AI agents, MCP, Persian NLP, and scalable backend systems.",
       a_prefs: "Preferences",
       a_theme: "Toggle theme",
+      a_theme_dark: "Switch to dark theme",
+      a_theme_light: "Switch to light theme",
       a_lang: "Language",
       a_contacts: "Show or hide contact details",
       a_copy_email: "Copy email address",
       a_nav: "Primary",
+      a_avatar: "Enlarge profile picture",
+      a_skip: "Skip to content",
       a_filter: "Filter projects by category",
+      a_notes_status: "Notes status",
       positioning: "AI & Backend Systems Engineer building production-grade distributed backends, RAG pipelines, and on-premise AI deployments under real-world infrastructure constraints.",
       tagline: "AI & Backend Engineer (dotnet / AI Systems)",
       open_to_work: "Busy with learning and building",
       show_contacts: "Show Contacts",
       copy_done: "Copied!",
+      about_cta_email: "Email me",
+      about_cta_resume: "View résumé",
       nav_about: "About",
       nav_resume: "Resume",
       nav_portfolio: "Portfolio",
@@ -53,27 +61,47 @@ window.SITE_DATA = {
       case_read_more: "View Case Study",
       case_show_less: "Show Less",
       logs_title: "Notes",
-      logs_sub: "Real-world architectural notes, system design trade-offs, and on-premise AI deployment insights directly synced from <a href=\"https://t.me/KhanAcademyy\" target=\"_blank\" rel=\"noopener noreferrer\">@KhanAcademyy</a>.",
+      logs_sub: "Notes on real system-design trade-offs, deployment constraints, and on-premise AI. Written in Persian, synced from <a href=\"https://t.me/KhanAcademyy\" target=\"_blank\" rel=\"noopener noreferrer\">@KhanAcademyy</a>.",
       logs_read: "Read on Telegram",
       logs_subscribe: "Subscribe on Telegram",
-      logs_refresh: "Refresh",
+      logs_refresh: "Check for updates",
+      logs_updated: "Updated just now",
+      logs_static: "Archived copy — not yet synced from Telegram",
+      logs_live: "Live from Telegram",
+      logs_checking: "Checking for updates…",
+      logs_no_change: "Already up to date",
+      logs_new_posts: "New notes loaded",
+      logs_synced_just_now: "synced just now",
+      logs_synced_min: "synced {n} min ago",
+      logs_synced_hour: "synced {n} hour ago",
+      logs_synced_hours: "synced {n} hours ago",
+      logs_synced_day: "synced {n} day ago",
+      logs_synced_days: "synced {n} days ago",
       logs_empty: "No notes yet — subscribe to catch the next one."
     },
 
     fa: {
       meta_title: "متین امین صبوری — مهندس هوش مصنوعی و بک‌اند (dotnet / سیستم‌های هوش مصنوعی)",
+      meta_desc: "پورتفولیوی متین امین صبوری — مهندس نرم‌افزار متخصص dotnet Core، پایتون، معماری‌های RAG، عوامل هوش مصنوعی، MCP، پردازش زبان فارسی و بک‌اندهای مقیاس‌پذیر.",
       a_prefs: "تنظیمات",
       a_theme: "تغییر پوسته",
+      a_theme_dark: "تغییر به پوستهٔ تیره",
+      a_theme_light: "تغییر به پوستهٔ روشن",
       a_lang: "زبان",
       a_contacts: "نمایش یا مخفی کردن اطلاعات تماس",
       a_copy_email: "کپی آدرس ایمیل",
       a_nav: "ناوبری اصلی",
+      a_avatar: "بزرگ‌نمایی تصویر پروفایل",
+      a_skip: "پرش به محتوا",
       a_filter: "فیلتر پروژه‌ها بر اساس دسته",
+      a_notes_status: "وضعیت یادداشت‌ها",
       positioning: "مهندس سیستم‌های هوش مصنوعی و بک‌اند؛ سازندهٔ بک‌اندهای توزیع‌شدهٔ تولیدی، پایپلاین‌های RAG و استقرارهای On-Premise هوش مصنوعی در محدودیت‌های زیرساخت واقعی.",
       tagline: "مهندس هوش مصنوعی و بک‌اند (dotnet / سیستم‌های هوش مصنوعی)",
       open_to_work: "مشغول یادگیری و ساختن",
       show_contacts: "نمایش اطلاعات تماس",
       copy_done: "کپی شد!",
+      about_cta_email: "ارسال ایمیل",
+      about_cta_resume: "مشاهدهٔ رزومه",
       nav_about: "دربارهٔ من",
       nav_resume: "رزومه",
       nav_portfolio: "نمونه‌کارها",
@@ -91,10 +119,22 @@ window.SITE_DATA = {
       case_read_more: "مشاهدهٔ مطالعهٔ موردی",
       case_show_less: "نمایش کمتر",
       logs_title: "یادداشت‌ها",
-      logs_sub: "نکته‌های واقعی معماری، مصالحه‌های طراحی سیستم و بینش‌های استقرار هوش مصنوعی On-Premise — مستقیماً از <a href=\"https://t.me/KhanAcademyy\" target=\"_blank\" rel=\"noopener noreferrer\">@KhanAcademyy</a> همگام‌سازی شده.",
+      logs_sub: "یادداشت‌هایی دربارهٔ مصالحه‌های طراحی سیستم، محدودیت‌های استقرار و هوش مصنوعی On-Premise؛ با همگام‌سازی مستقیم از <a href=\"https://t.me/KhanAcademyy\" target=\"_blank\" rel=\"noopener noreferrer\">@KhanAcademyy</a>.",
       logs_read: "مطالعه در تلگرام",
       logs_subscribe: "عضویت در تلگرام",
-      logs_refresh: "بروزرسانی",
+      logs_refresh: "بررسی بروزرسانی",
+      logs_updated: "همین حالا بروزرسانی شد",
+      logs_static: "نسخهٔ آرشیوی — هنوز از تلگرام همگام‌سازی نشده",
+      logs_live: "زنده از تلگرام",
+      logs_checking: "در حال بررسی بروزرسانی…",
+      logs_no_change: "در حال حاضر بروز است",
+      logs_new_posts: "یادداشت‌های تازه بارگذاری شد",
+      logs_synced_just_now: "همین حالا همگام‌سازی شد",
+      logs_synced_min: "{n} دقیقه پیش همگام‌سازی شد",
+      logs_synced_hour: "{n} ساعت پیش همگام‌سازی شد",
+      logs_synced_hours: "{n} ساعت پیش همگام‌سازی شد",
+      logs_synced_day: "{n} روز پیش همگام‌سازی شد",
+      logs_synced_days: "{n} روز پیش همگام‌سازی شد",
       logs_empty: "هنوز یادداشتی منتشر نشده — برای مطالعهٔ یادداشت‌های بعدی عضو شوید."
     }
 
@@ -383,7 +423,7 @@ window.SITE_DATA = {
       category: "backend",
       badges: [],
       category_label: { en: "Backend · E-Commerce", fa: "بک‌اند · تجارت الکترونیک" },
-      title: { en: "SibSalamat Online Pharmacy", fa: "داروخانهٔ آنلاین سیب‌سلمات" },
+      title: { en: "SibSalamat Online Pharmacy", fa: "داروخانهٔ آنلاین سیب سلامت" },
       desc: {
         en: "Online pharmacy platform built with dotnet 7 and MongoDB as the core persistence layer.",
         fa: "پلتفرم داروخانهٔ آنلاین ساخته‌شده با dotnet 7 و MongoDB به‌عنوان لایهٔ اصلی ذخیره‌سازی."
@@ -410,11 +450,11 @@ window.SITE_DATA = {
 
   ],
   /*-----------------------------------*\
-    Notes tab — fallback posts
-    The live Telegram source for this channel is currently unavailable, so
-    a few real posts are kept here (archived via the Wayback Machine) and
-    shown instantly on load. If the live feed resolves again, script.js
-    replaces these automatically.
+    Notes tab — offline fallback posts
+    assets/data/notes.json is the live copy, regenerated from the Telegram
+    channel by `npm run sync:notes` (see .github/workflows/sync-notes.yml)
+    and loaded at runtime. These posts are the offline fallback used when
+    that file is missing or empty — e.g. a fresh clone or a failed sync.
   \*-----------------------------------*/
 
   notes: {
@@ -425,7 +465,7 @@ window.SITE_DATA = {
         date: "2025-07-14T20:40:43Z",
         title: "چرا اول requirements.txt در Dockerfile؟",
         tags: ["Docker", "Dockerfile", "Caching"],
-        url: "https://web.archive.org/web/20250807072000/https://t.me/s/khanAcademyy/232",
+        url: "https://t.me/KhanAcademyy/241",
         text: `امشب یکی از نکات ریز ولی خیلی جالب در داکر بررسی میکنیم. 
 
 گفتیم که هر خط در داکر فایل در واقع به یک لایه نگاشت میشه
@@ -449,7 +489,7 @@ window.SITE_DATA = {
         date: "2025-07-09T20:00:13Z",
         title: "شبکه‌سازی در داکر و انواع شبکه‌های داکر",
         tags: ["Docker", "Networking"],
-        url: "https://web.archive.org/web/20250807210310/https://t.me/s/khanAcademyy/229",
+        url: "https://t.me/KhanAcademyy/232",
         text: `شبکه سازی در داکر و انواع شبکه‌های داکر
  
  خب همونطور که تا اینجا ما میدونیم تو داکر از کانتینرها برای اجرای اپلیکیشن‌ها استفاده می‌کنیم،
@@ -467,7 +507,7 @@ window.SITE_DATA = {
         date: "2025-07-04T20:49:14Z",
         title: "بررسی خط به خط Dockerfile",
         tags: ["Docker", "Dockerfile"],
-        url: "https://web.archive.org/web/20250827234949/https://t.me/s/khanAcademyy/211",
+        url: "https://t.me/KhanAcademyy/221",
         text: `FROM python:3.9-slim
 WORKDIR /app
 COPY requirements.txt .
@@ -508,7 +548,7 @@ docker run -d -p 5000:5000 my-flask-app:1.0
         date: "2025-06-30T21:43:32Z",
         title: "کانتینر چیه؟",
         tags: ["Docker", "Containers"],
-        url: "https://web.archive.org/web/20250902023749/https://t.me/s/khanAcademyy/203",
+        url: "https://t.me/KhanAcademyy/208",
         text: `کانتینر چیه؟
 کانتینر یه نمونه اجرا شده از ایمیجه. وقتی می‌زنیم 
 docker run python:3.9-slim
@@ -527,7 +567,7 @@ docker run python:3.9-slim
         date: "2025-06-28T04:30:19Z",
         title: "معرفی Gemini CLI",
         tags: ["AI", "Gemini CLI"],
-        url: "https://web.archive.org/web/20250902023749/https://t.me/s/khanAcademyy/203",
+        url: "https://t.me/KhanAcademyy/197",
         text: `گوگل همین چند روز پیش از جمنای CLI پرده برداری کرد که خیلیا الان دیگه میتونن ازش در محیط ترمینال استفاده کنند. خیلی کاربردیه مخصوصا برای دولوپرها https://github.com/google-gemini/gemini-cli @DevTwitter |`
       },
       {
@@ -535,7 +575,7 @@ docker run python:3.9-slim
         date: "2025-06-24T20:26:47Z",
         title: "نکته‌ای در پترن Repository",
         tags: ["Architecture", "Repository Pattern"],
-        url: "https://web.archive.org/web/20250902023749/https://t.me/s/khanAcademyy/203",
+        url: "https://t.me/KhanAcademyy/194",
         text: `یک نکته جالبی امروز دیدم خیلی جالب بود :
 
 اینکه توسعه دهنده ها میان متود های پترن Repository رو خیلی تو منطق برنامه به صورت share استفاده میکنن زیادم جالب نیست

@@ -1,0 +1,22 @@
+{
+  "name": "matinaminsabouri-portfolio",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Static portfolio site for Matin AminSabouri — prerendered, bilingual, no third-party runtime dependencies.",
+  "type": "commonjs",
+  "scripts": {
+    "build": "node scripts/build-icons.mjs && node scripts/build.mjs",
+    "icons": "node scripts/build-icons.mjs",
+    "sync:notes": "node scripts/sync-notes.mjs",
+    "og": "node scripts/make-og-card.mjs",
+    "serve": "node scripts/serve.mjs",
+    "check": "node scripts/check.mjs && node scripts/test-sync-parser.mjs",
+    "resume": "node scripts/build-resume.mjs",
+    "e2e": "node scripts/e2e/run.mjs && node scripts/e2e/nojs.mjs",
+    "test:sync": "node scripts/test-sync-parser.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}
