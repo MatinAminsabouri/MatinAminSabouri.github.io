@@ -196,6 +196,7 @@ const trySource = async (label, fn) => {
 
 const main = async () => {
   let posts = null;
+  let channelNotPublic = false;
 
   for (const url of PREVIEW_URLS) {
     posts = await trySource(`preview ${url}`, async () => {
@@ -206,18 +207,29 @@ const main = async () => {
       /* A reachable t.me that serves "Telegram: Contact @x" instead of the
          message history means the channel has no public web preview. That is
          a property of the channel, not a network fault, and retrying other
-         URLs will not help — say so instead of "no readable posts". */
+         URLs will not help. */
       if (/<meta property="og:title" content="Telegram: Contact/.test(body)) {
+        channelNotPublic = true;
         throw new Error(
-          't.me answered with the Contact page, so this channel has no public ' +
-          'preview. Telegram only exposes t.me/s/<channel> for channels whose ' +
-          'history is public; a private channel cannot be scraped at all.'
+          't.me answered with the Contact page — this channel has no public preview'
         );
       }
 
       return parsePreview(body);
     });
     if (posts) break;
+  }
+
+  /* A private channel is an expected state, not a broken build: the site is
+     designed to fall back to the archived notes. Exit 0 so the scheduled job
+     stays green until the channel is made public, and log one clear line. */
+  if (!posts && channelNotPublic) {
+    console.log(
+      '[sync-notes] channel is not public yet — keeping the archived notes. ' +
+      'Once the channel has a public history (t.me/s/<channel>) this job ' +
+      'will pick the posts up automatically.'
+    );
+    return;
   }
 
   if (!posts) {
