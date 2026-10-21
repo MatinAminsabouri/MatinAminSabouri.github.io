@@ -1,0 +1,37 @@
+name: Debug Telegram markup
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch t.me preview and commit a sample
+        run: |
+          node -e "
+          (async () => {
+            const res = await fetch('https://t.me/s/KhanAcademyy', {
+              headers: { 'user-agent': 'Mozilla/5.0 (compatible; MatinPortfolioNotesSync/1.0)' }
+            });
+            console.log('status', res.status);
+            const html = await res.text();
+            console.log('bytes', html.length);
+            require('fs').writeFileSync('debug-tme.html', html);
+            const classes = [...new Set([...html.matchAll(/class=\"([^\"]*tgme[^\"]*)\"/g)].map(m => m[1]))];
+            console.log('tgme classes:', JSON.stringify(classes.slice(0, 40), null, 2));
+          })();
+          "
+
+      - name: Commit sample
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f debug-tme.html
+          git commit -m "chore: capture telegram markup sample" || echo "no changes"
+          git push
