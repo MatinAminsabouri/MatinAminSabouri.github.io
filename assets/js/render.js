@@ -325,15 +325,24 @@
 
   const formatNoteDate = function (date, lang) {
     if (!(date instanceof Date) || isNaN(date.getTime())) return '';
+
+    /* Format in UTC on purpose. The page is prerendered by CI, so any
+       dependence on the machine's timezone makes the build output differ
+       between a local run and the runner — and a post at 20:40 UTC would
+       flip calendar days. Notes are published timestamps, not events
+       relative to the reader. */
     if (lang === 'fa') {
       const parts = date.toLocaleDateString('fa-IR', {
-        year: 'numeric', month: 'numeric', day: 'numeric'
+        year: 'numeric', month: 'numeric', day: 'numeric', timeZone: 'UTC'
       }).split('/').map(function (s) { return s.trim(); });
-      const monthName = date.toLocaleDateString('fa-IR', { month: 'long' })
+      const monthName = date.toLocaleDateString('fa-IR', { month: 'long', timeZone: 'UTC' })
         .replace(/\s*\d+.*$/, '');
       return persianDigits(parts[2]) + ' ' + monthName + ' ' + persianDigits(parts[0]);
     }
-    return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
+
+    return date.toLocaleDateString('en-GB', {
+      year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC'
+    });
   };
 
   const normalizeNote = function (post, lang) {
