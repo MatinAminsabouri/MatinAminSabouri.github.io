@@ -6,6 +6,14 @@ on:
     # Notes tab within an hour of the source
     - cron: '7 * * * *'
   workflow_dispatch:
+  push:
+    # running on a change to the sync itself gives immediate feedback that
+    # the parser still matches Telegram's markup. Path-filtered so the
+    # bot's own commit (notes.json + index.html) cannot re-trigger it.
+    paths:
+      - 'scripts/sync-notes.mjs'
+      - 'scripts/test-sync-parser.mjs'
+      - '.github/workflows/sync-notes.yml'
 
 permissions:
   contents: write
