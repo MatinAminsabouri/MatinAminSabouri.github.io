@@ -2,6 +2,9 @@ name: Debug Telegram markup
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/debug-tme.yml'
 
 permissions:
   contents: write
