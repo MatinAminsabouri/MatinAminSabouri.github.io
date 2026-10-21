@@ -15,37 +15,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Probe several Telegram URLs
+      - name: Probe candidate channel handles
         run: |
           node -e "
-          const urls = [
-            'https://t.me/s/KhanAcademyy',
-            'https://t.me/KhanAcademyy',
-            'https://t.me/s/durov',
-            'https://t.me/s/telegram'
-          ];
+          const handles = ['KhanAcademyy','khanAcademyy','KhanAcademy','KhanAcademyIR','khanacademyy'];
           const fs = require('fs');
           const out = [];
           (async () => {
-            for (const url of urls) {
-              try {
-                const res = await fetch(url, {
-                  headers: { 'user-agent': 'Mozilla/5.0 (compatible; MatinPortfolioNotesSync/1.0)' }
-                });
-                const html = await res.text();
-                const posts = (html.match(/data-post=/g) || []).length;
-                const wraps = (html.match(/tgme_widget_message_wrap/g) || []).length;
-                const ogTitle = /<meta property=\"og:title\" content=\"([^\"]*)\"/.exec(html);
-                const extra = /tgme_page_extra[^>]*>([^<]*)/.exec(html);
-                out.push({ url, status: res.status, bytes: html.length, posts, wraps,
-                           ogTitle: ogTitle ? ogTitle[1] : null,
-                           extra: extra ? extra[1].trim() : null });
-              } catch (e) {
-                out.push({ url, error: String(e.message || e) });
+            for (const h of handles) {
+              for (const prefix of ['s/','']) {
+                const url = 'https://t.me/' + prefix + h;
+                try {
+                  const res = await fetch(url, { headers: { 'user-agent': 'Mozilla/5.0' } });
+                  const html = await res.text();
+                  const wraps = (html.match(/tgme_widget_message_wrap/g) || []).length;
+                  const og = /<meta property=\"og:title\" content=\"([^\"]*)\"/.exec(html);
+                  out.push({ url, status: res.status, wraps, ogTitle: og ? og[1] : null });
+                } catch (e) { out.push({ url, error: String(e.message||e) }); }
               }
             }
             fs.writeFileSync('debug-tme.json', JSON.stringify(out, null, 2));
-            console.log(JSON.stringify(out, null, 2));
+            console.log(JSON.stringify(out.filter(x=>x.wraps>0), null, 2));
           })();
           "
 
@@ -54,5 +44,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f debug-tme.json
-          git commit -m "chore: probe telegram urls" || echo "no changes"
+          git commit -m "chore: probe telegram handles" || echo "no changes"
           git push
