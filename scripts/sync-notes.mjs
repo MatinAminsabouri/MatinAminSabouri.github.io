@@ -201,7 +201,21 @@ const main = async () => {
     posts = await trySource(`preview ${url}`, async () => {
       const res = await withTimeout(url);
       if (!res.ok) throw new Error('HTTP ' + res.status);
-      return parsePreview(await res.text());
+      const body = await res.text();
+
+      /* A reachable t.me that serves "Telegram: Contact @x" instead of the
+         message history means the channel has no public web preview. That is
+         a property of the channel, not a network fault, and retrying other
+         URLs will not help — say so instead of "no readable posts". */
+      if (/<meta property="og:title" content="Telegram: Contact/.test(body)) {
+        throw new Error(
+          't.me answered with the Contact page, so this channel has no public ' +
+          'preview. Telegram only exposes t.me/s/<channel> for channels whose ' +
+          'history is public; a private channel cannot be scraped at all.'
+        );
+      }
+
+      return parsePreview(body);
     });
     if (posts) break;
   }
