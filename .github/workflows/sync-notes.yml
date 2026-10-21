@@ -33,21 +33,21 @@ jobs:
           node-version: '20'
 
       - name: Fetch latest posts from Telegram
-        id: fetch
         run: |
-          if node scripts/sync-notes.mjs; then
-            echo "ok=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "ok=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::Telegram sync failed; notes.json left unchanged."
+          set +e
+          node scripts/sync-notes.mjs 2>&1 | tee /tmp/sync.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            # surface the reason as an annotation: run logs need auth to
+            # download, annotations do not, so this is the debuggable path
+            tail -n 12 /tmp/sync.log | sed 's/^/::error::/'
+            exit "$status"
           fi
 
       - name: Rebuild prerendered page
-        if: steps.fetch.outputs.ok == 'true'
         run: npm run build
 
       - name: Commit changes
-        if: steps.fetch.outputs.ok == 'true'
         run: |
           if git diff --quiet -- assets/data/notes.json index.html; then
             echo "No changes."
