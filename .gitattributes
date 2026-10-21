@@ -1,0 +1,15 @@
+# Normalise line endings for the whole repo.
+#
+# Without this, a Windows checkout (core.autocrlf=true) rewrites the
+# template to CRLF, `npm run build` then emits CRLF, and the CI check that
+# the committed output is up to date fails on every push — the bytes differ
+# even though the content is identical.
+* text=auto eol=lf
+
+# Binary assets must never be converted.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.woff2 binary
+*.ico binary

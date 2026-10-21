@@ -68,6 +68,16 @@ const sections = {
 
 let html = await fs.readFile('index.template.html', 'utf8');
 
+/* Emit LF regardless of how the template was checked out. Windows clones
+   with core.autocrlf=true deliver CRLF; without this the build output
+   differs from the committed file byte-for-byte and CI fails. */
+const toLF = (s) => s.replace(/\r\n/g, '\n');
+
+html = toLF(html);
+for (const [name, value] of Object.entries(sections)) {
+  sections[name] = toLF(value);
+}
+
 for (const [name, value] of Object.entries(sections)) {
   const re = new RegExp(`(<!--BUILD:${name}-->)([\\s\\S]*?)(<!--/BUILD:${name}-->)`);
   if (!re.test(html)) {
