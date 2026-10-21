@@ -29,6 +29,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const CHANNEL = process.env.TELEGRAM_CHANNEL || 'KhanAcademyy';
 const OUT = 'assets/data/notes.json';
@@ -295,8 +296,13 @@ const main = async () => {
 
 /* run only when invoked directly — importing this module (tests) must not
    hit the network or write files */
+/* Run only when invoked directly — importing this module (tests) must not
+   hit the network or write files. Comparing via pathToFileURL is the only
+   portable form: hand-building 'file:///' + argv[1] yields four slashes on
+   POSIX, so the guard silently never fired on the CI runner and the sync
+   exited 0 having done nothing. */
 const invokedDirectly = process.argv[1] &&
-  import.meta.url === new URL('file:///' + process.argv[1].replace(/\\/g, '/')).href;
+  import.meta.url === pathToFileURL(process.argv[1]).href;
 
 if (invokedDirectly) {
   main().catch((e) => {
