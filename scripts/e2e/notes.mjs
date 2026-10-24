@@ -1,6 +1,6 @@
 /**
- * notes.mjs — verifies the Notes tab reports provenance honestly and that
- * the refresh button produces visible feedback.
+ * notes.mjs — verifies the Notes tab renders the synced cards and reports
+ * provenance honestly.
  */
 import { launch } from './cdp.mjs';
 
@@ -22,25 +22,10 @@ const initial = await b.evaluate(`(() => ({
 }))()`);
 
 expect(initial.cards > 0, 'notes render', String(initial.cards));
-expect(/not yet synced|Archived/i.test(initial.status),
-  'fallback data is labelled, not claimed as fresh', initial.status);
-
-/* the refresh button must give visible feedback and keep the data */
-await b.evaluate(`document.querySelector('[data-logs-refresh]').click(); true`);
-const during = await b.evaluate(`document.querySelector('[data-logs-status]').textContent.trim()`);
-await new Promise((r) => setTimeout(r, 1500));
-
-const after = await b.evaluate(`(() => ({
-  status: document.querySelector('[data-logs-status]').textContent.trim(),
-  cards: document.querySelectorAll('.logs-card').length,
-  busy: document.querySelector('[data-logs-refresh]').getAttribute('aria-busy'),
-  disabled: document.querySelector('[data-logs-refresh]').disabled
-}))()`);
-
-expect(/Refresh|بروزرسانی/.test(during) || during !== '', 'refresh shows progress feedback', during);
-expect(after.cards === initial.cards, 'refresh keeps the cards', String(after.cards));
-expect(after.busy === null && after.disabled === false, 'refresh re-enables the button');
-expect(after.status.length > 0, 'status settles on a real message', after.status);
+expect(/Live|synced|Archived/i.test(initial.status),
+  'status names a real provenance (live / synced age / archived)', initial.status);
+expect(initial.status.length > 0 && !initial.status.includes('undefined'),
+  'status is a real message', initial.status);
 
 /* FA must localise the status line */
 await b.evaluate(`document.querySelector('[data-lang="fa"]').click(); true`);

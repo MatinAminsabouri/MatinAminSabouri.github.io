@@ -150,9 +150,9 @@ for (const m of renderers.matchAll(/class="([^"]+)"/g)) {
 
 /* classes that are state hooks or JS-only markers */
 const ignore = new Set([
-  'active', 'open', 'copied', 'refreshing', 'skeleton-card', 'skel',
+  'active', 'open', 'copied', 'skeleton-card', 'skel',
   'skel-meta', 'skel-title', 'skel-line', 'skel-chips', 'icon', 'badge',
-  'chip', 'btn', 'btn--ghost', 'btn--primary', 'btn--sm', 'case-block',
+  'chip', 'btn', 'btn--ghost', 'btn--primary', 'case-block',
   'case-toggle', 'case-toggle-label', 'social-item', 'service-content-box',
   'project-card-head', 'logs-card-actions'
 ]);
