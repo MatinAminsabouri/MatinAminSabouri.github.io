@@ -141,7 +141,18 @@ const parsePreview = (html) => {
 
   for (const chunk of chunks) {
     const idMatch = /data-post="[^/]+\/(\d+)"/.exec(chunk);
-    const textMatch = /<div class="tgme_widget_message_text[^"]*"[^>]*>([\s\S]*?)<\/div>/.exec(chunk);
+    /* replies repeat a text div in their header (js-message_reply_text)
+       before the post's own caption — take the first non-reply one, or
+       the newest post silently falls out of the set and trips the
+       stale-data guard */
+    let textMatch = null;
+    const textRe = /<div class="tgme_widget_message_text[^"]*"[^>]*>([\s\S]*?)<\/div>/g;
+    let tm;
+    while ((tm = textRe.exec(chunk)) !== null) {
+      if (tm[0].includes('js-message_reply_text')) continue;
+      textMatch = tm;
+      break;
+    }
     const timeMatch = /<time[^>]*datetime="([^"]+)"/.exec(chunk);
     const linkMatch = /<a class="tgme_widget_message_date" href="([^"]+)"/.exec(chunk);
 

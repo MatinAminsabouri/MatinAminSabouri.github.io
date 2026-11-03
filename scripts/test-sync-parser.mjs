@@ -30,6 +30,10 @@ const FIXTURE = `
   <div class="tgme_widget_message_wrap js-widget_message_wrap">
     <div class="tgme_widget_message text_not_supported_wrap js-widget_message" data-post="KhanAcademyy/512">
       <div class="tgme_widget_message_bubble">
+        <a class="tgme_widget_message_reply user-color-19" href="https://t.me/KhanAcademyy/510"><i class="tgme_widget_message_reply_thumb" style="background-image:url('https://cdn4.telestatic.me/file/replythumb.jpg')"></i>
+          <div class="tgme_widget_message_author accent_color"><span class="tgme_widget_message_author_name" dir="auto">Khan Academy!</span></div>
+          <div class="tgme_widget_message_text js-message_reply_text" dir="auto">Photo</div>
+        </a>
         <div class="tgme_widget_message_text js-message_text" dir="auto">
           چرا لایه‌های داکر رو کش می‌کنیم؟<br/>چون هر خط Dockerfile یک لایه است.<br/>#docker #caching
         </div>
@@ -97,8 +101,9 @@ const [first, second, third] = posts.sort((a, b) => b.id - a.id);
 assert.equal(first.id, 512);
 assert.equal(first.date, '2026-10-20T18:30:00.000Z');
 assert.equal(first.url, 'https://t.me/KhanAcademyy/512');
-assert.ok(first.title.includes('داکر'), 'title comes from the first line: ' + first.title);
+assert.ok(first.title.includes('داکر'), 'title comes from the main caption, not the reply header: ' + first.title);
 assert.deepEqual(first.tags, ['docker', 'caching']);
+assert.ok(!first.photos.length, 'reply thumbnails are not picked up as photos');
 assert.ok(!first.text.includes('<br'), 'line breaks are converted, not kept as tags');
 assert.ok(first.text.includes('\n'), 'line breaks survive as newlines');
 
