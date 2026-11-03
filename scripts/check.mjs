@@ -69,15 +69,14 @@ const externalRefs = [...html.matchAll(/(?:src|href)="(https?:\/\/[^"]+)"/g)]
 /* synced note media is content, not infrastructure: whatever hosts the
    current notes.json references (telegram CDN, RSSHub mirrors) are
    allowed as runtime resources */
-let noteMediaHosts = new Set();
+let noteMediaHosts = new Set(['wsrv.nl']);   /* note images are served through the wsrv.nl image proxy */
 try {
   const previewNotes = JSON.parse(await fs.readFile('assets/data/notes.json', 'utf8'));
-  noteMediaHosts = new Set(
-    (previewNotes.posts || [])
+  for (const u of (previewNotes.posts || [])
       .flatMap((p) => [...(p.photos || []), p.audio])
-      .filter(Boolean)
-      .map((u) => new URL(u).host)
-  );
+      .filter(Boolean)) {
+    noteMediaHosts.add(new URL(u).host);
+  }
 } catch { /* notes validated in section 5 */ }
 
 /* links in <a href> are fine; only loaded resources matter */

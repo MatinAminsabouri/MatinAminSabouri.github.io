@@ -345,6 +345,18 @@
     });
   };
 
+  /* Telegram CDN photo URLs are signed, expire within hours, and
+     cdn4.telesco.pe is unreachable from some networks (Iran). wsrv.nl is
+     a free image proxy on Cloudflare: it fetches the Telegram origin and
+     serves the bytes from Cloudflare's edge, which is reachable where
+     Telegram's CDN is not. w/q keep the transfer small for the card and
+     the popup slot. notes.json still stores the original URLs — the
+     proxy is applied in this rendering layer only. */
+  const IMAGE_PROXY = 'https://wsrv.nl/?url=';
+  const proxiedImage = function (url) {
+    return IMAGE_PROXY + encodeURIComponent(url) + '&w=1200&q=80&output=jpg';
+  };
+
   const normalizeNote = function (post, lang) {
     /* full text keeps its line breaks — the popup renders it pre-line like
        Telegram; the card excerpt is collapsed separately */
@@ -378,7 +390,10 @@
       badgeUrl: post.badgeUrl || post.url,
       date: isNaN(date.getTime()) ? null : date,
       reading: readingTime(text),
-      photos: Array.isArray(post.photos) ? post.photos.filter(function (u) { return typeof u === 'string' && /^https?:\/\//.test(u); }).slice(0, 8) : [],
+      photos: Array.isArray(post.photos) ? post.photos
+        .filter(function (u) { return typeof u === 'string' && /^https?:\/\//.test(u); })
+        .slice(0, 8)
+        .map(proxiedImage) : [],
       audio: (typeof post.audio === 'string' && /^https?:\/\//.test(post.audio)) ? post.audio : null,
       lang: post.lang || 'fa'
     };
