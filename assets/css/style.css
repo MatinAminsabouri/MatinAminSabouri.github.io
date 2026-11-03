@@ -2282,9 +2282,11 @@ html[lang="fa"] .timeline-text {
 }
 
 .post-modal-strip img {
-  flex: 0 0 auto;
-  max-width: 100%;
-  max-height: 52vh;
+  /* one full-width slide per snap view — the fixed basis keeps the strip
+     scrollable even before the telegram CDN images decode */
+  flex: 0 0 100%;
+  width: 100%;
+  height: min(52vh, 420px);
   object-fit: contain;
   scroll-snap-align: center;
   border-radius: 8px;
