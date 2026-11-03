@@ -2266,6 +2266,12 @@ html[lang="fa"] .timeline-text {
   min-height: 160px;   /* reserve the slot while the telegram CDN images stream in */
 }
 
+/* author display rules would override the UA's [hidden] { display:none } */
+.post-modal-media[hidden],
+.post-modal-strip-nav[hidden] {
+  display: none;
+}
+
 .post-modal-strip {
   display: flex;
   gap: var(--sp-2);
