@@ -1907,9 +1907,56 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
 }
 
 .logs-photo {
+  position: relative;
+  overflow: hidden;
   margin-top: var(--sp-3);
   display: flex;
   justify-content: center;
+}
+
+/* media wrappers shimmer while the proxied image streams in, then flip
+   to .is-loaded / .is-error (script.js settles them from load/error
+   capture listeners); .is-error shows its data-error caption */
+.logs-photo.is-loading::after,
+.post-slide.is-loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.12), transparent);
+  animation: shimmer 1.6s var(--ease-out) infinite;
+  z-index: 1;
+}
+
+.logs-photo.is-error::after,
+.post-slide.is-error::after {
+  content: attr(data-error);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-3);
+  font-size: 0.75rem;
+  color: var(--text-3);
+  text-align: center;
+  background: var(--bg-2);
+  z-index: 1;
+}
+
+/* album badge — how many more photos the popup gallery holds */
+.logs-photo-count {
+  position: absolute;
+  bottom: 8px;
+  inset-inline-end: 8px;
+  z-index: 2;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(7, 11, 18, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  color: var(--text-1);
+  font-family: var(--ff-mono);
+  font-size: 0.6875rem;
 }
 
 .logs-thumb {
@@ -2281,17 +2328,25 @@ html[lang="fa"] .timeline-text {
   border-radius: 8px;
 }
 
-.post-modal-strip img {
+.post-modal-strip .post-slide {
   /* one full-width slide per snap view — the fixed basis keeps the strip
      scrollable even before the telegram CDN images decode */
+  position: relative;
+  overflow: hidden;
   flex: 0 0 100%;
   width: 100%;
   height: min(52vh, 420px);
-  object-fit: contain;
   scroll-snap-align: center;
   border-radius: 8px;
   background: var(--bg-1);
   border: 1px solid var(--glass-brd);
+}
+
+.post-modal-strip .post-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .post-modal-strip-nav {

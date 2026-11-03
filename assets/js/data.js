@@ -73,7 +73,9 @@ window.SITE_DATA = {
       logs_synced_day: "synced {n} day ago",
       logs_synced_days: "synced {n} days ago",
       logs_empty: "No notes yet — subscribe to catch the next one.",
-      logs_view_photo: "View photo"
+      logs_view_photo: "View photo",
+      logs_photo_error: "Photo couldn't load",
+      logs_photo_count: "{n} photos"
     },
 
     fa: {
@@ -127,7 +129,9 @@ window.SITE_DATA = {
       logs_synced_day: "{n} روز پیش همگام‌سازی شد",
       logs_synced_days: "{n} روز پیش همگام‌سازی شد",
       logs_empty: "هنوز یادداشتی منتشر نشده — برای مطالعهٔ یادداشت‌های بعدی عضو شوید.",
-      logs_view_photo: "مشاهدهٔ تصویر"
+      logs_view_photo: "مشاهدهٔ تصویر",
+      logs_photo_error: "عکس نمایش داده نشد",
+      logs_photo_count: "{n} عکس"
     }
 
   },

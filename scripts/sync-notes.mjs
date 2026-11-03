@@ -86,21 +86,26 @@ const decodeEntities = (s) =>
 
 /* Photos live in the preview markup as background-image URLs on
    .tgme_widget_message_photo_wrap anchors (single photos and grouped
-   albums alike). Link-preview thumbnails use a different class
-   (.tgme_widget_link_preview_image) and are deliberately excluded —
-   only real message photos count. */
+   albums alike). Telegram renders a tiny blurred placeholder next to the
+   real photo — its wrap carries the "blured" class — so those URLs are
+   collected separately and only used if the message has nothing better.
+   Link-preview thumbnails use a different class
+   (.tgme_widget_link_preview_image) and are deliberately excluded. */
 const extractPhotos = (chunk) => {
-  const photos = [];
+  const clean = [];
+  const blurred = [];
   const bgRe = /background-image:\s*url\(['"]?(.*?)['"]?\)/gi;
   let m;
   while ((m = bgRe.exec(chunk)) !== null) {
     const before = chunk.slice(Math.max(0, m.index - 400), m.index);
     if (before.includes('link_preview')) continue;
     const url = decodeEntities(m[1]).replace(/\\(['"])/g, '$1');
-    if (/^https?:\/\//.test(url) && !photos.includes(url)) photos.push(url);
-    if (photos.length >= 8) break;
+    if (!/^https?:\/\//.test(url)) continue;
+    const bucket = before.includes('blured') ? blurred : clean;
+    if (!bucket.includes(url)) bucket.push(url);
+    if (clean.length >= 8) break;
   }
-  return photos;
+  return (clean.length ? clean : blurred).slice(0, 8);
 };
 
 const htmlToText = (html) =>

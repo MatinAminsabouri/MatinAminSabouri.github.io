@@ -230,6 +230,7 @@ const renderLogs = function () {
   logsGrid.innerHTML = logsItems.map(function (item) {
     return R.renderNoteCard(item, curLang(), I18N[curLang()]);
   }).join("");
+  markSettledImages(logsGrid);
 };
 
 /* Fallback copies of notes.json, tried only when the local file has never
@@ -604,6 +605,36 @@ const openLightbox = function () {
 };
 
 /*-----------------------------------*\
+  image settle states
+
+  Media wrappers start with .is-loading (shimmer) and flip to
+  .is-loaded / .is-error. Capture-phase listeners also see images added
+  dynamically into the grid and the popup; cached images that completed
+  before the listeners existed are swept by markSettledImages().
+\*-----------------------------------*/
+
+const settleImage = function (img, ok) {
+  const wrap = img.closest && img.closest(".logs-photo, .post-slide");
+  if (!wrap) return;
+  wrap.classList.remove("is-loading");
+  wrap.classList.add(ok ? "is-loaded" : "is-error");
+};
+
+const markSettledImages = function (scope) {
+  (scope || document).querySelectorAll(".is-loading img").forEach(function (img) {
+    if (img.complete && img.naturalWidth > 0) settleImage(img, true);
+  });
+};
+
+document.addEventListener("load", function (event) {
+  if (event.target && event.target.tagName === "IMG") settleImage(event.target, true);
+}, true);
+
+document.addEventListener("error", function (event) {
+  if (event.target && event.target.tagName === "IMG") settleImage(event.target, false);
+}, true);
+
+/*-----------------------------------*\
   post modal — full note popup (Telegram-like)
 
   Clicking anywhere on a note card opens the whole post: media strip,
@@ -690,13 +721,16 @@ const openPostModal = function (item) {
 
   if (postModalMedia && postModalStrip) {
     const photos = item.photos || [];
+    const errorText = I18N[curLang()].logs_photo_error;
     postModalStrip.innerHTML = photos.map(function (u) {
-      return '<img src="' + R.esc(u) + '" alt="" loading="lazy">';
+      return '<span class="post-slide is-loading" data-error="' + R.esc(errorText) + '">' +
+        '<img src="' + R.esc(u) + '" alt="" loading="lazy"></span>';
     }).join("");
     postModalMedia.hidden = !photos.length;
     if (postModalStripNav) postModalStripNav.hidden = photos.length < 2;
     postModalStrip.scrollLeft = 0;
     if (postModalCount) postModalCount.textContent = photos.length ? "1 / " + photos.length : "";
+    markSettledImages(postModalStrip);
   }
 
   if (postModalAudio) {

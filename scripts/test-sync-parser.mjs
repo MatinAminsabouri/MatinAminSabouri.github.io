@@ -73,7 +73,8 @@ const FIXTURE = `
   <div class="tgme_widget_message_wrap js-widget_message_wrap">
     <div class="tgme_widget_message js-widget_message" data-post="KhanAcademyy/509">
       <div class="tgme_widget_message_bubble">
-        <a class="tgme_widget_message_photo_wrap" style="background-image:url(https://cdn4.telestatic.me/file/abc.jpg)">
+        <style>.tgme_widget_message_photo_wrap{background-image:url('https://cdn4.telestatic.me/file/full.jpg')}</style>
+        <a class="tgme_widget_message_photo_wrap blured js-message_photo" style="background-image:url(https://cdn4.telestatic.me/file/thumb.jpg)">
           <span class="tgme_photo"></span>
         </a>
         <div class="tgme_widget_message_footer">
@@ -107,11 +108,12 @@ assert.deepEqual(second.tags, ['architecture']);
 /* media-only post without photos is still dropped */
 assert.ok(!posts.some((p) => p.id === 510), 'media-only post without photos is skipped');
 
-/* a post that only carries photos is kept and its images are extracted */
+/* a post that only carries photos is kept; the tiny blurred placeholder
+   is dropped in favour of the full-size rendition from the style block */
 const photoPost = posts.find((p) => p.id === 509);
 assert.ok(photoPost, 'photo-only post is kept');
 assert.equal(photoPost.title, 'Photo');
-assert.deepEqual(photoPost.photos, ['https://cdn4.telestatic.me/file/abc.jpg']);
+assert.deepEqual(photoPost.photos, ['https://cdn4.telestatic.me/file/full.jpg']);
 
 console.log(`PASS  parser: ${posts.length} posts, newest #${first.id} at ${first.date}`);
 console.log('PASS  hashtags, line breaks, media-only filtering');

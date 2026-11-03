@@ -354,7 +354,7 @@
      proxy is applied in this rendering layer only. */
   const IMAGE_PROXY = 'https://wsrv.nl/?url=';
   const proxiedImage = function (url) {
-    return IMAGE_PROXY + encodeURIComponent(url) + '&w=1200&q=80&output=jpg';
+    return IMAGE_PROXY + encodeURIComponent(url) + '&w=1280&q=85';
   };
 
   const normalizeNote = function (post, lang) {
@@ -415,15 +415,30 @@
       : '';
 
     /* a photo-bearing note shows its first image as a thumbnail; clicking
-       the card opens the post popup with the full gallery */
-    const photoHtml = item.photos && item.photos.length
-      ? '<div class="logs-photo"><img src="' + esc(item.photos[0]) + '" class="logs-thumb" alt="" loading="lazy"></div>'
+       the card opens the post popup with the full gallery. An album badge
+       hints the rest of the gallery; the shimmer/error states come from
+       the .is-loading/.is-error wrappers (script.js settles them). */
+    const photoCount = item.photos ? item.photos.length : 0;
+    const countLabel = t.logs_photo_count.replace('{n}', lang === 'fa' ? persianDigits(photoCount) : photoCount);
+    const photoHtml = photoCount
+      ? '<div class="logs-photo is-loading" data-error="' + esc(t.logs_photo_error) + '">' +
+        '<img src="' + esc(item.photos[0]) + '" class="logs-thumb" alt="" loading="lazy">' +
+        (photoCount > 1
+          ? '<span class="logs-photo-count" dir="ltr" aria-label="' + esc(countLabel) + '">' +
+            (lang === 'fa' ? persianDigits(photoCount) : photoCount) + '</span>'
+          : '') +
+      '</div>'
+      : '';
+
+    /* a one-line reaction or a photo meme has no meaningful reading time */
+    const readingHtml = String(item.text || '').length > 200
+      ? '<span>' + esc(reading) + '</span>'
       : '';
 
     return '<article class="logs-card" data-post-id="' + esc(item.id != null ? item.id : '') + '" tabindex="0" role="button" aria-haspopup="dialog">' +
       '<div class="logs-meta">' +
         dateHtml +
-        '<span>' + esc(reading) + '</span>' +
+        readingHtml +
         '<a class="logs-badge" href="' + esc(item.badgeUrl || item.url) + '" target="_blank" rel="noopener noreferrer" lang="en">t.me/KhanAcademyy</a>' +
       '</div>' +
       /* notes are Persian source text regardless of the UI language */
