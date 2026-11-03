@@ -603,12 +603,183 @@ const openLightbox = function () {
   openLightboxWith(img.currentSrc || img.src, img.alt || "");
 };
 
-/* open a note's photo in the same lightbox — delegated from the logs grid */
+/*-----------------------------------*\
+  post modal — full note popup (Telegram-like)
+
+  Clicking anywhere on a note card opens the whole post: media strip,
+  audio (when the sync captured one) and the full text. Real links on
+  the card (badge / Read on Telegram) keep navigating.
+\*-----------------------------------*/
+
+const postModal = document.getElementById("postModal");
+const postModalDateEl = postModal ? postModal.querySelector(".post-modal-date") : null;
+const postModalBadge = postModal ? postModal.querySelector(".post-modal-badge") : null;
+const postModalTitle = postModal ? postModal.querySelector(".post-modal-title") : null;
+const postModalMedia = postModal ? postModal.querySelector(".post-modal-media") : null;
+const postModalStrip = postModal ? postModal.querySelector(".post-modal-strip") : null;
+const postModalStripNav = postModal ? postModal.querySelector(".post-modal-strip-nav") : null;
+const postModalCount = postModal ? postModal.querySelector(".post-modal-count") : null;
+const postModalAudio = postModal ? postModal.querySelector(".post-modal-audio") : null;
+const postModalText = postModal ? postModal.querySelector(".post-modal-text") : null;
+const postModalLink = postModal ? postModal.querySelector(".post-modal-link") : null;
+const postModalCloseBtn = postModal ? postModal.querySelector(".lightbox-close") : null;
+
+let postModalOpen = false;
+let postReturnFocus = null;
+
+const handlePostModalKeydown = function (event) {
+  if (event.key === "Escape") {
+    closePostModal();
+    return;
+  }
+
+  /* arrows drive the media strip when it is visible */
+  if (postModalMedia && !postModalMedia.hidden) {
+    if (event.key === "ArrowLeft") { scrollMedia(-1); return; }
+    if (event.key === "ArrowRight") { scrollMedia(1); return; }
+  }
+
+  /* focus trap - Tab and Shift+Tab */
+  if (event.key === "Tab") {
+    const focusableElements = postModal.querySelectorAll(
+      'button, [href], audio, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusableElements.length) return;
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    if (event.shiftKey && document.activeElement === firstElement) {
+      event.preventDefault();
+      lastElement.focus();
+    } else if (!event.shiftKey && document.activeElement === lastElement) {
+      event.preventDefault();
+      firstElement.focus();
+    }
+  }
+};
+
+const syncMediaCount = function () {
+  if (!postModalStrip || !postModalCount) return;
+  const imgs = postModalStrip.querySelectorAll("img");
+  if (imgs.length < 2) return;
+  const step = imgs[0].getBoundingClientRect().width + 8;   /* strip gap */
+  const idx = Math.min(imgs.length - 1, Math.max(0, Math.round(postModalStrip.scrollLeft / Math.max(1, step))));
+  postModalCount.textContent = (idx + 1) + " / " + imgs.length;
+};
+
+const scrollMedia = function (dir) {
+  if (!postModalStrip) return;
+  postModalStrip.scrollBy({ left: dir * postModalStrip.clientWidth, behavior: "smooth" });
+};
+
+const openPostModal = function (item) {
+  if (!postModal || !item) return;
+
+  postReturnFocus = document.activeElement;
+
+  if (postModalDateEl) {
+    postModalDateEl.textContent = item.date ? R.formatNoteDate(item.date, curLang()) : "";
+    if (item.date) postModalDateEl.setAttribute("datetime", item.date.toISOString());
+  }
+  if (postModalTitle) {
+    postModalTitle.textContent = item.title || "";
+    postModalTitle.lang = item.lang || "fa";
+    /* photo-only posts carry the placeholder title "Photo" — hide it */
+    postModalTitle.hidden = !item.text && item.title === "Photo";
+  }
+
+  if (postModalMedia && postModalStrip) {
+    const photos = item.photos || [];
+    postModalStrip.innerHTML = photos.map(function (u) {
+      return '<img src="' + R.esc(u) + '" alt="" loading="lazy">';
+    }).join("");
+    postModalMedia.hidden = !photos.length;
+    if (postModalStripNav) postModalStripNav.hidden = photos.length < 2;
+    postModalStrip.scrollLeft = 0;
+    if (postModalCount) postModalCount.textContent = photos.length ? "1 / " + photos.length : "";
+  }
+
+  if (postModalAudio) {
+    if (item.audio) {
+      postModalAudio.src = item.audio;
+      postModalAudio.hidden = false;
+    } else {
+      postModalAudio.pause();
+      postModalAudio.removeAttribute("src");
+      postModalAudio.hidden = true;
+    }
+  }
+
+  if (postModalText) {
+    postModalText.textContent = item.text || "";
+    postModalText.lang = item.lang || "fa";
+    postModalText.hidden = !item.text;
+  }
+
+  if (postModalBadge) postModalBadge.href = item.badgeUrl || item.url || "#";
+  if (postModalLink) postModalLink.href = item.url || "#";
+
+  postModal.hidden = false;
+  document.body.style.overflow = "hidden";
+  postModalOpen = true;
+
+  /* focus synchronously — a timer loses the race with the visibility
+     transition and focus silently stays behind the dialog */
+  if (postModalCloseBtn) postModalCloseBtn.focus();
+  document.addEventListener("keydown", handlePostModalKeydown);
+};
+
+function closePostModal() {
+  if (!postModal || !postModalOpen) return;
+
+  postModal.hidden = true;
+  document.body.style.overflow = "";
+  postModalOpen = false;
+  if (postModalStrip) postModalStrip.innerHTML = "";
+  if (postModalAudio) {
+    postModalAudio.pause();
+    postModalAudio.removeAttribute("src");
+  }
+
+  document.removeEventListener("keydown", handlePostModalKeydown);
+
+  if (postReturnFocus && typeof postReturnFocus.focus === "function") {
+    postReturnFocus.focus();
+  }
+}
+
+const findNoteById = function (id) {
+  const n = Number(id);
+  return logsItems.find(function (p) { return p.id === n; }) ||
+    staticNotes.find(function (p) { return p.id === n; }) || null;
+};
+
 logsGrid.addEventListener("click", function (event) {
-  const btn = event.target.closest(".logs-photo-btn");
-  if (!btn) return;
-  openLightboxWith(btn.getAttribute("data-photo"), btn.getAttribute("aria-label") || "");
+  if (event.target.closest("a")) return;   /* badge / read button keep navigating */
+  const card = event.target.closest(".logs-card[data-post-id]");
+  if (!card) return;
+  openPostModal(findNoteById(card.getAttribute("data-post-id")));
 });
+
+/* keyboard: the card is a role=button */
+logsGrid.addEventListener("keydown", function (event) {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  if (event.target.closest("a")) return;
+  const card = event.target.closest(".logs-card[data-post-id]");
+  if (!card) return;
+  event.preventDefault();
+  openPostModal(findNoteById(card.getAttribute("data-post-id")));
+});
+
+if (postModal) {
+  postModal.addEventListener("click", function (event) {
+    if (event.target.closest("[data-post-close]")) { closePostModal(); return; }
+    if (event.target.closest("[data-media-prev]")) { scrollMedia(-1); return; }
+    if (event.target.closest("[data-media-next]")) { scrollMedia(1); return; }
+  });
+
+  if (postModalStrip) postModalStrip.addEventListener("scroll", syncMediaCount);
+}
 
 function closeLightbox() {
   if (!lightbox) return;

@@ -66,6 +66,20 @@ const externalRefs = [...html.matchAll(/(?:src|href)="(https?:\/\/[^"]+)"/g)]
   .map((m) => m[1])
   .filter((u) => !u.startsWith('https://matinaminsabouri.github.io'));
 
+/* synced note media is content, not infrastructure: whatever hosts the
+   current notes.json references (telegram CDN, RSSHub mirrors) are
+   allowed as runtime resources */
+let noteMediaHosts = new Set();
+try {
+  const previewNotes = JSON.parse(await fs.readFile('assets/data/notes.json', 'utf8'));
+  noteMediaHosts = new Set(
+    (previewNotes.posts || [])
+      .flatMap((p) => [...(p.photos || []), p.audio])
+      .filter(Boolean)
+      .map((u) => new URL(u).host)
+  );
+} catch { /* notes validated in section 5 */ }
+
 /* links in <a href> are fine; only loaded resources matter */
 const loaded = [...html.matchAll(/<(?:script|link|img)[^>]+(?:src|href)="(https?:\/\/[^"]+)"/g)]
   .map((m) => [m[0], m[1]])
@@ -73,6 +87,8 @@ const loaded = [...html.matchAll(/<(?:script|link|img)[^>]+(?:src|href)="(https?
   .filter(([tag, url]) => !url.startsWith('https://matinaminsabouri.github.io'))
   /* rel=canonical|alternate are metadata, not loaded resources */
   .filter(([tag]) => !/rel="(canonical|alternate)"/.test(tag))
+  /* note thumbnails/audios come straight from the sync — expected */
+  .filter(([, url]) => !noteMediaHosts.has(new URL(url).host))
   .map(([, url]) => url);
 
 if (loaded.length) problems.push(`third-party runtime resources: ${loaded.join(', ')}`);
@@ -175,7 +191,7 @@ const notes = JSON.parse(await fs.readFile('assets/data/notes.json', 'utf8'));
 if (!Array.isArray(notes.posts) || !notes.posts.length) {
   problems.push('assets/data/notes.json has no posts');
 } else {
-  const bad = notes.posts.filter((p) => !p.id || !p.url || !/^https:\/\/t\.me\//.test(p.url) || (!p.text && (!p.photos || !p.photos.length)));
+  const bad = notes.posts.filter((p) => !p.id || !p.url || !/^https:\/\/t\.me\//.test(p.url) || (!p.text && !(p.photos || []).length && !p.audio));
   if (bad.length) problems.push(`notes with invalid url/id/text: ${bad.map((p) => p.id).join(', ')}`);
   else ok.push(`${notes.posts.length} notes valid`);
 }

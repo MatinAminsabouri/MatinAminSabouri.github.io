@@ -98,7 +98,7 @@ const extractPhotos = (chunk) => {
     if (before.includes('link_preview')) continue;
     const url = decodeEntities(m[1]).replace(/\\(['"])/g, '$1');
     if (/^https?:\/\//.test(url) && !photos.includes(url)) photos.push(url);
-    if (photos.length >= 4) break;
+    if (photos.length >= 8) break;
   }
   return photos;
 };
@@ -188,15 +188,35 @@ const parseRss = (xml) => {
     while ((m = imgRe.exec(html)) !== null) {
       const url = decodeEntities(m[1]);
       if (/^https?:\/\//.test(url) && !photos.includes(url)) photos.push(url);
-      if (photos.length >= 4) break;
+      if (photos.length >= 8) break;
     }
     const encRe = /<(?:enclosure|media:content)[^>]+url="([^"]+)"/gi;
     while ((m = encRe.exec(raw)) !== null) {
       const url = decodeEntities(m[1]);
       if (/^https?:\/\//.test(url) && !photos.includes(url)) photos.push(url);
-      if (photos.length >= 4) break;
+      if (photos.length >= 8) break;
     }
     return photos;
+  };
+
+  /* voice notes / music: enclosures typed as audio, or a recognizable
+     audio extension. The t.me preview never exposes audio files, so this
+     only feeds the RSS fallback path. */
+  const extractRssAudio = (raw) => {
+    const encRe = /<(?:enclosure|media:content)\b[^>]*>/gi;
+    let m;
+    while ((m = encRe.exec(raw)) !== null) {
+      const tag = m[0];
+      const urlMatch = /url="([^"]+)"/i.exec(tag);
+      const typeMatch = /type="([^"]*)"/i.exec(tag);
+      if (!urlMatch) continue;
+      const url = decodeEntities(urlMatch[1]);
+      if (!/^https?:\/\//.test(url)) continue;
+      const isAudioType = typeMatch && /^audio\//i.test(typeMatch[1]);
+      const isAudioExt = /\.(mp3|ogg|oga|m4a|opus|wav)(\?|$)/i.test(url);
+      if (isAudioType || isAudioExt) return url;
+    }
+    return null;
   };
 
   return items
@@ -223,6 +243,7 @@ const parseRss = (xml) => {
         url: `https://t.me/${CHANNEL}/${id}`,
         text,
         photos,
+        audio: extractRssAudio(block),
         lang: 'fa'
       };
     })

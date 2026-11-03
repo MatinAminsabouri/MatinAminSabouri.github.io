@@ -343,6 +343,37 @@
     </figure>
   </div>
 
+  <!-- Post popup — full note like the Telegram app: media strip, audio, full text -->
+  <div class="post-modal" id="postModal" role="dialog" aria-modal="true" aria-label="Note preview" hidden>
+    <div class="lightbox-backdrop" data-post-close></div>
+    <button class="lightbox-close" type="button" data-post-close aria-label="Close note preview">
+      <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-close-outline"></use></svg>
+    </button>
+    <article class="post-modal-card">
+      <header class="post-modal-head">
+        <time class="post-modal-date"></time>
+        <a class="logs-badge post-modal-badge" href="#" target="_blank" rel="noopener noreferrer" lang="en">t.me/KhanAcademyy</a>
+      </header>
+      <h4 class="post-modal-title" dir="auto"></h4>
+      <div class="post-modal-media" hidden>
+        <div class="post-modal-strip" dir="ltr" tabindex="0"></div>
+        <div class="post-modal-strip-nav" hidden>
+          <button class="post-modal-nav" type="button" data-media-prev aria-label="Previous photo">&#8249;</button>
+          <span class="post-modal-count" dir="ltr"></span>
+          <button class="post-modal-nav" type="button" data-media-next aria-label="Next photo">&#8250;</button>
+        </div>
+      </div>
+      <audio class="post-modal-audio" controls preload="none" hidden></audio>
+      <p class="post-modal-text" dir="auto"></p>
+      <footer class="post-modal-foot">
+        <a class="btn btn--ghost post-modal-link" href="#" target="_blank" rel="noopener noreferrer">
+          <span data-i18n="logs_read"></span>
+          <svg class="icon btn-arrow" aria-hidden="true" focusable="false"><use href="#i-arrow-forward-outline"></use></svg>
+        </a>
+      </footer>
+    </article>
+  </div>
+
   <script src="./assets/js/data.js"></script>
   <script src="./assets/js/render.js"></script>
   <script src="./assets/js/script.js"></script>

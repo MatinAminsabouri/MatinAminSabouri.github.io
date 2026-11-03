@@ -346,26 +346,40 @@
   };
 
   const normalizeNote = function (post, lang) {
-    const text = String(post.text || '').replace(/\s+/g, ' ').trim();
+    /* full text keeps its line breaks — the popup renders it pre-line like
+       Telegram; the card excerpt is collapsed separately */
+    const text = String(post.text || '').trim();
     const date = new Date(post.date);
 
-    /* A synced Telegram post repeats its title as the first line of the body.
-       Without this the card printed the same sentence twice — once as the
-       title and again as the opening of the excerpt. */
-    const title = post.title || text.slice(0, 80);
-    const excerpt = title && text.indexOf(title) === 0
-      ? text.slice(title.length).trim()
-      : text;
+    const title = post.title || text.replace(/\s+/g, ' ').slice(0, 80);
+
+    /* A synced Telegram post repeats its title as the first line of the body,
+       so the card printed the same sentence twice. The sync truncates the
+       title at 110 chars (appending "…"), which broke exact-prefix matching —
+       compare the collapsed first line against the title prefix instead and
+       drop the whole first line when they refer to the same sentence. */
+    const lines = text.split('\n');
+    const firstLine = (lines.find(function (l) { return l.trim(); }) || '').replace(/\s+/g, ' ').trim();
+    const titleCore = title.replace(/\s+/g, ' ').trim().replace(/…$/, '');
+    const dropsFirstLine = titleCore && firstLine &&
+      (firstLine === titleCore || firstLine.indexOf(titleCore) === 0 || titleCore.indexOf(firstLine) === 0);
+    const body = dropsFirstLine ? lines.slice(1).join('\n').trim() : text;
+
+    const collapsedBody = body.replace(/\s+/g, ' ').trim();
 
     return {
+      id: post.id,
       title: title,
-      excerpt: excerpt.length > 220 ? excerpt.slice(0, 220).trimEnd() + '…' : excerpt,
+      /* body without its duplicated title line — shown in full in the popup */
+      text: body,
+      excerpt: collapsedBody.length > 220 ? collapsedBody.slice(0, 220).trimEnd() + '…' : collapsedBody,
       tags: (post.tags || []).slice(0, 5),
       url: post.url,
       badgeUrl: post.badgeUrl || post.url,
       date: isNaN(date.getTime()) ? null : date,
       reading: readingTime(text),
-      photos: Array.isArray(post.photos) ? post.photos.filter(function (u) { return typeof u === 'string' && /^https?:\/\//.test(u); }).slice(0, 4) : [],
+      photos: Array.isArray(post.photos) ? post.photos.filter(function (u) { return typeof u === 'string' && /^https?:\/\//.test(u); }).slice(0, 8) : [],
+      audio: (typeof post.audio === 'string' && /^https?:\/\//.test(post.audio)) ? post.audio : null,
       lang: post.lang || 'fa'
     };
   };
@@ -385,12 +399,13 @@
       ? '<p class="logs-excerpt" dir="auto" lang="' + esc(item.lang) + '">' + esc(item.excerpt) + '</p>'
       : '';
 
-    /* a photo-bearing note shows its first image as a thumbnail that opens the lightbox */
+    /* a photo-bearing note shows its first image as a thumbnail; clicking
+       the card opens the post popup with the full gallery */
     const photoHtml = item.photos && item.photos.length
-      ? '<div class="logs-photo"><button class="btn btn--ghost logs-photo-btn" type="button" data-photo="' + esc(item.photos[0]) + '" aria-label="' + esc(t.logs_view_photo) + '"><img src="' + esc(item.photos[0]) + '" class="logs-thumb" alt=""></button></div>'
+      ? '<div class="logs-photo"><img src="' + esc(item.photos[0]) + '" class="logs-thumb" alt="" loading="lazy"></div>'
       : '';
 
-    return '<article class="logs-card">' +
+    return '<article class="logs-card" data-post-id="' + esc(item.id != null ? item.id : '') + '" tabindex="0" role="button" aria-haspopup="dialog">' +
       '<div class="logs-meta">' +
         dateHtml +
         '<span>' + esc(reading) + '</span>' +

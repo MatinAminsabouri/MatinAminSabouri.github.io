@@ -1912,19 +1912,10 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
   justify-content: center;
 }
 
-.logs-photo-btn {
-  padding: 0;
-  border: none;
-  background: transparent;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
 .logs-thumb {
   width: 100%;
   max-height: 220px;
+  min-height: 140px;   /* hold the slot while the telegram CDN image streams in */
   object-fit: cover;
   border-radius: var(--radius);
   border: 1px solid var(--glass-brd);
@@ -2182,8 +2173,176 @@ html[lang="fa"] .timeline-text {
     height: 40px;
     font-size: 20px;
   }
-  
+
   .lightbox-img {
     max-height: 70vh;
+  }
+}
+
+/*-----------------------------------*\
+  #18 POST MODAL — full note popup (Telegram-like)
+\*-----------------------------------*/
+
+/* the whole card opens the post popup */
+.logs-card[data-post-id] {
+  cursor: pointer;
+}
+
+.logs-card:focus-visible {
+  outline: 2px solid var(--accent-1);
+  outline-offset: 3px;
+}
+
+.post-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+  opacity: 0;
+  visibility: hidden;
+  /* visibility flips only after the fade-out completes; on open it must
+     become visible immediately or the close button cannot receive focus */
+  transition: opacity var(--dur-2) var(--ease-out), visibility 0s linear var(--dur-2);
+}
+
+.post-modal:not([hidden]) {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity var(--dur-2) var(--ease-out), visibility 0s linear 0s;
+}
+
+.post-modal-card {
+  position: relative;
+  z-index: 1000;
+  width: min(640px, 100%);
+  max-height: min(86vh, 900px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  background: var(--bg-2);
+  border: 1px solid var(--glass-brd);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5);
+  box-shadow: 0 24px 48px -16px rgba(2, 6, 23, 0.8);
+  transform: translateY(14px) scale(0.97);
+  transition: transform var(--dur-3) var(--ease-out);
+}
+
+.post-modal:not([hidden]) .post-modal-card {
+  transform: none;
+}
+
+.post-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  min-height: 24px;
+}
+
+.post-modal-date {
+  font-family: var(--ff-mono);
+  font-size: 0.6875rem;
+  color: var(--text-3);
+}
+
+.post-modal-title {
+  font-family: 'Vazirmatn', 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.6;
+  letter-spacing: normal;
+  filter: grayscale(1);
+}
+
+/* photo strip — swipeable (scroll-snap), arrows scroll it by a page */
+.post-modal-media {
+  display: grid;
+  gap: var(--sp-2);
+  min-height: 160px;   /* reserve the slot while the telegram CDN images stream in */
+}
+
+.post-modal-strip {
+  display: flex;
+  gap: var(--sp-2);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  border-radius: 8px;
+}
+
+.post-modal-strip img {
+  flex: 0 0 auto;
+  max-width: 100%;
+  max-height: 52vh;
+  object-fit: contain;
+  scroll-snap-align: center;
+  border-radius: 8px;
+  background: var(--bg-1);
+  border: 1px solid var(--glass-brd);
+}
+
+.post-modal-strip-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+}
+
+.post-modal-nav {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--glass-brd);
+  background: var(--glass-bg);
+  color: var(--text-2);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color var(--dur-1), border-color var(--dur-1);
+}
+
+.post-modal-nav:hover {
+  color: var(--accent-1);
+  border-color: rgba(34, 211, 238, 0.4);
+}
+
+.post-modal-count {
+  font-family: var(--ff-mono);
+  font-size: 0.6875rem;
+  color: var(--text-3);
+  min-width: 32px;
+  text-align: center;
+}
+
+.post-modal-audio {
+  width: 100%;
+}
+
+.post-modal-text {
+  font-family: 'Vazirmatn', 'Inter', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.9;
+  letter-spacing: normal;
+  white-space: pre-line;   /* keep the post's original line breaks */
+  overflow-wrap: anywhere;
+  filter: grayscale(1);
+}
+
+.post-modal-foot {
+  display: flex;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-modal,
+  .post-modal-card {
+    transition-duration: 0.01ms !important;
   }
 }
