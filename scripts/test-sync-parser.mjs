@@ -73,8 +73,8 @@ const FIXTURE = `
   <div class="tgme_widget_message_wrap js-widget_message_wrap">
     <div class="tgme_widget_message js-widget_message" data-post="KhanAcademyy/509">
       <div class="tgme_widget_message_bubble">
-        <style>.tgme_widget_message_photo_wrap{background-image:url('https://cdn4.telestatic.me/file/full.jpg')}</style>
-        <a class="tgme_widget_message_photo_wrap blured js-message_photo" style="background-image:url(https://cdn4.telestatic.me/file/thumb.jpg)">
+        <style>.tgme_widget_message_photo_wrap{background-image:url('https://cdn4.telestatic.me/file/thumb.jpg');background-size:437px 257px}</style>
+        <a class="tgme_widget_message_photo_wrap js-message_photo" style="width:437px;background-image:url(&quot;https://cdn4.telestatic.me/file/full.jpg&quot;)">
           <span class="tgme_photo"></span>
         </a>
         <div class="tgme_widget_message_footer">
@@ -109,7 +109,7 @@ assert.deepEqual(second.tags, ['architecture']);
 assert.ok(!posts.some((p) => p.id === 510), 'media-only post without photos is skipped');
 
 /* a post that only carries photos is kept; the tiny blurred placeholder
-   is dropped in favour of the full-size rendition from the style block */
+   from the style block is skipped in favour of the anchor's real image */
 const photoPost = posts.find((p) => p.id === 509);
 assert.ok(photoPost, 'photo-only post is kept');
 assert.equal(photoPost.title, 'Photo');

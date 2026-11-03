@@ -85,27 +85,30 @@ const decodeEntities = (s) =>
     .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)));
 
 /* Photos live in the preview markup as background-image URLs on
-   .tgme_widget_message_photo_wrap anchors (single photos and grouped
-   albums alike). Telegram renders a tiny blurred placeholder next to the
-   real photo — its wrap carries the "blured" class — so those URLs are
-   collected separately and only used if the message has nothing better.
-   Link-preview thumbnails use a different class
-   (.tgme_widget_link_preview_image) and are deliberately excluded. */
+   .tgme_widget_message_photo_wrap anchors. The widget's inline style
+   holds the real rendition; the per-message <style> block repeats the
+   same photos as tiny blurred placeholders, so style blocks are stripped
+   before scanning. Link previews and channel avatars are excluded. */
 const extractPhotos = (chunk) => {
-  const clean = [];
-  const blurred = [];
-  const bgRe = /background-image:\s*url\(['"]?(.*?)['"]?\)/gi;
+  const body = chunk.replace(/<style[\s\S]*?<\/style>/gi, ' ');
+  const photos = [];
+  /* the style attribute quotes can arrive entity-encoded (&quot;) —
+     capture everything up to the closing paren and strip quotes after
+     decoding */
+  const bgRe = /background-image:\s*url\(([^)]*)\)/gi;
   let m;
-  while ((m = bgRe.exec(chunk)) !== null) {
-    const before = chunk.slice(Math.max(0, m.index - 400), m.index);
+  while ((m = bgRe.exec(body)) !== null) {
+    const before = body.slice(Math.max(0, m.index - 400), m.index);
     if (before.includes('link_preview')) continue;
-    const url = decodeEntities(m[1]).replace(/\\(['"])/g, '$1');
+    if (before.includes('avatar')) continue;
+    /* a reply header previews the message being replied to — not ours */
+    if (before.includes('reply_thumb')) continue;
+    const url = decodeEntities(m[1]).replace(/\\(['"])/g, '$1').trim().replace(/^['"]+|['"]+$/g, '');
     if (!/^https?:\/\//.test(url)) continue;
-    const bucket = before.includes('blured') ? blurred : clean;
-    if (!bucket.includes(url)) bucket.push(url);
-    if (clean.length >= 8) break;
+    if (!photos.includes(url)) photos.push(url);
+    if (photos.length >= 8) break;
   }
-  return (clean.length ? clean : blurred).slice(0, 8);
+  return photos;
 };
 
 const htmlToText = (html) =>
