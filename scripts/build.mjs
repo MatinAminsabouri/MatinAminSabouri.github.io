@@ -174,9 +174,24 @@ const notFound = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#070B12">
   <title>404 — Page not found | Matin AminSabouri</title>
   <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png">
   <link rel="stylesheet" href="/assets/css/style.css">
+  <script>
+    /* honour the visitor's saved theme instead of always rendering dark */
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute('content', t === 'light' ? '#F8FAFC' : '#070B12');
+      } catch (e) { }
+    })();
+  </script>
 </head>
 <body>
   <main style="width:min(560px,100% - 2rem);margin:12vh auto;">

@@ -348,14 +348,24 @@
   const normalizeNote = function (post, lang) {
     const text = String(post.text || '').replace(/\s+/g, ' ').trim();
     const date = new Date(post.date);
+
+    /* A synced Telegram post repeats its title as the first line of the body.
+       Without this the card printed the same sentence twice — once as the
+       title and again as the opening of the excerpt. */
+    const title = post.title || text.slice(0, 80);
+    const excerpt = title && text.indexOf(title) === 0
+      ? text.slice(title.length).trim()
+      : text;
+
     return {
-      title: post.title || text.slice(0, 80),
-      excerpt: text.length > 220 ? text.slice(0, 220).trimEnd() + '…' : text,
+      title: title,
+      excerpt: excerpt.length > 220 ? excerpt.slice(0, 220).trimEnd() + '…' : excerpt,
       tags: (post.tags || []).slice(0, 5),
       url: post.url,
       badgeUrl: post.badgeUrl || post.url,
       date: isNaN(date.getTime()) ? null : date,
       reading: readingTime(text),
+      photos: Array.isArray(post.photos) ? post.photos.filter(function (u) { return typeof u === 'string' && /^https?:\/\//.test(u); }).slice(0, 4) : [],
       lang: post.lang || 'fa'
     };
   };
@@ -370,6 +380,16 @@
       ? 'مطالعهٔ ' + persianDigits(item.reading) + ' دقیقه‌ای'
       : item.reading + ' min read';
 
+    /* a note whose body is nothing but its title has no excerpt left to show */
+    const excerptHtml = item.excerpt
+      ? '<p class="logs-excerpt" dir="auto" lang="' + esc(item.lang) + '">' + esc(item.excerpt) + '</p>'
+      : '';
+
+    /* a photo-bearing note shows its first image as a thumbnail that opens the lightbox */
+    const photoHtml = item.photos && item.photos.length
+      ? '<div class="logs-photo"><button class="btn btn--ghost logs-photo-btn" type="button" data-photo="' + esc(item.photos[0]) + '" aria-label="' + esc(t.logs_view_photo) + '"><img src="' + esc(item.photos[0]) + '" class="logs-thumb" alt=""></button></div>'
+      : '';
+
     return '<article class="logs-card">' +
       '<div class="logs-meta">' +
         dateHtml +
@@ -378,7 +398,8 @@
       '</div>' +
       /* notes are Persian source text regardless of the UI language */
       '<h4 class="logs-title" dir="auto" lang="' + esc(item.lang) + '">' + esc(item.title) + '</h4>' +
-      '<p class="logs-excerpt" dir="auto" lang="' + esc(item.lang) + '">' + esc(item.excerpt) + '</p>' +
+      excerptHtml +
+      photoHtml +
       '<ul class="tag-row">' +
         item.tags.map(function (tag) {
           return '<li><span class="chip" dir="ltr" lang="en">#' + esc(tag) + '</span></li>';

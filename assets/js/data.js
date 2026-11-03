@@ -72,7 +72,8 @@ window.SITE_DATA = {
       logs_synced_hours: "synced {n} hours ago",
       logs_synced_day: "synced {n} day ago",
       logs_synced_days: "synced {n} days ago",
-      logs_empty: "No notes yet — subscribe to catch the next one."
+      logs_empty: "No notes yet — subscribe to catch the next one.",
+      logs_view_photo: "View photo"
     },
 
     fa: {
@@ -125,7 +126,8 @@ window.SITE_DATA = {
       logs_synced_hours: "{n} ساعت پیش همگام‌سازی شد",
       logs_synced_day: "{n} روز پیش همگام‌سازی شد",
       logs_synced_days: "{n} روز پیش همگام‌سازی شد",
-      logs_empty: "هنوز یادداشتی منتشر نشده — برای مطالعهٔ یادداشت‌های بعدی عضو شوید."
+      logs_empty: "هنوز یادداشتی منتشر نشده — برای مطالعهٔ یادداشت‌های بعدی عضو شوید.",
+      logs_view_photo: "مشاهدهٔ تصویر"
     }
 
   },
@@ -243,14 +245,14 @@ window.SITE_DATA = {
 
     education: [
       {
-        title: { en: "Isfahan University Of Technology", fa: "دانشگاه صنعتی اصفهان" },
+        title: { en: "Isfahan University of Technology", fa: "دانشگاه صنعتی اصفهان" },
         period: "2022 — Present",
         desc: { en: "Studying Computer Engineering", fa: "دانشجوی مهندسی کامپیوتر" }
       },
       {
-        title: { en: "Harati High school", fa: "دبیرستان هراتی" },
+        title: { en: "Harati High School", fa: "دبیرستان هراتی" },
         period: "2019 — 2022",
-        desc: { en: "Studied Mathematics in Harati high school", fa: "تحصیل در رشتهٔ ریاضی فیزیک — دبیرستان هراتی" }
+        desc: { en: "Studied Mathematics in Harati High School", fa: "تحصیل در رشتهٔ ریاضی فیزیک — دبیرستان هراتی" }
       }
     ],
 

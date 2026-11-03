@@ -69,14 +69,29 @@ const FIXTURE = `
       </div>
     </div>
   </div>
+
+  <div class="tgme_widget_message_wrap js-widget_message_wrap">
+    <div class="tgme_widget_message js-widget_message" data-post="KhanAcademyy/509">
+      <div class="tgme_widget_message_bubble">
+        <a class="tgme_widget_message_photo_wrap" style="background-image:url(https://cdn4.telestatic.me/file/abc.jpg)">
+          <span class="tgme_photo"></span>
+        </a>
+        <div class="tgme_widget_message_footer">
+          <a class="tgme_widget_message_date" href="https://t.me/KhanAcademyy/509">
+            <time datetime="2026-10-17T12:00:00+00:00">12:00</time>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 `;
 
 const posts = parsePreviewForTest(FIXTURE);
 
-assert.equal(posts.length, 2, `expected 2 readable posts, got ${posts.length}`);
+assert.equal(posts.length, 3, `expected 3 readable posts, got ${posts.length}`);
 
-const [first, second] = posts.sort((a, b) => b.id - a.id);
+const [first, second, third] = posts.sort((a, b) => b.id - a.id);
 
 assert.equal(first.id, 512);
 assert.equal(first.date, '2026-10-20T18:30:00.000Z');
@@ -89,8 +104,14 @@ assert.ok(first.text.includes('\n'), 'line breaks survive as newlines');
 assert.equal(second.id, 511);
 assert.deepEqual(second.tags, ['architecture']);
 
-/* media-only posts are dropped, not rendered as empty cards */
-assert.ok(!posts.some((p) => p.id === 510), 'media-only post is skipped');
+/* media-only post without photos is still dropped */
+assert.ok(!posts.some((p) => p.id === 510), 'media-only post without photos is skipped');
+
+/* a post that only carries photos is kept and its images are extracted */
+const photoPost = posts.find((p) => p.id === 509);
+assert.ok(photoPost, 'photo-only post is kept');
+assert.equal(photoPost.title, 'Photo');
+assert.deepEqual(photoPost.photos, ['https://cdn4.telestatic.me/file/abc.jpg']);
 
 console.log(`PASS  parser: ${posts.length} posts, newest #${first.id} at ${first.date}`);
 console.log('PASS  hashtags, line breaks, media-only filtering');

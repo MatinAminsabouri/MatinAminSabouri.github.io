@@ -175,7 +175,7 @@ const notes = JSON.parse(await fs.readFile('assets/data/notes.json', 'utf8'));
 if (!Array.isArray(notes.posts) || !notes.posts.length) {
   problems.push('assets/data/notes.json has no posts');
 } else {
-  const bad = notes.posts.filter((p) => !p.id || !p.text || !p.url || !/^https:\/\/t\.me\//.test(p.url));
+  const bad = notes.posts.filter((p) => !p.id || !p.url || !/^https:\/\/t\.me\//.test(p.url) || (!p.text && (!p.photos || !p.photos.length)));
   if (bad.length) problems.push(`notes with invalid url/id/text: ${bad.map((p) => p.id).join(', ')}`);
   else ok.push(`${notes.posts.length} notes valid`);
 }

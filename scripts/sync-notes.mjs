@@ -33,7 +33,7 @@ import { pathToFileURL } from 'node:url';
 
 const CHANNEL = process.env.TELEGRAM_CHANNEL || 'KhanAcademyy';
 const OUT = 'assets/data/notes.json';
-const MAX_POSTS = Number(process.env.NOTES_LIMIT || 12);
+const MAX_POSTS = Number(process.env.NOTES_LIMIT || 20);
 const DRY = process.argv.includes('--dry');
 
 const PREVIEW_URLS = [
@@ -84,6 +84,25 @@ const decodeEntities = (s) =>
     .replace(/&#0?39;/g, "'")
     .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)));
 
+/* Photos live in the preview markup as background-image URLs on
+   .tgme_widget_message_photo_wrap anchors (single photos and grouped
+   albums alike). Link-preview thumbnails use a different class
+   (.tgme_widget_link_preview_image) and are deliberately excluded —
+   only real message photos count. */
+const extractPhotos = (chunk) => {
+  const photos = [];
+  const bgRe = /background-image:\s*url\(['"]?(.*?)['"]?\)/gi;
+  let m;
+  while ((m = bgRe.exec(chunk)) !== null) {
+    const before = chunk.slice(Math.max(0, m.index - 400), m.index);
+    if (before.includes('link_preview')) continue;
+    const url = decodeEntities(m[1]).replace(/\\(['"])/g, '$1');
+    if (/^https?:\/\//.test(url) && !photos.includes(url)) photos.push(url);
+    if (photos.length >= 4) break;
+  }
+  return photos;
+};
+
 const htmlToText = (html) =>
   decodeEntities(
     html
@@ -118,10 +137,14 @@ const parsePreview = (html) => {
     const timeMatch = /<time[^>]*datetime="([^"]+)"/.exec(chunk);
     const linkMatch = /<a class="tgme_widget_message_date" href="([^"]+)"/.exec(chunk);
 
-    if (!idMatch || !textMatch) continue;
+    if (!idMatch) continue;
 
-    const text = htmlToText(textMatch[1]);
-    if (text.length < 20) continue;
+    /* photo posts carry their images as background-image URLs; a post is
+       worth keeping when it has readable text OR real photos (a photo-only
+       post has a "Photo" stub or no text div at all) */
+    const photos = extractPhotos(chunk);
+    const text = textMatch ? htmlToText(textMatch[1]) : '';
+    if (text.length < 20 && !photos.length) continue;
 
     const id = Number(idMatch[1]);
     const tags = Array.from(
@@ -131,10 +154,11 @@ const parsePreview = (html) => {
     posts.push({
       id,
       date: timeMatch ? new Date(timeMatch[1]).toISOString() : null,
-      title: truncate(firstLine(text), 110),
+      title: text ? truncate(firstLine(text), 110) : 'Photo',
       tags,
       url: linkMatch ? linkMatch[1] : `https://t.me/${CHANNEL}/${id}`,
       text,
+      photos,
       lang: 'fa'
     });
   }
@@ -153,22 +177,52 @@ const parseRss = (xml) => {
     return m ? m[1].replace(/^<!\[CDATA\[|\]\]>$/g, '').trim() : '';
   };
 
+  /* RSS descriptions carry photos as <img> tags (preview markup does not
+     survive the proxy path), plus optional <enclosure url="..."/> and
+     <media:content url="..."/> elements — collect all of them. */
+  const extractRssPhotos = (raw) => {
+    const photos = [];
+    const html = raw.replace(/^<!\[CDATA\[|\]\]>$/g, '').trim();
+    const imgRe = /<img[^>]+src="([^"]+)"/gi;
+    let m;
+    while ((m = imgRe.exec(html)) !== null) {
+      const url = decodeEntities(m[1]);
+      if (/^https?:\/\//.test(url) && !photos.includes(url)) photos.push(url);
+      if (photos.length >= 4) break;
+    }
+    const encRe = /<(?:enclosure|media:content)[^>]+url="([^"]+)"/gi;
+    while ((m = encRe.exec(raw)) !== null) {
+      const url = decodeEntities(m[1]);
+      if (/^https?:\/\//.test(url) && !photos.includes(url)) photos.push(url);
+      if (photos.length >= 4) break;
+    }
+    return photos;
+  };
+
   return items
     .map((block) => {
       const link = pick(block, 'link');
       const idMatch = /t\.me\/(?:s\/)?[^/]+\/(\d+)/.exec(link);
-      const text = htmlToText(pick(block, 'description'));
-      if (!idMatch || text.length < 20) return null;
+      const rawDesc = pick(block, 'description');
+      /* RSSHub ships its quote blocks double-escaped: the first strip pass
+         leaves literal markup like <div class="rsshub-quote"> in the text,
+         so decode-and-strip once more when that happens */
+      let text = htmlToText(rawDesc);
+      if (/<[a-z!/][^>]*>/i.test(text)) text = htmlToText(text);
+      /* image URLs are escaped the same way — decode before matching */
+      const photos = extractRssPhotos(decodeEntities(decodeEntities(rawDesc)) + '\n' + block);
+      if (!idMatch || (text.length < 20 && !photos.length)) return null;
       const id = Number(idMatch[1]);
       return {
         id,
         date: pick(block, 'pubDate') ? new Date(pick(block, 'pubDate')).toISOString() : null,
-        title: truncate(firstLine(text), 110),
+        title: text ? truncate(firstLine(text), 110) : 'Photo',
         tags: Array.from(
           new Set((text.match(/#[\p{L}\p{N}_]+/gu) || []).map((t) => t.slice(1)))
         ).slice(0, 5),
         url: `https://t.me/${CHANNEL}/${id}`,
         text,
+        photos,
         lang: 'fa'
       };
     })

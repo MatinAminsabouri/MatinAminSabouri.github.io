@@ -90,8 +90,8 @@
   --warn: #FBBF24;
 
   /* glass */
-  --glass-bg: rgba(16, 23, 37, 0.55);
-  --glass-brd: rgba(148, 163, 184, 0.10);
+  --glass-bg: rgba(16, 23, 37, 0.62);
+  --glass-brd: rgba(148, 163, 184, 0.16);
   --nav-bg: rgba(16, 23, 37, 0.78);
   --featured-bg: linear-gradient(160deg, rgba(34, 211, 238, 0.07), rgba(99, 102, 241, 0.05) 50%, rgba(16, 23, 37, 0.6));
 
@@ -950,6 +950,24 @@ article.active {
 
 .timeline-text + .timeline-text { margin-top: var(--sp-2); }
 
+/* experience bullets carry a marker so the list reads as a list; the single
+   education line (which has no .timeline-company) is left untouched */
+.timeline-company ~ .timeline-text {
+  position: relative;
+  padding-inline-start: var(--sp-4);
+}
+
+.timeline-company ~ .timeline-text::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-1);
+}
+
 /* skills — categorized chips */
 .skills { margin-top: var(--sp-6); }
 
@@ -1091,6 +1109,10 @@ article.active {
 .project-list {
   display: grid;
   gap: var(--sp-4);
+  /* start, not stretch: a card is as tall as its own content. Stretching
+     pinned every card in a row to the tallest one, which left the short
+     cards (and anything beside the expandable case study) mostly empty. */
+  align-items: start;
 }
 
 .project-item { display: none; }
@@ -1125,13 +1147,18 @@ article.active {
 
 .project-card-head {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  /* nowrap: the badges wrap inside their own row instead, so the category
+     label never drops to a second line and lands alone on the far left */
+  flex-wrap: nowrap;
+  /* flex-start: with a two-line badge block the category sits level with the
+     first badge rather than floating in the middle of the block */
+  align-items: flex-start;
   gap: var(--sp-2);
-  flex-wrap: wrap;
 }
 
 .project-category {
+  flex-shrink: 0;
+  margin-inline-start: auto;
   font-family: var(--ff-mono);
   font-size: 0.6875rem;
   letter-spacing: 0.06em;
@@ -1171,6 +1198,7 @@ article.active {
   display: flex;
   gap: var(--sp-2);
   flex-wrap: wrap;
+  min-width: 0;   /* let the row shrink so the category keeps its own column */
 }
 
 .badge {
@@ -1419,6 +1447,56 @@ article.active {
 
 }
 
+/* 640px – 1024px — tablets
+   Below the 1024px split the profile card goes full-width and ~500px tall, so
+   everything the visitor came for sits below the fold. Lay the identity out as
+   a compact horizontal band instead: avatar on one side, details on the other.
+   This block sits ABOVE the desktop split on purpose: the range ends at 1024
+   (not 1023) so no width falls between the two, and at 1024 the desktop query
+   below re-declares every property this block sets. */
+@media (min-width: 640px) and (max-width: 1024px) {
+
+  .sidebar { padding: var(--sp-4) var(--sp-5); }
+
+  .sidebar-info {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "avatar info"
+      "avatar controls";
+    /* start, so the avatar sits level with the name instead of being
+       centred down the tall identity block */
+    align-items: start;
+    column-gap: var(--sp-5);
+    row-gap: var(--sp-2);
+    text-align: start;
+  }
+
+  .avatar-box { grid-area: avatar; }
+  .avatar-box img { width: 84px; height: 84px; }
+
+  .info-content { grid-area: info; }
+
+  .info-content .title { margin-inline: 0; }
+
+  /* the name above is LTR, so line the Persian name up under it rather than
+     letting its own dir="rtl" push it to the far edge */
+  .persian-name { text-align: end; }
+
+  .status-row { justify-content: flex-start; }
+
+  .positioning { padding: 0; text-align: start; }
+
+  .controls {
+    grid-area: controls;
+    justify-self: start;   /* line up with the identity text, not the card centre */
+    margin: var(--sp-2) 0 0;
+  }
+
+  .info_more-btn { grid-column: 1 / -1; }
+
+}
+
 /* >= 1024px — desktop split */
 @media (min-width: 1024px) {
 
@@ -1433,16 +1511,25 @@ article.active {
   .sidebar {
     position: sticky;
     top: var(--sp-5);
+    padding: var(--sp-5);   /* undo the compact tablet band's tighter padding */
     /* a short viewport must scroll the card, not clip its contacts;
        sticky + no max-height silently hides everything below the fold */
     max-height: calc(100vh - var(--sp-7));
     overflow-y: auto;
     overscroll-behavior: contain;
-    scrollbar-width: thin;
+    /* the sidebar is always taller than its max-height (the profile block
+       alone is ~1000px), so a permanent scrollbar track sat in the middle of
+       the screen. Scroll it, but don't advertise the track. */
+    scrollbar-width: none;
     margin-bottom: 0;
   }
 
+  .sidebar::-webkit-scrollbar { display: none; }
+
   .sidebar-info {
+    /* the tablet band lays this block out as a grid; the split layout needs
+       the original flex column back */
+    display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
@@ -1451,6 +1538,10 @@ article.active {
   .avatar-box img { width: 120px; height: 120px; }
 
   .info-content .title { margin-inline: auto; }
+
+  .persian-name { text-align: center; }
+
+  .positioning { padding: 0 8px; text-align: center; }
 
   .status-row { justify-content: center; }
 
@@ -1496,6 +1587,30 @@ article.active {
 @media (max-width: 1023px) {
 
   main { padding-bottom: 110px; }
+
+}
+
+/* < 480px — phones */
+@media (max-width: 480px) {
+
+  /* the three-up stats strip leaves ~92px per column here, so "AI Lead" and
+     "Municipal AI Assistant in Iran" both broke mid-phrase */
+  .stats { gap: var(--sp-2); }
+
+  .stat { padding: var(--sp-3) var(--sp-1); }
+
+  .stat-value { font-size: 1rem; }
+
+  .stat-label { text-wrap: balance; }
+
+  /* the address is wider than the room left beside the copy button, and
+     overflow-wrap:anywhere was splitting it as "…@gmail.c / om". Let the copy
+     button drop to its own row so the address keeps the full width. */
+  .contact-item { flex-wrap: wrap; row-gap: 4px; }
+
+  .contact-info { flex: 1 1 calc(100% - 52px); }
+
+  .copy-btn { margin-inline-start: auto; }
 
 }
 
@@ -1709,14 +1824,11 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
   grid-template-columns: 1fr;
   gap: var(--sp-4);
   min-height: 240px;   /* CLS guard while skeleton → content swaps */
+  align-items: start;  /* same reasoning as .project-list */
 }
 
 @media (min-width: 768px) {
   .logs-grid { grid-template-columns: repeat(2, 1fr); }
-
-  /* two columns read better with a floor on card height; on one column the
-     content defines the height — 320px of empty card on a phone is waste */
-  .logs-card { min-height: 320px; }
 }
 
 .logs-card {
@@ -1792,6 +1904,38 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
   margin-top: auto;
   display: flex;
   align-items: center;
+}
+
+.logs-photo {
+  margin-top: var(--sp-3);
+  display: flex;
+  justify-content: center;
+}
+
+.logs-photo-btn {
+  padding: 0;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.logs-thumb {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--glass-brd);
+  background: var(--bg-2);
+  display: block;
+  transition: transform var(--dur-1), opacity var(--dur-1);
+}
+
+.logs-thumb:hover {
+  transform: scale(1.02);
+  opacity: 0.9;
 }
 
 .logs-footer {
@@ -2012,10 +2156,10 @@ html[lang="fa"] .timeline-text {
 
 .lightbox-caption {
   margin-top: var(--sp-3);
-  font-family: var(--ff-mono);
+  font-family: var(--ff-body);
   font-size: var(--fs-small);
   color: var(--text-3);
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
 }
 
 /* Reduced motion */

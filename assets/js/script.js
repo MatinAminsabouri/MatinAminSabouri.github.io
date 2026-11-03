@@ -578,15 +578,14 @@ const handleLightboxKeydown = function (event) {
   }
 };
 
-const openLightbox = function () {
-  if (!lightbox || !lightboxImg || !avatarTrigger) return;
+const openLightboxWith = function (src, alt) {
+  if (!lightbox || !lightboxImg) return;
 
   lastFocusedElement = document.activeElement;
 
-  const img = avatarTrigger.querySelector("img");
-  lightboxImg.src = img.currentSrc || img.src;
-  lightboxImg.alt = img.alt || "";
-  lightboxCaption.textContent = img.alt || "";
+  lightboxImg.src = src;
+  lightboxImg.alt = alt || "";
+  lightboxCaption.textContent = alt || "";
 
   lightbox.hidden = false;
   document.body.style.overflow = "hidden";
@@ -597,6 +596,19 @@ const openLightbox = function () {
 
   document.addEventListener("keydown", handleLightboxKeydown);
 };
+
+const openLightbox = function () {
+  if (!lightbox || !lightboxImg || !avatarTrigger) return;
+  const img = avatarTrigger.querySelector("img");
+  openLightboxWith(img.currentSrc || img.src, img.alt || "");
+};
+
+/* open a note's photo in the same lightbox — delegated from the logs grid */
+logsGrid.addEventListener("click", function (event) {
+  const btn = event.target.closest(".logs-photo-btn");
+  if (!btn) return;
+  openLightboxWith(btn.getAttribute("data-photo"), btn.getAttribute("aria-label") || "");
+});
 
 function closeLightbox() {
   if (!lightbox) return;
