@@ -419,7 +419,16 @@ const showPage = function (page, options) {
   document.title = I18N[lang].meta_title;
 
   if (!options || options.scroll !== false) {
-    window.scrollTo(0, 0);
+    /* mobile stacks the sidebar above the page content, so scrolling to the
+       top after a tab switch lands on the profile card instead of the tab
+       the user just asked for — bring the content itself into view */
+    if (!desktopMQ.matches) {
+      const target = document.querySelector('article[data-page="' + page + '"]');
+      if (target) target.scrollIntoView({ block: "start" });
+      else window.scrollTo(0, 0);
+    } else {
+      window.scrollTo(0, 0);
+    }
   }
 
   if (!options || options.focus !== false) {
@@ -868,5 +877,12 @@ projectList.addEventListener("click", function (event) {
 \*-----------------------------------*/
 
 applyLang(curLang(), { updateUrl: false });
-showPage(pageFromHash(), { history: false, focus: false, scroll: false });
+/* deep links (#portfolio, #resume…) land on the tab's content — on mobile
+   that means skipping past the stacked sidebar. 'about' stays at the very
+   top so the profile intro is the first thing a cold visit shows. */
+showPage(pageFromHash(), {
+  history: false,
+  focus: false,
+  scroll: pageFromHash() !== "about"
+});
 loadLogs(false);

@@ -1622,14 +1622,23 @@ article.active {
 
   .stat-label { text-wrap: balance; }
 
-  /* the address is wider than the room left beside the copy button, and
-     overflow-wrap:anywhere was splitting it as "…@gmail.c / om". Let the copy
-     button drop to its own row so the address keeps the full width. */
-  .contact-item { flex-wrap: wrap; row-gap: 4px; }
+  /* keep the copy button on the contact row (aligned with the text column)
+     instead of letting it float on a detached row below the text */
+  .contact-item { align-items: center; }
 
-  .contact-info { flex: 1 1 calc(100% - 52px); }
+  .contact-info { flex: 1 1 auto; min-width: 0; }
 
-  .copy-btn { margin-inline-start: auto; }
+  .copy-btn { flex: none; margin-inline-start: auto; }
+
+  /* cards breathe less on phones — 32px padding eats a 360px screen */
+  .project-card { padding: var(--sp-4); }
+
+  .project-card-body { padding: var(--sp-4); }
+
+  .logs-card { padding: var(--sp-4) var(--sp-3); }
+
+  /* keep scroll targets clear of the fixed bottom nav */
+  html { scroll-padding-bottom: 96px; }
 
 }
 
