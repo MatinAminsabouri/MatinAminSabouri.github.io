@@ -2130,12 +2130,20 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
 
 /* Log content is Persian regardless of the site language — always render
    titles/excerpts in Vazirmatn (loaded unconditionally in <head>) so no
-   system-font fallback (Tahoma/Arial) ever appears */
+   system-font fallback (Tahoma/Arial) ever appears. Emojis are swapped for
+   self-hosted Apple images by render.js, so they look identical on every OS */
 .logs-grid .logs-title,
 .logs-grid .logs-excerpt {
   font-family: 'Vazirmatn', 'Inter', sans-serif;
   letter-spacing: normal;   /* keeps Persian ligatures/joining intact */
-  filter: grayscale(1);     /* strip color from emojis — monochrome only */
+}
+
+/* inline Apple emoji images ride the text like a glyph */
+.emoji {
+  display: inline-block;
+  width: 1.25em;
+  height: 1.25em;
+  vertical-align: -0.22em;
 }
 
 .logs-grid .logs-title {

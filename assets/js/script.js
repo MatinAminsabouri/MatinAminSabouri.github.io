@@ -713,7 +713,7 @@ const openPostModal = function (item) {
     if (item.date) postModalDateEl.setAttribute("datetime", item.date.toISOString());
   }
   if (postModalTitle) {
-    postModalTitle.textContent = item.title || "";
+    postModalTitle.innerHTML = R.emojify(R.esc(item.title || ""));
     postModalTitle.lang = item.lang || "fa";
     /* photo-only posts carry the placeholder title "Photo" — hide it */
     postModalTitle.hidden = !item.text && item.title === "Photo";
@@ -745,7 +745,7 @@ const openPostModal = function (item) {
   }
 
   if (postModalText) {
-    postModalText.textContent = item.text || "";
+    postModalText.innerHTML = R.emojify(R.esc(item.text || ""));
     postModalText.lang = item.lang || "fa";
     postModalText.hidden = !item.text;
   }

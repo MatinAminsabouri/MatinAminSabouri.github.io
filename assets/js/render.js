@@ -39,6 +39,59 @@
   /* the Telegram channel the notes are synced from */
   const CHANNEL_URL = 'https://t.me/KhanAcademyy';
 
+  /*-----------------------------------*\
+    emojis — self-hosted Apple set
+
+    Notes are peppered with emojis; the platform emoji font makes them look
+    different per OS, so we ship the Apple artwork for the ones that occur
+    (assets/images/emoji/, downloaded by scripts/fetch-emoji.mjs) and swap
+    them inline. A sequence without a shipped asset renders with the
+    viewer's native emoji font — colored, just not Apple's artwork.
+  \*-----------------------------------*/
+  const EMOJI_CODES = new Set([
+    '2705', '274c', '2764-fe0f', '1f3af', '1f50d', '1f525', '1f602',
+    '1f642-200d-2195-fe0f', '1f91d', '1f929'
+  ]);
+
+  /* keep in sync with EMOJI_SCAN_RE in scripts/fetch-emoji.mjs */
+  const EMOJI_RUN_RE = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{2190}-\u{21FF}\u{2300}-\u{23FF}\u{25A0}-\u{25FF}\u{2900}-\u{297F}\uFE0F\u200D]+/gu;
+
+  const emojiImg = function (cps) {
+    const name = cps.map(function (c) { return c.codePointAt(0).toString(16); }).join('-');
+    if (!EMOJI_CODES.has(name)) return cps.join('');   /* no asset → native font */
+    return '<img class="emoji" src="./assets/images/emoji/' + name +
+      '.png" alt="' + esc(cps.join('')) + '" loading="lazy">';
+  };
+
+  /* escaped text in, escaped html out: emoji runs that ship an asset become
+     inline images; everything else passes through untouched */
+  const emojify = function (escaped) {
+    return String(escaped).replace(EMOJI_RUN_RE, function (run) {
+      const cps = [...run];
+      /* a run of connectors alone (ZWJ/FE0F) is not an emoji */
+      if (!cps.some(function (c) {
+        const cp = c.codePointAt(0);
+        return cp !== 0xfe0f && cp !== 0x200d;
+      })) return run;
+
+      /* split adjacent emojis: a ZWJ glues the next codepoint into the same
+         token ("🙂‍↕️"), FE0F extends the current one — keep in sync with
+         segment() in scripts/fetch-emoji.mjs */
+      let out = '';
+      let cur = [];
+      for (let i = 0; i < cps.length; i++) {
+        const cp = cps[i].codePointAt(0);
+        if (cur.length && cp !== 0xfe0f && cp !== 0x200d && cps[i - 1].codePointAt(0) !== 0x200d) {
+          out += emojiImg(cur);
+          cur = [];
+        }
+        cur.push(cps[i]);
+      }
+      if (cur.length) out += emojiImg(cur);
+      return out;
+    });
+  };
+
   const chipRow = function (tags) {
     return '<ul class="tag-row">' +
       tags.map(function (t) { return '<li><span class="chip">' + esc(t) + '</span></li>'; }).join('') +
@@ -424,7 +477,7 @@
 
     /* a note whose body is nothing but its title has no excerpt left to show */
     const excerptHtml = item.excerpt
-      ? '<p class="logs-excerpt" dir="auto" lang="' + esc(item.lang) + '">' + esc(item.excerpt) + '</p>'
+      ? '<p class="logs-excerpt" dir="auto" lang="' + esc(item.lang) + '">' + emojify(esc(item.excerpt)) + '</p>'
       : '';
 
     /* albums render every photo, not just the first: one image fills the
@@ -466,7 +519,7 @@
       '<div class="post-main">' +
         head +
         /* notes are Persian source text regardless of the UI language */
-        '<h4 class="logs-title" dir="auto" lang="' + esc(item.lang) + '">' + esc(item.title) + '</h4>' +
+        '<h4 class="logs-title" dir="auto" lang="' + esc(item.lang) + '">' + emojify(esc(item.title)) + '</h4>' +
         excerptHtml +
         photoHtml +
         '<ul class="tag-row">' +
@@ -504,6 +557,7 @@
     normalizeNote: normalizeNote,
     renderNoteCard: renderNoteCard,
     renderNotes: renderNotes,
+    emojify: emojify,
     readingTime: readingTime,
     persianDigits: persianDigits,
     formatNoteDate: formatNoteDate
