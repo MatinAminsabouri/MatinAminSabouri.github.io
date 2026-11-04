@@ -2411,7 +2411,6 @@ html[lang="fa"] .timeline-text {
   font-weight: 700;
   line-height: 1.6;
   letter-spacing: normal;
-  filter: grayscale(1);
 }
 
 /* photo strip — swipeable (scroll-snap), arrows scroll it by a page */
@@ -2504,7 +2503,6 @@ html[lang="fa"] .timeline-text {
   letter-spacing: normal;
   white-space: pre-line;   /* keep the post's original line breaks */
   overflow-wrap: anywhere;
-  filter: grayscale(1);
 }
 
 .post-modal-foot {
