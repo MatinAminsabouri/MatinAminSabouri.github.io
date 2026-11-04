@@ -180,7 +180,14 @@ langBtns.forEach(function (b) {
   If the file is missing or empty, SITE_DATA.notes is used.
 \*-----------------------------------*/
 
-const NOTES_URL = "./assets/data/notes.json";
+/* The curated card schema first (authored titles/excerpts, media alt,
+   reading time — written by scripts/build-notes-cards.mjs on every sync);
+   the raw sync schema is the fallback for a repo where the cards build
+   has not run yet. */
+const NOTES_URLS = [
+  "./assets/data/notes.cards.json",
+  "./assets/data/notes.json"
+];
 
 const staticNotes = ((DATA.notes && DATA.notes.posts) || []).map(function (p) {
   return R.normalizeNote(p, curLang());
@@ -242,6 +249,8 @@ const renderLogs = function () {
    raw.githubusercontent sends Access-Control-Allow-Origin: *, so this works
    cross-origin. */
 const NOTES_REMOTE_URLS = [
+  "https://raw.githubusercontent.com/MatinAminsabouri/MatinAminSabouri.github.io/main/assets/data/notes.cards.json",
+  "https://matinaminsabouri.github.io/assets/data/notes.cards.json",
   "https://raw.githubusercontent.com/MatinAminsabouri/MatinAminSabouri.github.io/main/assets/data/notes.json",
   "https://matinaminsabouri.github.io/assets/data/notes.json"
 ];
@@ -249,16 +258,20 @@ const NOTES_REMOTE_URLS = [
 const IS_PRODUCTION = /(^|\.)matinaminsabouri\.github\.io$/.test(location.hostname);
 
 const parseNotesPayload = function (data) {
-  const posts = Array.isArray(data) ? data : (data && data.posts);
+  /* both payload shapes: raw {posts}, curated {cards}, or a bare array */
+  const posts = Array.isArray(data) ? data
+    : (data && Array.isArray(data.cards)) ? data.cards
+    : (data && data.posts);
   if (!Array.isArray(posts) || !posts.length) throw new Error("empty notes file");
 
   /* "source" tells the UI whether this data ever came from Telegram:
      "fallback" means it was seeded from data.js and never synced, so we
-     must not claim freshness */
+     must not claim freshness. The cards payload stamps freshness as
+     "generated", the raw sync as "updated". */
   const source = (data && data.source) || "telegram";
   return {
     posts: posts,
-    syncedAt: source === "fallback" ? null : ((data && data.updated) || null),
+    syncedAt: source === "fallback" ? null : ((data && (data.updated || data.generated)) || null),
     fromFallback: source === "fallback"
   };
 };
@@ -272,27 +285,37 @@ const fetchJson = async function (url) {
 };
 
 const loadNotes = async function () {
-  const local = await fetchJson(NOTES_URL);
-  const parsed = parseNotesPayload(local);
+  let lastError = null;
 
-  /* a local fallback copy means "never synced". Only a development origin
-     may reach for the published file; the live site never makes an extra
-     request, so it stays dependency-free and console-clean. */
-  if (!parsed.fromFallback || IS_PRODUCTION) return parsed;
-
-  for (const url of NOTES_REMOTE_URLS) {
+  for (const url of NOTES_URLS) {
     try {
-      const remote = parseNotesPayload(await fetchJson(url));
-      if (!remote.fromFallback) {
-        console.info("[Notes] local copy is unsynced; using published notes from", new URL(url).host);
-        return remote;
+      const parsed = parseNotesPayload(await fetchJson(url));
+
+      /* a local fallback copy means "never synced". Only a development origin
+         may reach for the published file; the live site never makes an extra
+         request, so it stays dependency-free and console-clean. */
+      if (!parsed.fromFallback || IS_PRODUCTION) return parsed;
+
+      for (const remoteUrl of NOTES_REMOTE_URLS) {
+        try {
+          const remote = parseNotesPayload(await fetchJson(remoteUrl));
+          if (!remote.fromFallback) {
+            console.info("[Notes] local copy is unsynced; using published notes from", new URL(remoteUrl).host);
+            return remote;
+          }
+        } catch (e) {
+          console.info("[Notes] published notes not available at", new URL(remoteUrl).host);
+        }
       }
+
+      return parsed;
     } catch (e) {
-      console.info("[Notes] published notes not available at", new URL(url).host);
+      /* cards file missing or unreadable — fall through to the raw schema */
+      lastError = e;
     }
   }
 
-  return parsed;
+  throw lastError || new Error("no notes source readable");
 };
 
 const applyNotes = function (parsed) {
@@ -722,9 +745,10 @@ const openPostModal = function (item) {
   if (postModalMedia && postModalStrip) {
     const photos = item.photos || [];
     const errorText = I18N[curLang()].logs_photo_error;
-    postModalStrip.innerHTML = photos.map(function (u) {
+    postModalStrip.innerHTML = photos.map(function (u, i) {
+      const alt = (item.photoAlts && item.photoAlts[i]) || "";
       return '<span class="post-slide is-loading" data-error="' + R.esc(errorText) + '">' +
-        '<img src="' + R.esc(u) + '" alt="" loading="lazy"></span>';
+        '<img src="' + R.esc(u) + '" alt="' + R.esc(alt) + '" loading="lazy"></span>';
     }).join("");
     postModalMedia.hidden = !photos.length;
     if (postModalStripNav) postModalStripNav.hidden = photos.length < 2;
@@ -783,9 +807,13 @@ function closePostModal() {
 }
 
 const findNoteById = function (id) {
-  const n = Number(id);
-  return logsItems.find(function (p) { return p.id === n; }) ||
-    staticNotes.find(function (p) { return p.id === n; }) || null;
+  /* ids are numeric in the raw schema ("725") and prefixed in the card
+     schema ("tg_725") — compare as strings so both resolve */
+  const key = String(id);
+  const byId = function (list) {
+    return list.find(function (p) { return String(p.id) === key; }) || null;
+  };
+  return byId(logsItems) || byId(staticNotes);
 };
 
 logsGrid.addEventListener("click", function (event) {

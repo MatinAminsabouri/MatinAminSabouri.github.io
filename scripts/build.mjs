@@ -46,10 +46,18 @@ const T = DATA.i18n[LANG];
   sections
 \*-----------------------------------*/
 
+/* Prerender prefers the curated card schema (notes.cards.json — authored
+   titles/excerpts, media alt, reading time) and falls back to the raw
+   sync schema, then to the offline seed in data.js. */
+const cardsPayload = JSON.parse(await fs.readFile('assets/data/notes.cards.json', 'utf8').catch(() => 'null'));
 const notesPayload = JSON.parse(await fs.readFile('assets/data/notes.json', 'utf8').catch(() => 'null'));
-const notePosts = (notesPayload && Array.isArray(notesPayload.posts) && notesPayload.posts.length)
-  ? notesPayload.posts
-  : (DATA.notes && DATA.notes.posts) || [];
+
+const notePosts =
+  (cardsPayload && Array.isArray(cardsPayload.cards) && cardsPayload.cards.length)
+    ? cardsPayload.cards
+    : (notesPayload && Array.isArray(notesPayload.posts) && notesPayload.posts.length)
+      ? notesPayload.posts
+      : (DATA.notes && DATA.notes.posts) || [];
 
 const sections = {
   ICONS: await fs.readFile('assets/icons/sprite.svg.html', 'utf8'),
@@ -125,7 +133,7 @@ console.log(`[build] index.html prerendered (${(html.length / 1024).toFixed(1)} 
    makes sitemap.xml differ on every run, which breaks the CI check that
    the committed build output is up to date */
 const newestNote = notePosts
-  .map((p) => p.date)
+  .map((p) => p.date || (p.published_at && p.published_at.iso))
   .filter(Boolean)
   .sort()
   .pop();

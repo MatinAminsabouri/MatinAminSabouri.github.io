@@ -39,10 +39,10 @@ try {
       .map(r => r.name).filter(n => !n.startsWith(location.origin));
     /* local dev may fetch the published notes file when the local copy has
        never been synced — that is the only permitted cross-origin request */
-    const notesFallback = ext.filter(n => /notes\\.json/.test(n));
+    const notesFallback = ext.filter(n => /notes\.(cards\.)?json/.test(n));
     return {
       notes: document.querySelectorAll('.logs-card').length,
-      external: ext.filter(n => !/notes\\.json/.test(n)),
+      external: ext.filter(n => !/notes\.(cards\.)?json/.test(n)),
       notesFallback,
       isProduction: /(^|\\.)matinaminsabouri\\.github\\.io$/.test(location.hostname),
       sprite: !!document.getElementById('i-mail-outline'),
@@ -392,7 +392,7 @@ try {
   /* the dev-only notes fallback probes a URL that may not exist yet; that
      is an expected, handled miss, not a page error */
   const errs = browser.consoleErrors.filter(
-    (e) => !/favicon|404 \(Not Found\)/i.test(e) && !/notes\.json/i.test(e)
+    (e) => !/favicon|404 \(Not Found\)/i.test(e) && !/notes\.(cards\.)?json/i.test(e)
   );
   check('no console errors', errs.length === 0, errs.slice(0, 3).join(' | '));
 

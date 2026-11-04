@@ -35,7 +35,9 @@ expect(info.articles === 4, 'all four articles exist', String(info.articles));
 expect(info.articlesVisible.length === 4, 'all articles visible without JS', info.articlesVisible.join(','));
 expect(info.contacts === 4, 'contacts prerendered', String(info.contacts));
 expect(info.projects === 4, 'projects prerendered', String(info.projects));
-expect(info.notes === 6, 'notes prerendered', String(info.notes));
+/* the count depends on the synced channel (17 cards today) — the seed in
+   data.js alone guarantees six, so assert "prerendered at all" */
+expect(info.notes >= 6, 'notes prerendered', String(info.notes));
 expect(info.caseStudyVisible, 'case study readable without JS');
 expect(info.icons > 20, 'icons render', String(info.icons));
 expect(info.headings.join('|') === 'About me|Resume|Portfolio|Notes', 'section headings present', info.headings.join('|'));
