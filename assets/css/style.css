@@ -93,7 +93,6 @@
   --glass-bg: rgba(16, 23, 37, 0.62);
   --glass-brd: rgba(148, 163, 184, 0.16);
   --nav-bg: rgba(16, 23, 37, 0.78);
-  --featured-tint: rgba(34, 211, 238, 0.10);
 
   /* typography */
   --ff-body: 'Inter', sans-serif;
@@ -1126,11 +1125,14 @@ article.active {
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--sp-3);
+  /* opt out of the shared panel surface (`.sidebar, article` pads every
+     card <article>) — padding lives on .project-card-body so the cover
+     bleeds to the card edges */
+  padding: 0;
   background: var(--glass-bg);
   border: 1px solid var(--glass-brd);
   border-radius: var(--radius-lg);
-  padding: var(--sp-5);
+  overflow: hidden;   /* the cover bleeds to the card edges */
   transition: transform var(--dur-2) var(--ease-out), border-color var(--dur-2), box-shadow var(--dur-2);
 }
 
@@ -1140,43 +1142,100 @@ article.active {
   box-shadow: 0 16px 40px -16px rgba(2, 6, 23, 0.8);
 }
 
-.project-card--featured {
-  position: relative;
-  border-color: rgba(34, 211, 238, 0.28);
-  /* a corner glow anchored to the top edge and fading to transparent — the
-     old linear wash ended mid-card with a near-solid stop and read as a
-     stain. Centered horizontally so it never leans in RTL */
-  background:
-    radial-gradient(120% 80% at 50% 0%, var(--featured-tint), transparent 60%),
-    var(--glass-bg);
+/* content column under the cover */
+.project-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+  flex: 1;
+  min-width: 0;
 }
 
-/* accent hairline marking the featured card's top edge */
-.project-card--featured::before {
+/*-----------------------------------*\
+  cover art — pure CSS, per category. No image assets: each category gets
+  its own gradient mood plus a shared grid-line texture, and the category
+  icon anchors the corner
+\*-----------------------------------*/
+.project-cover {
+  position: relative;
+  height: 128px;
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  padding: var(--sp-3) var(--sp-4);
+  overflow: hidden;
+  border-bottom: 1px solid var(--glass-brd);
+  background:
+    radial-gradient(100% 140% at 88% 0%, rgba(148, 163, 184, 0.35), transparent 55%),
+    linear-gradient(135deg, rgba(100, 116, 139, 0.4), rgba(51, 65, 85, 0.35));
+  transition: filter var(--dur-2) var(--ease-out);
+}
+
+.project-card:hover .project-cover { filter: saturate(1.2) brightness(1.08); }
+
+.project-cover::before {
   content: "";
   position: absolute;
-  top: 0;
-  inset-inline: 14px;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.6), transparent);
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 18px 18px;
+  pointer-events: none;
+}
+
+.project-cover[data-category="ai systems"] {
+  background:
+    radial-gradient(100% 140% at 88% 0%, rgba(34, 211, 238, 0.5), transparent 58%),
+    linear-gradient(135deg, rgba(99, 102, 241, 0.55), rgba(13, 148, 136, 0.4));
+}
+
+.project-cover[data-category="backend"] {
+  background:
+    radial-gradient(100% 140% at 88% 0%, rgba(129, 140, 248, 0.5), transparent 58%),
+    linear-gradient(135deg, rgba(79, 70, 229, 0.5), rgba(30, 64, 175, 0.42));
+}
+
+.project-cover[data-category="desktop"] {
+  background:
+    radial-gradient(100% 140% at 88% 0%, rgba(251, 191, 36, 0.4), transparent 58%),
+    linear-gradient(135deg, rgba(180, 83, 9, 0.42), rgba(15, 118, 110, 0.4));
+}
+
+.project-cover-icon {
+  position: absolute;
+  inset-inline-end: var(--sp-4);
+  bottom: var(--sp-3);
+  width: 42px;
+  height: 42px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.project-cover .project-category {
+  position: relative;
+  font-family: var(--ff-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.88);
+  letter-spacing: 0.08em;
 }
 
 .project-card-head {
-  /* one head anatomy for every card: the category line, then the badge
-     line — uniform across featured and regular cards, LTR and RTL */
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--sp-2);
 }
 
-.project-category {
-  font-family: var(--ff-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-3);
+.project-card--featured .project-cover {
+  height: 148px;
+  background:
+    radial-gradient(110% 150% at 85% 0%, rgba(34, 211, 238, 0.6), transparent 62%),
+    linear-gradient(135deg, rgba(34, 211, 238, 0.3), rgba(99, 102, 241, 0.6));
+}
+
+.project-card--featured {
+  border-color: rgba(34, 211, 238, 0.35);
 }
 
 .project-title { font-size: clamp(1.02rem, 0.95rem + 0.3vw, 1.2rem); }
@@ -1748,7 +1807,6 @@ article.active {
   --glass-bg: rgba(255, 255, 255, 0.65);
   --glass-brd: rgba(15, 23, 42, 0.08);
   --nav-bg: rgba(255, 255, 255, 0.85);
-  --featured-tint: rgba(14, 116, 144, 0.08);
 }
 
 [data-theme="light"] body::before {
