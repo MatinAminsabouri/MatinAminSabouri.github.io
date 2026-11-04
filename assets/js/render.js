@@ -263,14 +263,6 @@
     }).join('');
   };
 
-  /* cover artwork per category — pure CSS gradients + the category icon,
-     so project cards carry real visual identity without any image assets */
-  const COVER_ICONS = {
-    'ai systems': 'sparkles-outline',
-    'backend': 'server-outline',
-    'desktop': 'desktop-outline'
-  };
-
   const buildProjectCard = function (p, lang, t, caseOpen) {
     const badges = p.badges && p.badges.length
       ? '<div class="badge-row">' +
@@ -284,13 +276,8 @@
        so the featured card differs only by its accent frame, not its layout */
     const head =
       '<div class="project-card-head">' +
-        (badges || '') +
-      '</div>';
-
-    const cover =
-      '<div class="project-cover" data-category="' + esc(p.category) + '">' +
-        icon(COVER_ICONS[p.category] || 'sparkles-outline', 'project-cover-icon') +
         '<span class="project-category">' + esc(L(p.category_label, lang)) + '</span>' +
+        (badges || '') +
       '</div>';
 
     let caseStudyHtml = '';
@@ -355,15 +342,12 @@
         (p.featured ? ' project-card--featured' : '') +
         (caseOpen && p.case_study ? ' open' : '') +
       '">' +
-      cover +
-      '<div class="project-card-body">' +
-        head +
-        '<h3 class="project-title">' + esc(L(p.title, lang)) + '</h3>' +
-        '<p class="project-text">' + esc(L(p.desc, lang)) + '</p>' +
-        caseStudyHtml +
-        chipRow(p.tags) +
-        '<div class="project-actions">' + toggleHtml + linkHtml + noteHtml + '</div>' +
-      '</div>' +
+      head +
+      '<h3 class="project-title">' + esc(L(p.title, lang)) + '</h3>' +
+      '<p class="project-text">' + esc(L(p.desc, lang)) + '</p>' +
+      caseStudyHtml +
+      chipRow(p.tags) +
+      '<div class="project-actions">' + toggleHtml + linkHtml + noteHtml + '</div>' +
       '</article>';
   };
 
