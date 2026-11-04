@@ -93,7 +93,7 @@
   --glass-bg: rgba(16, 23, 37, 0.62);
   --glass-brd: rgba(148, 163, 184, 0.16);
   --nav-bg: rgba(16, 23, 37, 0.78);
-  --featured-bg: linear-gradient(160deg, rgba(34, 211, 238, 0.07), rgba(99, 102, 241, 0.05) 50%, rgba(16, 23, 37, 0.6));
+  --featured-tint: rgba(34, 211, 238, 0.10);
 
   /* typography */
   --ff-body: 'Inter', sans-serif;
@@ -1141,18 +1141,34 @@ article.active {
 }
 
 .project-card--featured {
-  border-color: rgba(34, 211, 238, 0.22);
-  background: var(--featured-bg);
+  position: relative;
+  border-color: rgba(34, 211, 238, 0.28);
+  /* a corner glow anchored to the top edge and fading to transparent — the
+     old linear wash ended mid-card with a near-solid stop and read as a
+     stain. Centered horizontally so it never leans in RTL */
+  background:
+    radial-gradient(120% 80% at 50% 0%, var(--featured-tint), transparent 60%),
+    var(--glass-bg);
+}
+
+/* accent hairline marking the featured card's top edge */
+.project-card--featured::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  inset-inline: 14px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.6), transparent);
 }
 
 .project-card-head {
   display: flex;
-  /* nowrap: the badges wrap inside their own row instead, so the category
-     label never drops to a second line and lands alone on the far left */
-  flex-wrap: nowrap;
-  /* flex-start: with a two-line badge block the category sits level with the
-     first badge rather than floating in the middle of the block */
-  align-items: flex-start;
+  /* the whole row wraps as one unit: badges stay on their line and the
+     category drops below them (still right-aligned via its auto margin)
+     when a card is too narrow for everything */
+  flex-wrap: wrap;
+  align-items: center;
   gap: var(--sp-2);
 }
 
@@ -1197,8 +1213,11 @@ article.active {
 .badge-row {
   display: flex;
   gap: var(--sp-2);
-  flex-wrap: wrap;
-  min-width: 0;   /* let the row shrink so the category keeps its own column */
+  /* one line: when badges + category don't fit, the whole head row wraps
+     and the category moves below them (keeps the head from stacking badges
+     vertically beside a floating label) */
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 .badge {
@@ -1272,8 +1291,12 @@ article.active {
 
 .case-toggle-label { white-space: nowrap; }
 
-/* breathing room between case-study blocks once the accordion is open */
-.case-block + .case-block { margin-top: var(--sp-5); }
+/* breathing room + a hairline between case-study blocks once open */
+.case-block + .case-block {
+  margin-top: var(--sp-5);
+  border-top: 1px solid var(--line-1);
+  padding-top: var(--sp-5);
+}
 
 .project-card.open .case-toggle-icon { transform: rotate(180deg); }
 
@@ -1728,7 +1751,7 @@ article.active {
   --glass-bg: rgba(255, 255, 255, 0.65);
   --glass-brd: rgba(15, 23, 42, 0.08);
   --nav-bg: rgba(255, 255, 255, 0.85);
-  --featured-bg: linear-gradient(160deg, rgba(14, 116, 144, 0.07), rgba(79, 70, 229, 0.05) 50%, rgba(255, 255, 255, 0.7));
+  --featured-tint: rgba(14, 116, 144, 0.08);
 }
 
 [data-theme="light"] body::before {
