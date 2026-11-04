@@ -334,18 +334,12 @@
        between a local run and the runner — and a post at 20:40 UTC would
        flip calendar days. Notes are published timestamps, not events
        relative to the reader. */
+    /* month + year only — the day never mattered on a dev-log */
     if (lang === 'fa') {
-      const parts = date.toLocaleDateString('fa-IR', {
-        year: 'numeric', month: 'numeric', day: 'numeric', timeZone: 'UTC'
-      }).split('/').map(function (s) { return s.trim(); });
-      const monthName = date.toLocaleDateString('fa-IR', { month: 'long', timeZone: 'UTC' })
-        .replace(/\s*\d+.*$/, '');
-      return persianDigits(parts[2]) + ' ' + monthName + ' ' + persianDigits(parts[0]);
+      return date.toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', timeZone: 'UTC' });
     }
 
-    return date.toLocaleDateString('en-GB', {
-      year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC'
-    });
+    return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', timeZone: 'UTC' });
   };
 
   /* Telegram CDN photo URLs are signed, expire within hours, and
@@ -361,71 +355,42 @@
   };
 
   const normalizeNote = function (post, lang) {
-    /* Two input schemas feed the same renderer:
-       - the raw sync schema (notes.json): scraped title/text/photos;
-       - the curated card schema (notes.cards.json, written by
-         scripts/build-notes-cards.mjs): authored title/excerpt,
-         full_content, media{url, alt}, precomputed reading time.
-       Cards are detected by full_content/published_at and mapped onto the
-       same internal shape, so the markup below never forks. */
-    const isCard = post && (post.full_content != null || post.published_at != null);
-
     /* full text keeps its line breaks — the popup renders it pre-line like
        Telegram; the card excerpt is collapsed separately */
-    const text = String(isCard ? post.full_content : post.text || '').trim();
-    const date = new Date(isCard ? (post.published_at && post.published_at.iso) || post.date : post.date);
+    const text = String(post.text || '').trim();
+    const date = new Date(post.date);
 
     const title = post.title || text.replace(/\s+/g, ' ').slice(0, 80);
 
-    let body = text;
-    let excerpt = '';
+    /* A synced Telegram post repeats its title as the first line of the body,
+       so the card printed the same sentence twice. The sync truncates the
+       title at 110 chars (appending "…"), which broke exact-prefix matching —
+       compare the collapsed first line against the title prefix instead and
+       drop the whole first line when they refer to the same sentence. */
+    const lines = text.split('\n');
+    const firstLine = (lines.find(function (l) { return l.trim(); }) || '').replace(/\s+/g, ' ').trim();
+    const titleCore = title.replace(/\s+/g, ' ').trim().replace(/…$/, '');
+    const dropsFirstLine = titleCore && firstLine &&
+      (firstLine === titleCore || firstLine.indexOf(titleCore) === 0 || titleCore.indexOf(firstLine) === 0);
+    const body = dropsFirstLine ? lines.slice(1).join('\n').trim() : text;
 
-    if (isCard) {
-      /* title and body are authored independently — no duplicated first
-         line to strip */
-      excerpt = String(post.excerpt || '').trim() || body.replace(/\s+/g, ' ').trim();
-    } else {
-      /* A synced Telegram post repeats its title as the first line of the body,
-         so the card printed the same sentence twice. The sync truncates the
-         title at 110 chars (appending "…"), which broke exact-prefix matching —
-         compare the collapsed first line against the title prefix instead and
-         drop the whole first line when they refer to the same sentence. */
-      const lines = text.split('\n');
-      const firstLine = (lines.find(function (l) { return l.trim(); }) || '').replace(/\s+/g, ' ').trim();
-      const titleCore = title.replace(/\s+/g, ' ').trim().replace(/…$/, '');
-      const dropsFirstLine = titleCore && firstLine &&
-        (firstLine === titleCore || firstLine.indexOf(titleCore) === 0 || titleCore.indexOf(firstLine) === 0);
-      body = dropsFirstLine ? lines.slice(1).join('\n').trim() : text;
-      excerpt = body.replace(/\s+/g, ' ').trim();
-    }
-
-    const collapsedBody = excerpt.length > 220 ? excerpt.slice(0, 220).trimEnd() + '…' : excerpt;
-
-    /* cards ship "3 min read" precomputed; fall back to computing it */
-    const readingMatch = isCard && /^(\d+)\s*min\b/.exec(String(post.reading_time || ''));
-    const reading = readingMatch ? Number(readingMatch[1]) : readingTime(text);
-
-    const cardUrl = isCard && post.channel && post.channel.post_url ? post.channel.post_url : post.url;
-    const mediaUrl = isCard && post.media && /^https?:\/\//.test(String(post.media.url || ''))
-      ? String(post.media.url)
-      : null;
+    const collapsedBody = body.replace(/\s+/g, ' ').trim();
 
     return {
       id: post.id,
       title: title,
       /* body without its duplicated title line — shown in full in the popup */
       text: body,
-      excerpt: collapsedBody,
+      excerpt: collapsedBody.length > 220 ? collapsedBody.slice(0, 220).trimEnd() + '…' : collapsedBody,
       tags: (post.tags || []).slice(0, 5),
-      url: cardUrl,
-      badgeUrl: post.badgeUrl || cardUrl,
+      url: post.url,
+      badgeUrl: post.badgeUrl || post.url,
       date: isNaN(date.getTime()) ? null : date,
-      reading: reading,
-      photos: (mediaUrl ? [mediaUrl] : isCard ? [] : Array.isArray(post.photos) ? post.photos : [])
+      reading: readingTime(text),
+      photos: Array.isArray(post.photos) ? post.photos
         .filter(function (u) { return typeof u === 'string' && /^https?:\/\//.test(u); })
         .slice(0, 8)
-        .map(proxiedImage),
-      photoAlts: mediaUrl && post.media.alt ? [String(post.media.alt)] : [],
+        .map(proxiedImage) : [],
       audio: (typeof post.audio === 'string' && /^https?:\/\//.test(post.audio)) ? post.audio : null,
       lang: post.lang || 'fa'
     };
@@ -462,22 +427,22 @@
       ? '<p class="logs-excerpt" dir="auto" lang="' + esc(item.lang) + '">' + esc(item.excerpt) + '</p>'
       : '';
 
-    /* a photo-bearing note shows its first image as a thumbnail; clicking
-       the card opens the post popup with the full gallery. An album badge
-       hints the rest of the gallery; the shimmer/error states come from
-       the .is-loading/.is-error wrappers (script.js settles them). */
+    /* albums render every photo, not just the first: one image fills the
+       row, two or more sit in a grid (3 = one tall + two stacked, like X).
+       Each cell keeps its own shimmer/error wrapper (script.js settles
+       them from load/error capture listeners). */
     const photoCount = item.photos ? item.photos.length : 0;
-    const countLabel = t.logs_photo_count.replace('{n}', lang === 'fa' ? persianDigits(photoCount) : photoCount);
-    const photoHtml = photoCount
-      ? '<div class="logs-photo is-loading" data-error="' + esc(t.logs_photo_error) + '">' +
-        '<img src="' + esc(item.photos[0]) + '" class="logs-thumb" alt="' +
-          esc((item.photoAlts && item.photoAlts[0]) || '') + '" loading="lazy">' +
-        (photoCount > 1
-          ? '<span class="logs-photo-count" dir="ltr" aria-label="' + esc(countLabel) + '">' +
-            (lang === 'fa' ? persianDigits(photoCount) : photoCount) + '</span>'
-          : '') +
-      '</div>'
-      : '';
+    const photoWrap = function (u) {
+      return '<div class="logs-photo is-loading" data-error="' + esc(t.logs_photo_error) + '">' +
+        '<img src="' + esc(u) + '" class="logs-thumb" alt="" loading="lazy"></div>';
+    };
+    const photoHtml = photoCount === 1
+      ? photoWrap(item.photos[0])
+      : photoCount > 1
+        ? '<div class="logs-gallery" data-count="' + photoCount + '">' +
+            item.photos.map(photoWrap).join('') +
+          '</div>'
+        : '';
 
     /* action row: reply opens the post on Telegram, share hands it to
        Telegram's native share sheet with the title prefilled */

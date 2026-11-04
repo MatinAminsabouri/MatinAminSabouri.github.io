@@ -1973,6 +1973,44 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
   justify-content: center;
 }
 
+/* album grid — every photo of the post, not just the first. Two photos
+   sit side by side; three forms the X pattern: one tall cell plus two
+   stacked next to it. The container clips the shared corners, which
+   stays correct in RTL where the grid mirrors. */
+.logs-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: var(--sp-1);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.logs-gallery[data-count="3"] .logs-photo:first-child {
+  grid-row: span 2;
+}
+
+.logs-gallery .logs-photo {
+  aspect-ratio: 1 / 1;
+  margin-top: 0;
+  display: block;
+}
+
+/* the spanning cell must stretch over both rows — keep the square ratio
+   off it or it refuses to grow */
+.logs-gallery[data-count="3"] .logs-photo:first-child {
+  aspect-ratio: auto;
+  height: 100%;
+}
+
+.logs-gallery .logs-thumb {
+  min-height: 0;
+  max-height: none;
+  height: 100%;
+  border-radius: 0;
+  border: 0;
+}
+
 /* media wrappers shimmer while the proxied image streams in, then flip
    to .is-loaded / .is-error (script.js settles them from load/error
    capture listeners); .is-error shows its data-error caption */
@@ -2001,21 +2039,6 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
   text-align: center;
   background: var(--bg-2);
   z-index: 1;
-}
-
-/* album badge — how many more photos the popup gallery holds */
-.logs-photo-count {
-  position: absolute;
-  bottom: 8px;
-  inset-inline-end: 8px;
-  z-index: 2;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(7, 11, 18, 0.72);
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  color: var(--text-1);
-  font-family: var(--ff-mono);
-  font-size: 0.6875rem;
 }
 
 .logs-thumb {
@@ -2126,8 +2149,9 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
   line-height: 1.85;
 }
 
-/* meta row (author · handle · date · reading) stays LTR; dates use Latin digits */
-.logs-grid .logs-meta { direction: ltr; }
+/* the head row follows the page direction — in FA it must flow RTL like
+   the post body, or the Persian author name sits on the wrong edge and
+   the date wraps out of the row */
 
 /* Persian headings: heavier weight + taller leading (Vazirmatn optical size) */
 html[lang="fa"] h1,

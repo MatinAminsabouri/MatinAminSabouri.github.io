@@ -9,10 +9,9 @@ on:
   push:
     # running on a change to the sync itself gives immediate feedback that
     # the parser still matches Telegram's markup. Path-filtered so the
-    # bot's own commit (notes.json + cards + index.html) cannot re-trigger it.
+    # bot's own commit (notes.json + index.html) cannot re-trigger it.
     paths:
       - 'scripts/sync-notes.mjs'
-      - 'scripts/build-notes-cards.mjs'
       - 'scripts/test-sync-parser.mjs'
       - '.github/workflows/sync-notes.yml'
 
@@ -45,41 +44,17 @@ jobs:
             exit "$status"
           fi
 
-      - name: Build dev-log cards
-        id: cards
-        run: |
-          set +e
-          node scripts/build-notes-cards.mjs 2>&1 | tee /tmp/cards.log
-          status=${PIPESTATUS[0]}
-          if [ "$status" -ne 0 ]; then
-            # cards are derived from notes.json, so a failure here must never
-            # block the notes sync — the status is surfaced twice: as an
-            # annotation now, and as a red run after the commit step below
-            tail -n 12 /tmp/cards.log | sed 's/^/::error::/'
-          fi
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-
       - name: Rebuild prerendered page
         run: npm run build
 
       - name: Commit changes
         run: |
-          paths="assets/data/notes.json index.html"
-          if [ "${{ steps.cards.outputs.status }}" = "0" ]; then
-            paths="$paths assets/data/notes.cards.json"
-          fi
-          if git diff --quiet -- $paths; then
+          if git diff --quiet -- assets/data/notes.json index.html; then
             echo "No changes."
-          else
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add $paths
-            git commit -m "chore: sync Telegram notes"
-            git push
+            exit 0
           fi
-          # keep the run red when the cards build failed even though the
-          # notes commit above succeeded — otherwise the drift would only
-          # show up later as stale cards
-          if [ "${{ steps.cards.outputs.status }}" != "0" ]; then
-            exit 1
-          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/data/notes.json index.html
+          git commit -m "chore: sync Telegram notes"
+          git push
