@@ -1108,11 +1108,10 @@ article.active {
 /* project grid */
 .project-list {
   display: grid;
+  grid-template-columns: 1fr;   /* one standard column — no ragged pairs */
   gap: var(--sp-4);
-  /* start, not stretch: a card is as tall as its own content. Stretching
-     pinned every card in a row to the tallest one, which left the short
-     cards (and anything beside the expandable case study) mostly empty. */
-  align-items: start;
+  max-width: 720px;             /* aligns with the Notes feed */
+  margin-inline: auto;
 }
 
 .project-item { display: none; }
@@ -1163,11 +1162,12 @@ article.active {
 }
 
 .project-card-head {
-  /* one head anatomy for every card: the category line, then the badge
-     line — uniform across featured and regular cards, LTR and RTL */
+  /* full-width card: category on the start edge, badges on the far edge —
+     one tidy line (wraps under it when a narrow screen forces it) */
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: var(--sp-2);
 }
 
@@ -1210,10 +1210,8 @@ article.active {
 .badge-row {
   display: flex;
   gap: var(--sp-2);
-  /* one line: when badges + category don't fit, the whole head row wraps
-     and the category moves below them (keeps the head from stacking badges
-     vertically beside a floating label) */
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  justify-content: flex-end;   /* badges hug the far edge of the head row */
   min-width: 0;
 }
 
@@ -1417,6 +1415,9 @@ article.active {
     flex-wrap: wrap;
     gap: var(--sp-2);
     margin-bottom: var(--sp-5);
+    /* align the chips with the single-column card stack */
+    max-width: 720px;
+    margin-inline: auto;
   }
 
   .filter-item button {
@@ -1441,8 +1442,6 @@ article.active {
     background: var(--grad-accent);
     border-color: transparent;
   }
-
-  .project-list { grid-template-columns: repeat(2, 1fr); }
 
   /* skills — disciplined 2×2 grid, chips pinned to the baseline */
   .skills {
