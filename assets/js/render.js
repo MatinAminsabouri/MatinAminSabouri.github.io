@@ -272,10 +272,12 @@
         '</div>'
       : '';
 
+    /* every card shares one head anatomy — category line, then badge line —
+       so the featured card differs only by its accent frame, not its layout */
     const head =
       '<div class="project-card-head">' +
-        badges +
         '<span class="project-category">' + esc(L(p.category_label, lang)) + '</span>' +
+        (badges || '') +
       '</div>';
 
     let caseStudyHtml = '';
