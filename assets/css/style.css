@@ -1805,6 +1805,9 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
 .logs-feed {
   display: grid;
   gap: var(--sp-5);
+  /* an X-style timeline reads best in a single column, however wide the tab */
+  max-width: 720px;
+  margin-inline: auto;
 }
 
 /* feed provenance / refresh feedback — announced politely */
@@ -1822,40 +1825,68 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
 .logs-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--sp-4);
+  gap: 0;              /* rows carry their own bottom hairline */
   min-height: 240px;   /* CLS guard while skeleton → content swaps */
-  align-items: start;  /* same reasoning as .project-list */
-}
-
-@media (min-width: 768px) {
-  .logs-grid { grid-template-columns: repeat(2, 1fr); }
+  align-items: stretch;
 }
 
 .logs-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-3);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-brd);
-  border-radius: var(--radius-lg);
-  padding: var(--sp-5);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0 var(--sp-3);
+  padding: var(--sp-4) var(--sp-2);
+  /* opt out of the shared glass panel surface (`.sidebar, article` also
+     hits every card <article>) — a timeline row is transparent and is
+     separated from its neighbours by a hairline only */
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--line-2);
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   min-width: 0;   /* a long URL in a note must not blow the column track out */
-  transition: transform var(--dur-2) var(--ease-out), border-color var(--dur-2), box-shadow var(--dur-2);
+  transition: background var(--dur-1);
 }
 
+.logs-card:last-child { border-bottom: 0; }
+
+/* X's row hover: a quiet wash — no lift, no shadow, the hairline stays */
 .logs-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(34, 211, 238, 0.3);
-  box-shadow: 0 16px 40px -16px rgba(2, 6, 23, 0.8);
+  background: var(--glass-bg);
+}
+
+/* author column */
+.post-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid var(--glass-brd);
+  background: var(--bg-2);
+  align-self: start;
+}
+
+.post-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.post-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
 }
 
 .logs-meta {
   display: flex;
   align-items: center;
-  gap: var(--sp-2);
+  gap: 6px;
   flex-wrap: wrap;
-  font-family: var(--ff-mono);
-  font-size: 0.6875rem;
+  font-size: 0.8125rem;
   color: var(--text-3);
 }
 
@@ -1864,10 +1895,44 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
   height: 3px;
   border-radius: 50%;
   background: var(--line-3);
+  flex: none;
 }
 
+.post-name {
+  color: var(--text-1);
+  font-weight: 700;
+}
+
+.post-handle {
+  font-family: var(--ff-mono);
+  font-size: 0.75rem;
+  letter-spacing: -0.02em;
+  transition: color var(--dur-1);
+}
+
+.post-handle:hover { color: var(--accent-2); }
+
+.post-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+  margin-top: var(--sp-1);
+}
+
+.post-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-3);
+  transition: color var(--dur-1);
+}
+
+.post-action:hover { color: var(--accent-1); }
+
+.post-action .icon { width: 18px; height: 18px; }
+
+/* channel pill — kept for the post popup's badge (.post-modal-badge) */
 .logs-badge {
-  margin-inline-start: auto;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -1900,16 +1965,10 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
   overflow: hidden;
 }
 
-.logs-card-actions {
-  margin-top: auto;
-  display: flex;
-  align-items: center;
-}
-
 .logs-photo {
   position: relative;
   overflow: hidden;
-  margin-top: var(--sp-3);
+  margin-top: var(--sp-1);
   display: flex;
   justify-content: center;
 }
@@ -2067,14 +2126,8 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
   line-height: 1.85;
 }
 
-/* meta row (date · reading · badge) stays LTR; dates use Latin digits */
+/* meta row (author · handle · date · reading) stays LTR; dates use Latin digits */
 .logs-grid .logs-meta { direction: ltr; }
-
-.logs-grid .logs-badge {
-  font-family: 'JetBrains Mono', monospace;
-  direction: ltr;
-  letter-spacing: -0.02em;
-}
 
 /* Persian headings: heavier weight + taller leading (Vazirmatn optical size) */
 html[lang="fa"] h1,

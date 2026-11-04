@@ -169,7 +169,7 @@ const ignore = new Set([
   'skel-meta', 'skel-title', 'skel-line', 'skel-chips', 'icon', 'badge',
   'chip', 'btn', 'btn--ghost', 'btn--primary', 'case-block',
   'case-toggle', 'case-toggle-label', 'social-item', 'service-content-box',
-  'project-card-head', 'logs-card-actions'
+  'project-card-head'
 ]);
 
 const cssClasses = new Set([...css.matchAll(/\.([a-zA-Z][\w-]*)/g)].map((m) => m[1]));

@@ -16,11 +16,23 @@ const state = await b.evaluate(`(() => {
   const alt = document.querySelector('.logs-thumb')?.getAttribute('alt') || '';
   const chips = Array.from(document.querySelectorAll('.logs-card')[0].querySelectorAll('.chip')).map(c => c.textContent.trim());
   const times = Array.from(document.querySelectorAll('.logs-meta span')).map(s => s.textContent.trim()).filter(Boolean);
-  return { firstTitle, alt, chips, times };
+  const first = document.querySelector('.logs-card');
+  return {
+    firstTitle, alt, chips, times,
+    avatar: !!first.querySelector('.post-avatar img'),
+    handle: first.querySelector('.post-handle')?.textContent.trim(),
+    actions: first.querySelectorAll('.post-actions a').length,
+    oldBadge: !!first.querySelector('.logs-badge'),
+    oldButton: !!first.querySelector('.logs-card-actions')
+  };
 })()`);
 
 expect(state.firstTitle === 'موسیقی متن فصل اول سریال Silo',
   'runtime rendered the curated card title (cards file consumed)', state.firstTitle);
+expect(state.avatar, 'timeline row shows the author avatar');
+expect(state.handle === '@KhanAcademyy', 'head shows the channel handle', state.handle);
+expect(state.actions === 2, 'action row has reply + share links', String(state.actions));
+expect(!state.oldBadge && !state.oldButton, 'legacy card chrome is gone');
 expect(state.alt.includes('خاک و غبار'),
   'photo thumb carries the authored alt text', state.alt.slice(0, 40) + '…');
 expect(state.chips.some((c) => c === '#Music') && state.chips.some((c) => c === '#Soundtrack'),

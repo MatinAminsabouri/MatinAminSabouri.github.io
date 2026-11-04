@@ -36,6 +36,9 @@
       '" aria-hidden="true" focusable="false"><use href="#i-' + name + '"></use></svg>';
   };
 
+  /* the Telegram channel the notes are synced from */
+  const CHANNEL_URL = 'https://t.me/KhanAcademyy';
+
   const chipRow = function (tags) {
     return '<ul class="tag-row">' +
       tags.map(function (t) { return '<li><span class="chip">' + esc(t) + '</span></li>'; }).join('') +
@@ -429,14 +432,30 @@
   };
 
   const renderNoteCard = function (item, lang, t) {
+    /* X-timeline row: avatar column, then head (name @handle · time ·
+       reading), body, media, tags, action row. The whole card still opens
+       the post popup; the head links and action row navigate for real. */
     const dateHtml = item.date
-      ? '<time datetime="' + item.date.toISOString() + '">' + esc(formatNoteDate(item.date, lang)) + '</time>' +
-        '<span class="dot" aria-hidden="true"></span>'
+      ? '<span class="dot" aria-hidden="true"></span>' +
+        '<time datetime="' + item.date.toISOString() + '">' + esc(formatNoteDate(item.date, lang)) + '</time>'
       : '';
 
     const reading = lang === 'fa'
       ? 'مطالعهٔ ' + persianDigits(item.reading) + ' دقیقه‌ای'
       : item.reading + ' min read';
+
+    /* a one-line reaction or a photo meme has no meaningful reading time */
+    const readingHtml = String(item.text || '').length > 200
+      ? '<span class="dot" aria-hidden="true"></span><span>' + esc(reading) + '</span>'
+      : '';
+
+    const head =
+      '<div class="logs-meta">' +
+        '<span class="post-name">' + esc(t.logs_author) + '</span>' +
+        '<a class="post-handle" href="' + esc(CHANNEL_URL) + '" target="_blank" rel="noopener noreferrer" lang="en" dir="ltr">@KhanAcademyy</a>' +
+        dateHtml +
+        readingHtml +
+      '</div>';
 
     /* a note whose body is nothing but its title has no excerpt left to show */
     const excerptHtml = item.excerpt
@@ -460,31 +479,37 @@
       '</div>'
       : '';
 
-    /* a one-line reaction or a photo meme has no meaningful reading time */
-    const readingHtml = String(item.text || '').length > 200
-      ? '<span>' + esc(reading) + '</span>'
-      : '';
+    /* action row: reply opens the post on Telegram, share hands it to
+       Telegram's native share sheet with the title prefilled */
+    const shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(item.url) +
+      '&text=' + encodeURIComponent(item.title || '');
+
+    const actionsHtml =
+      '<div class="post-actions">' +
+        '<a class="post-action" href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer"' +
+          ' aria-label="' + esc(t.logs_reply) + '" title="' + esc(t.logs_reply) + '">' +
+          icon('chatbubble-ellipses-outline') +
+        '</a>' +
+        '<a class="post-action" href="' + esc(shareUrl) + '" target="_blank" rel="noopener noreferrer"' +
+          ' aria-label="' + esc(t.logs_share) + '" title="' + esc(t.logs_share) + '">' +
+          icon('arrow-redo-outline') +
+        '</a>' +
+      '</div>';
 
     return '<article class="logs-card" data-post-id="' + esc(item.id != null ? item.id : '') + '" tabindex="0" role="button" aria-haspopup="dialog">' +
-      '<div class="logs-meta">' +
-        dateHtml +
-        readingHtml +
-        '<a class="logs-badge" href="' + esc(item.badgeUrl || item.url) + '" target="_blank" rel="noopener noreferrer" lang="en">t.me/KhanAcademyy</a>' +
-      '</div>' +
-      /* notes are Persian source text regardless of the UI language */
-      '<h4 class="logs-title" dir="auto" lang="' + esc(item.lang) + '">' + esc(item.title) + '</h4>' +
-      excerptHtml +
-      photoHtml +
-      '<ul class="tag-row">' +
-        item.tags.map(function (tag) {
-          return '<li><span class="chip" dir="ltr" lang="en">#' + esc(tag) + '</span></li>';
-        }).join('') +
-      '</ul>' +
-      '<div class="logs-card-actions">' +
-        '<a class="btn btn--ghost" href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer">' +
-          '<span>' + esc(t.logs_read) + '</span>' +
-          icon('arrow-forward-outline', 'btn-arrow') +
-        '</a>' +
+      '<div class="post-avatar" aria-hidden="true"><img src="./assets/images/myPic.jpg" alt="" loading="lazy"></div>' +
+      '<div class="post-main">' +
+        head +
+        /* notes are Persian source text regardless of the UI language */
+        '<h4 class="logs-title" dir="auto" lang="' + esc(item.lang) + '">' + esc(item.title) + '</h4>' +
+        excerptHtml +
+        photoHtml +
+        '<ul class="tag-row">' +
+          item.tags.map(function (tag) {
+            return '<li><span class="chip" dir="ltr" lang="en">#' + esc(tag) + '</span></li>';
+          }).join('') +
+        '</ul>' +
+        actionsHtml +
       '</div>' +
     '</article>';
   };
