@@ -104,17 +104,11 @@
 
   const renderContacts = function (data, lang, t) {
     return data.profile.contacts.map(function (c) {
+      const isExternal = c.href && c.href.startsWith('http');
+      const targetAttr = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
       const valueHtml = c.href
-        ? '<a href="' + esc(c.href) + '" class="contact-link">' + esc(c.text) + '</a>'
+        ? '<a href="' + esc(c.href) + '"' + targetAttr + ' class="contact-link">' + esc(c.text) + '</a>'
         : '<address>' + esc(L(c.address, lang)) + '</address>';
-
-      const copyHtml = c.copy
-        ? '<button class="copy-btn" type="button" data-copy="' + esc(c.copy) + '" aria-label="' + esc(t.a_copy_email) + '">' +
-            icon('copy-outline', 'copy-ic') +
-            icon('checkmark-outline', 'check-ic') +
-            '<span class="copy-tooltip" aria-hidden="true">' + esc(t.copy_done) + '</span>' +
-          '</button>'
-        : '';
 
       return '<li class="contact-item">' +
         '<div class="icon-box">' + icon(c.icon) + '</div>' +
@@ -122,7 +116,6 @@
           '<p class="contact-title">' + esc(L(c.label, lang)) + '</p>' +
           valueHtml +
         '</div>' +
-        copyHtml +
         '</li>';
     }).join('');
   };
@@ -130,7 +123,7 @@
   const renderSocials = function (data, lang) {
     return data.profile.socials.map(function (s) {
       return '<li class="social-item">' +
-        '<a href="' + esc(s.href) + '" class="social-link" aria-label="' + esc(L(s.label, lang)) + '" rel="me">' +
+        '<a href="' + esc(s.href) + '" class="social-link" aria-label="' + esc(L(s.label, lang)) + '" target="_blank" rel="noopener noreferrer me">' +
           icon(s.icon) +
         '</a>' +
         '</li>';
@@ -143,7 +136,7 @@
 
   const renderAbout = function (data, lang, t) {
     const a = data.about;
-    const email = (data.profile.contacts.find(function (c) { return c.copy; }) || {}).href || "mailto:";
+    const email = (data.profile.contacts.find(function (c) { return c.href && c.href.startsWith('mailto:'); }) || {}).href || "mailto:matinaminsabouri70@gmail.com";
 
     return '<section class="about-text">' +
         a.bio.map(function (b) { return '<p>' + L(b, lang) + '</p>'; }).join('') +

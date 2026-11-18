@@ -149,23 +149,28 @@ window.SITE_DATA = {
 
     contacts: [
       {
+        icon: "mail-outline",
+        label: { en: "Email", fa: "ایمیل" },
+        href: "mailto:matinaminsabouri70@gmail.com",
+        text: "matinaminsabouri70@gmail.com"
+      },
+      {
+        icon: "paper-plane-outline",
+        label: { en: "Telegram", fa: "تلگرام" },
+        href: "https://t.me/KhanAcademyy",
+        text: "@KhanAcademyy"
+      },
+      {
         icon: "logo-github",
         label: { en: "GitHub", fa: "گیت‌هاب" },
         href: "https://github.com/MatinAminsabouri",
         text: "matinaminsabouri"
       },
       {
-        icon: "mail-outline",
-        label: { en: "Email", fa: "ایمیل" },
-        href: "mailto:matinaminsabouri70@gmail.com",
-        text: "matinaminsabouri70@gmail.com",
-        copy: "matinaminsabouri70@gmail.com"
-      },
-      {
         icon: "logo-linkedin",
         label: { en: "LinkedIn", fa: "لینکدین" },
         href: "https://www.linkedin.com/in/matin-amin-sabouri-b0a6b2200/",
-        text: "linkedin.com/in/matin-amin-sabouri"
+        text: "matin-amin-sabouri"
       },
       {
         icon: "location-outline",
@@ -184,6 +189,11 @@ window.SITE_DATA = {
         icon: "logo-linkedin",
         href: "https://www.linkedin.com/in/matin-amin-sabouri-b0a6b2200/",
         label: { en: "LinkedIn profile", fa: "پروفایل لینکدین" }
+      },
+      {
+        icon: "paper-plane-outline",
+        href: "https://t.me/KhanAcademyy",
+        label: { en: "Telegram channel", fa: "کانال تلگرام" }
       }
     ]
 

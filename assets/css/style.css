@@ -418,31 +418,52 @@ article.active {
   outline-offset: 4px;
 }
 
+.avatar-box {
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.45), rgba(99, 102, 241, 0.35), rgba(255, 255, 255, 0.12));
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.5);
+  margin-bottom: var(--sp-2);
+  transition: transform var(--dur-2), box-shadow var(--dur-2);
+}
+
+.avatar-box:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 28px -4px rgba(34, 211, 238, 0.25);
+}
+
 .avatar-box img {
   width: 96px;
   height: 96px;
   object-fit: cover;
   border-radius: 50%;
-  border: 3px solid var(--bg-1);
+  display: block;
+  border: 2px solid var(--bg-1);
 }
 
 .info-content { width: 100%; min-width: 0; }
 
 .info-content .name {
-  font-size: clamp(1.5rem, 1.3rem + 0.6vw, 1.75rem);
-  line-height: 1.2;
+  font-size: clamp(1.35rem, 1.2rem + 0.5vw, 1.6rem);
+  font-weight: 700;
+  line-height: 1.25;
   letter-spacing: -0.02em;
+  color: var(--text-1);
 }
 
 .persian-name {
   font-family: 'Vazirmatn', var(--ff-mono);
-  font-size: var(--fs-chip);
+  font-size: 0.9375rem;
+  font-weight: 500;
   color: var(--text-3);
-  margin-top: 2px;
+  margin-top: 3px;
+  margin-bottom: var(--sp-2);
 }
 
 .info-content .title {
-  margin-top: var(--sp-2);
+  margin-top: 2px;
   margin-inline: auto;
   width: fit-content;
   background: linear-gradient(90deg, var(--accent-1), var(--accent-3));
@@ -451,6 +472,7 @@ article.active {
   color: transparent;
   font-weight: 600;
   font-size: var(--fs-small);
+  letter-spacing: -0.01em;
 }
 
 /* open-to-work status */
@@ -458,12 +480,12 @@ article.active {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
-  margin: 6px auto;
+  gap: 7px;
+  margin: 6px auto var(--sp-2);
   padding: 4px 12px;
   border-radius: 999px;
-  background: rgba(34, 211, 238, 0.08);
-  border: 1px solid rgba(34, 211, 238, 0.2);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.22);
 }
 
 /* status dot: "busy building" reads as an activity indicator, not an
@@ -472,15 +494,15 @@ article.active {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--accent-1);
-  box-shadow: 0 0 10px rgba(34, 211, 238, 0.55);
+  background: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
   animation: pulse 2.4s var(--ease-out) infinite;
 }
 
 .status-text {
   font-family: var(--ff-mono);
-  font-size: var(--fs-chip);
-  color: var(--accent-1);
+  font-size: 0.72rem;
+  color: #34d399;
   text-align: center;
   line-height: 1;
   font-weight: 500;
@@ -490,12 +512,12 @@ article.active {
 .positioning {
   width: 100%;
   max-width: 100%;
-  font-size: 0.85rem;
-  line-height: 1.5;
+  font-size: 0.8125rem;
+  line-height: 1.55;
   text-align: center;
   color: var(--text-2);
   margin-top: var(--sp-2);
-  padding: 0 8px;
+  padding: 0 4px;
 }
 
 /* mobile "show contacts" toggle */
@@ -548,44 +570,49 @@ article.active {
 
 .separator {
   height: 1px;
-  background: var(--line-1);
-  margin: var(--sp-4) 0;
+  background: linear-gradient(90deg, transparent, var(--line-1) 20%, var(--line-1) 80%, transparent);
+  margin: var(--sp-3) 0;
 }
 
 /* contacts */
 .contacts-list {
   display: grid;
-  gap: var(--sp-2);
+  gap: 6px;
 }
 
 .contact-item {
   display: flex;
   align-items: center;
-  gap: var(--sp-2);
-  padding: 6px var(--sp-2);
+  gap: var(--sp-3);
+  padding: 6px 8px;
   border-radius: var(--radius-md);
-  transition: background var(--dur-1);
+  border: 1px solid transparent;
+  transition: background var(--dur-1), border-color var(--dur-1);
 }
 
-.contact-item:hover { background: var(--bg-2); }
+.contact-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.05);
+}
 
 .icon-box {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--bg-2);
   border: 1px solid var(--line-1);
   color: var(--accent-1);
-  font-size: 16px;
-  transition: border-color var(--dur-1), color var(--dur-1), box-shadow var(--dur-2);
+  font-size: 18px;
+  transition: border-color var(--dur-1), color var(--dur-1), box-shadow var(--dur-2), background var(--dur-1);
 }
 
 .contact-item:hover .icon-box {
-  border-color: rgba(34, 211, 238, 0.35);
+  background: rgba(34, 211, 238, 0.08);
+  border-color: rgba(34, 211, 238, 0.4);
   box-shadow: 0 0 12px rgba(34, 211, 238, 0.2);
 }
 
@@ -598,10 +625,12 @@ article.active {
   text-transform: uppercase;
   color: var(--text-3);
   margin-bottom: 2px;
+  line-height: 1.2;
 }
 
 .contact-info :is(.contact-link, address) {
   font-size: 0.8125rem;
+  font-weight: 500;
   color: var(--text-2);
   display: block;
   overflow: hidden;
@@ -612,81 +641,36 @@ article.active {
 
 .contact-info .contact-link:hover { color: var(--accent-1); }
 
-/* copy-to-clipboard micro-interaction */
-.copy-btn {
-  position: relative;
-  flex-shrink: 0;
-  width: 30px;
-  height: 30px;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--line-1);
-  color: var(--text-3);
-  font-size: 14px;
-  transition: color var(--dur-1), border-color var(--dur-1), box-shadow var(--dur-1);
-}
-
-.copy-btn:hover {
-  color: var(--accent-1);
-  border-color: rgba(34, 211, 238, 0.35);
-}
-
-.copy-btn .check-ic { display: none; }
-
-.copy-btn.copied {
-  color: var(--ok);
-  border-color: rgba(52, 211, 153, 0.4);
-}
-
-.copy-btn.copied .copy-ic { display: none; }
-.copy-btn.copied .check-ic { display: block; }
-
-.copy-tooltip {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  inset-inline-end: 0;
-  font-family: var(--ff-mono);
-  font-size: 0.625rem;
-  background: var(--bg-3);
-  color: var(--text-1);
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--line-2);
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity var(--dur-1), transform var(--dur-1);
-  pointer-events: none;
-  white-space: nowrap;
-}
-
-.copy-btn.copied .copy-tooltip { opacity: 1; transform: none; }
-
 /* socials */
 .social-list {
   display: flex;
+  justify-content: center;
+  align-items: center;
   gap: var(--sp-3);
+  padding: 4px 0;
 }
 
 .social-item { display: flex; }
 
 .social-link {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--line-2);
+  background: var(--bg-2);
+  border: 1px solid var(--line-1);
   color: var(--text-2);
-  font-size: 18px;
-  transition: color var(--dur-1), border-color var(--dur-1), box-shadow var(--dur-1), transform var(--dur-1);
+  font-size: 17px;
+  transition: color var(--dur-1), border-color var(--dur-1), box-shadow var(--dur-1), transform var(--dur-1), background var(--dur-1);
 }
 
 .social-link:hover {
   color: var(--accent-1);
-  border-color: rgba(34, 211, 238, 0.4);
+  border-color: rgba(34, 211, 238, 0.45);
+  background: rgba(34, 211, 238, 0.08);
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.2);
   transform: translateY(-2px);
 }
 
@@ -1651,14 +1635,6 @@ article.active {
 
   .stat-label { text-wrap: balance; }
 
-  /* keep the copy button on the contact row (aligned with the text column)
-     instead of letting it float on a detached row below the text */
-  .contact-item { align-items: center; }
-
-  .contact-info { flex: 1 1 auto; min-width: 0; }
-
-  .copy-btn { flex: none; margin-inline-start: auto; }
-
   /* cards breathe less on phones — 32px padding eats a 360px screen */
   .project-card { padding: var(--sp-4); }
 
@@ -1910,6 +1886,36 @@ article.active {
   color: #0F172A;
 }
 
+[data-theme="light"] .contact-item:hover {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .icon-box {
+  background: #FFFFFF;
+  border-color: var(--line-2);
+  color: var(--accent-1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .contact-item:hover .icon-box {
+  background: #F0FDFA;
+  border-color: var(--accent-1);
+}
+
+[data-theme="light"] .social-link {
+  background: #FFFFFF;
+  border-color: var(--line-2);
+  color: var(--text-2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .social-link:hover {
+  background: #F0FDFA;
+  border-color: var(--accent-1);
+  color: var(--accent-1);
+}
+
 /*-----------------------------------*\
   #14 RTL & PERSIAN TYPOGRAPHY
 \*-----------------------------------*/
@@ -1920,16 +1926,18 @@ html[lang="fa"] {
 }
 
 html[lang="fa"] .persian-name {
-  font-size: 1.15rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: var(--text-1);
-  margin-top: 4px;
+  margin-top: 0;
+  margin-bottom: 2px;
 }
 
 html[lang="fa"] .info-content .name {
-  font-size: 1.15rem;
+  font-size: 0.95rem;
   font-weight: 500;
-  color: var(--text-2);
+  color: var(--text-3);
+  margin-bottom: var(--sp-2);
 }
 
 /* code tokens, chips and the pipeline stay JetBrains Mono in both languages */
@@ -1956,10 +1964,6 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
   direction: ltr;
   unicode-bidi: isolate;
   display: inline-block;
-}
-
-[dir="rtl"] .copy-btn {
-  margin-inline-start: auto;
 }
 
 /* directional arrows flip in RTL */
