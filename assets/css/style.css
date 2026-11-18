@@ -229,9 +229,9 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(52rem 32rem at 12% -8%, rgba(34, 211, 238, 0.10), transparent 60%),
-    radial-gradient(44rem 30rem at 88% 4%, rgba(99, 102, 241, 0.10), transparent 60%),
-    radial-gradient(40rem 34rem at 50% 110%, rgba(52, 211, 153, 0.06), transparent 60%);
+    radial-gradient(56rem 36rem at 10% -10%, rgba(34, 211, 238, 0.12), transparent 60%),
+    radial-gradient(48rem 32rem at 90% 0%, rgba(99, 102, 241, 0.14), transparent 60%),
+    radial-gradient(42rem 36rem at 50% 105%, rgba(52, 211, 153, 0.07), transparent 60%);
 }
 
 ::selection {
@@ -278,12 +278,12 @@ main {
 /* shared panel surface */
 .sidebar, article {
   background: var(--glass-bg);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
   border: 1px solid var(--glass-brd);
   border-radius: var(--radius-xl);
   padding: var(--sp-5);
-  box-shadow: 0 24px 48px -24px rgba(2, 6, 23, 0.7);
+  box-shadow: 0 24px 48px -20px rgba(2, 6, 23, 0.75), 0 0 0 1px var(--line-1);
 }
 
 @supports not (backdrop-filter: blur(1px)) {
@@ -311,13 +311,13 @@ article.active {
   width: max-content;
   max-width: calc(100% - 2rem);
   background: var(--nav-bg);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid var(--glass-brd);
   border-radius: 999px;
-  padding: var(--sp-2);
-  padding-bottom: calc(var(--sp-2) + env(safe-area-inset-bottom, 0px));
-  box-shadow: 0 16px 40px -16px rgba(2, 6, 23, 0.8);
+  padding: 6px var(--sp-2);
+  padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 20px 48px -12px rgba(2, 6, 23, 0.8), 0 0 0 1px var(--line-1);
 }
 
 .navbar-list {
@@ -328,7 +328,7 @@ article.active {
 .navbar-link {
   position: relative;
   display: block;
-  padding: 10px 18px;
+  padding: 8px 18px;
   border-radius: 999px;
   font-size: 0.875rem;
   font-weight: 500;
@@ -336,14 +336,14 @@ article.active {
   /* Persian labels are longer than their English counterparts — wrapping
      would make the bottom pill grow and overlap the page */
   white-space: nowrap;
-  transition: color var(--dur-1), background var(--dur-1);
+  transition: color var(--dur-1), background var(--dur-2), transform var(--dur-1);
 }
 
 .navbar-link::after {
   content: "";
   position: absolute;
   inset-inline: 18px;
-  bottom: 4px;
+  bottom: 3px;
   height: 2px;
   border-radius: 2px;
   background: var(--grad-accent);
@@ -354,8 +354,12 @@ article.active {
 
 .navbar-link:hover { color: var(--text-1); }
 
-.navbar-link.active { color: var(--text-1); }
-.navbar-link.active::after { transform: scaleX(1); }
+.navbar-link.active {
+  color: var(--text-1);
+  background: rgba(34, 211, 238, 0.12);
+  font-weight: 600;
+}
+.navbar-link.active::after { transform: scaleX(0.85); }
 
 /* article headers */
 .article-title {
@@ -455,26 +459,31 @@ article.active {
   justify-content: center;
   align-items: center;
   gap: 8px;
-  margin: 8px auto;
+  margin: 6px auto;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.08);
+  border: 1px solid rgba(34, 211, 238, 0.2);
 }
 
 /* status dot: "busy building" reads as an activity indicator, not an
    availability beacon — a pulsing green dot would say "open to work" */
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--accent-1);
-  box-shadow: 0 0 10px rgba(34, 211, 238, 0.45);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.55);
   animation: pulse 2.4s var(--ease-out) infinite;
 }
 
 .status-text {
   font-family: var(--ff-mono);
   font-size: var(--fs-chip);
-  color: var(--accent-2);
+  color: var(--accent-1);
   text-align: center;
   line-height: 1;
+  font-weight: 500;
 }
 
 /* engineering positioning statement */
@@ -529,10 +538,8 @@ article.active {
 .sidebar.active .sidebar-info_more { grid-template-rows: 1fr; }
 
 /* A collapsed accordion must also leave the tab order — otherwise keyboard
-   users tab into invisible contact links on mobile. Scoped below 1024px on
-   purpose: the desktop layout always shows this block, and a `:not(.active)`
-   selector outranks the desktop override by specificity. */
-@media (max-width: 1023px) {
+   users tab into invisible contact links on mobile. */
+@media (max-width: 991px) {
   .sidebar:not(.active) .sidebar-info_more-inner {
     visibility: hidden;
     transition: visibility 0s linear var(--dur-3);
@@ -542,7 +549,7 @@ article.active {
 .separator {
   height: 1px;
   background: var(--line-1);
-  margin: var(--sp-5) 0;
+  margin: var(--sp-4) 0;
 }
 
 /* contacts */
@@ -554,8 +561,8 @@ article.active {
 .contact-item {
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
-  padding: var(--sp-2);
+  gap: var(--sp-2);
+  padding: 6px var(--sp-2);
   border-radius: var(--radius-md);
   transition: background var(--dur-1);
 }
@@ -564,8 +571,8 @@ article.active {
 
 .icon-box {
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -573,17 +580,20 @@ article.active {
   background: var(--bg-2);
   border: 1px solid var(--line-1);
   color: var(--accent-1);
-  font-size: 18px;
-  transition: border-color var(--dur-1), color var(--dur-1);
+  font-size: 16px;
+  transition: border-color var(--dur-1), color var(--dur-1), box-shadow var(--dur-2);
 }
 
-.contact-item:hover .icon-box { border-color: rgba(34, 211, 238, 0.35); }
+.contact-item:hover .icon-box {
+  border-color: rgba(34, 211, 238, 0.35);
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.2);
+}
 
 .contact-info { flex: 1; min-width: 0; }
 
 .contact-title {
   font-family: var(--ff-mono);
-  font-size: 0.6875rem;
+  font-size: 0.65rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-3);
@@ -591,9 +601,12 @@ article.active {
 }
 
 .contact-info :is(.contact-link, address) {
-  font-size: var(--fs-small);
+  font-size: 0.8125rem;
   color: var(--text-2);
-  overflow-wrap: anywhere;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   transition: color var(--dur-1);
 }
 
@@ -603,15 +616,15 @@ article.active {
 .copy-btn {
   position: relative;
   flex-shrink: 0;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--line-1);
   color: var(--text-3);
-  font-size: 15px;
+  font-size: 14px;
   transition: color var(--dur-1), border-color var(--dur-1), box-shadow var(--dur-1);
 }
 
@@ -712,32 +725,49 @@ article.active {
 }
 
 .stat {
+  position: relative;
+  overflow: hidden;
   background: var(--bg-2);
   border: 1px solid var(--line-1);
   border-radius: var(--radius-md);
-  padding: var(--sp-3) var(--sp-2);
+  padding: var(--sp-4) var(--sp-2);
   text-align: center;
-  transition: border-color var(--dur-1), transform var(--dur-2) var(--ease-out);
+  transition: border-color var(--dur-2), transform var(--dur-2) var(--ease-out), box-shadow var(--dur-2);
+}
+
+.stat::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.12), transparent 70%);
+  opacity: 0;
+  transition: opacity var(--dur-2);
 }
 
 .stat:hover {
-  border-color: rgba(34, 211, 238, 0.3);
-  transform: translateY(-2px);
+  border-color: rgba(34, 211, 238, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px -10px rgba(34, 211, 238, 0.25);
 }
+
+.stat:hover::before { opacity: 1; }
 
 .stat-value {
   display: block;
   font-family: var(--ff-mono);
-  font-size: 1.15rem;
-  font-weight: 500;
-  color: var(--accent-1);
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .stat-label {
   display: block;
   font-size: var(--fs-chip);
   color: var(--text-3);
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 /* services */
@@ -780,7 +810,8 @@ article.active {
 
 .service-item:hover {
   transform: translateY(-3px);
-  border-color: rgba(34, 211, 238, 0.3);
+  border-color: rgba(34, 211, 238, 0.4);
+  box-shadow: 0 16px 36px -12px rgba(2, 6, 23, 0.9), 0 0 20px -6px rgba(34, 211, 238, 0.15);
 }
 
 .service-item:hover::before { opacity: 1; }
@@ -797,6 +828,14 @@ article.active {
   border: 1px solid var(--line-1);
   color: var(--accent-1);
   font-size: 22px;
+  transition: border-color var(--dur-2), color var(--dur-2), box-shadow var(--dur-2), transform var(--dur-2) var(--ease-out);
+}
+
+.service-item:hover .service-icon-box {
+  border-color: var(--accent-1);
+  color: var(--accent-1);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.35);
+  transform: scale(1.05);
 }
 
 .service-item-title {
@@ -928,6 +967,7 @@ article.active {
   margin-bottom: var(--sp-1);
 }
 
+.timeline-period,
 .timeline-list > li > span {
   display: inline-block;
   font-family: var(--ff-mono);
@@ -1110,7 +1150,7 @@ article.active {
   display: grid;
   grid-template-columns: 1fr;   /* one standard column — no ragged pairs */
   gap: var(--sp-4);
-  max-width: 720px;             /* aligns with the Notes feed */
+  max-width: 820px;
   margin-inline: auto;
 }
 
@@ -1134,17 +1174,15 @@ article.active {
 }
 
 .project-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(34, 211, 238, 0.3);
-  box-shadow: 0 16px 40px -16px rgba(2, 6, 23, 0.8);
+  transform: translateY(-4px);
+  border-color: rgba(34, 211, 238, 0.4);
+  box-shadow: 0 20px 48px -16px rgba(2, 6, 23, 0.9), 0 0 24px -8px rgba(34, 211, 238, 0.15);
 }
 
 .project-card--featured {
   position: relative;
-  border-color: rgba(34, 211, 238, 0.28);
-  /* a corner glow anchored to the top edge and fading to transparent — the
-     old linear wash ended mid-card with a near-solid stop and read as a
-     stain. Centered horizontally so it never leans in RTL */
+  border-color: rgba(34, 211, 238, 0.35);
+  /* a corner glow anchored to the top edge and fading to transparent */
   background:
     radial-gradient(120% 80% at 50% 0%, var(--featured-tint), transparent 60%),
     var(--glass-bg);
@@ -1158,7 +1196,8 @@ article.active {
   inset-inline: 14px;
   height: 2px;
   border-radius: 999px;
-  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.6), transparent);
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.8), transparent);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
 }
 
 .project-card-head {
@@ -1415,8 +1454,8 @@ article.active {
     flex-wrap: wrap;
     gap: var(--sp-2);
     margin-bottom: var(--sp-5);
-    /* align the chips with the single-column card stack */
-    max-width: 720px;
+    /* align the chips with the card stack */
+    max-width: 820px;
     margin-inline: auto;
   }
 
@@ -1466,14 +1505,10 @@ article.active {
 
 }
 
-/* 640px – 1024px — tablets
-   Below the 1024px split the profile card goes full-width and ~500px tall, so
-   everything the visitor came for sits below the fold. Lay the identity out as
-   a compact horizontal band instead: avatar on one side, details on the other.
-   This block sits ABOVE the desktop split on purpose: the range ends at 1024
-   (not 1023) so no width falls between the two, and at 1024 the desktop query
-   below re-declares every property this block sets. */
-@media (min-width: 640px) and (max-width: 1024px) {
+/* 640px – 991px — tablets
+   Below the desktop split the profile card goes full-width and lays the
+   identity out as a compact horizontal band: avatar on one side, details on the other. */
+@media (min-width: 640px) and (max-width: 991px) {
 
   .sidebar { padding: var(--sp-4) var(--sp-5); }
 
@@ -1483,8 +1518,6 @@ article.active {
     grid-template-areas:
       "avatar info"
       "avatar controls";
-    /* start, so the avatar sits level with the name instead of being
-       centred down the tall identity block */
     align-items: start;
     column-gap: var(--sp-5);
     row-gap: var(--sp-2);
@@ -1498,9 +1531,7 @@ article.active {
 
   .info-content .title { margin-inline: 0; }
 
-  /* the name above is LTR, so line the Persian name up under it rather than
-     letting its own dir="rtl" push it to the far edge */
-  .persian-name { text-align: end; }
+  .persian-name { text-align: start; }
 
   .status-row { justify-content: flex-start; }
 
@@ -1516,51 +1547,55 @@ article.active {
 
 }
 
-/* >= 1024px — desktop split */
-@media (min-width: 1024px) {
+/* >= 992px — desktop split */
+@media (min-width: 992px) {
 
   main {
     display: grid;
-    grid-template-columns: 320px minmax(0, 1fr);
+    grid-template-columns: 290px minmax(0, 1fr);
     gap: var(--sp-5);
     align-items: start;
     margin-bottom: var(--sp-7);
   }
 
+  @media (min-width: 1100px) {
+    main {
+      grid-template-columns: 310px minmax(0, 1fr);
+    }
+  }
+
   .sidebar {
     position: sticky;
     top: var(--sp-5);
-    padding: var(--sp-5);   /* undo the compact tablet band's tighter padding */
-    /* a short viewport must scroll the card, not clip its contacts;
-       sticky + no max-height silently hides everything below the fold */
-    max-height: calc(100vh - var(--sp-7));
+    padding: var(--sp-4) var(--sp-4);
+    max-height: calc(100vh - var(--sp-6));
     overflow-y: auto;
     overscroll-behavior: contain;
-    /* the sidebar is always taller than its max-height (the profile block
-       alone is ~1000px), so a permanent scrollbar track sat in the middle of
-       the screen. Scroll it, but don't advertise the track. */
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-3) transparent;
     margin-bottom: 0;
   }
 
-  .sidebar::-webkit-scrollbar { display: none; }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb {
+    background: var(--line-3);
+    border-radius: 4px;
+  }
 
   .sidebar-info {
-    /* the tablet band lays this block out as a grid; the split layout needs
-       the original flex column back */
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
   }
 
-  .avatar-box img { width: 120px; height: 120px; }
+  .avatar-box img { width: 104px; height: 104px; }
 
   .info-content .title { margin-inline: auto; }
 
   .persian-name { text-align: center; }
 
-  .positioning { padding: 0 8px; text-align: center; }
+  .positioning { padding: 0 4px; text-align: center; }
 
   .status-row { justify-content: center; }
 
@@ -1573,11 +1608,10 @@ article.active {
     transform: none;
     width: max-content;
     margin: 0 0 var(--sp-5) auto;
-    padding: var(--sp-2);
+    padding: 5px var(--sp-2);
   }
 
-  /* inside the nav pill the controls lose their own pill chrome —
-     one cohesive header unit instead of a floating island */
+  /* inside the nav pill the controls lose their own pill chrome */
   .navbar .controls {
     width: auto;
     margin: 0;
@@ -1587,25 +1621,20 @@ article.active {
     box-shadow: none;
   }
 
-}
-
-/* >= 1250px — wide desktop */
-@media (min-width: 1250px) {
-
-  .service-list { grid-template-columns: repeat(3, 1fr); }
-
-  .service-item { flex-direction: column; }
-
-  .service-icon-box { margin-bottom: var(--sp-2); }
+  /* balanced 2x2 grid for services on desktop */
+  .service-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--sp-4);
+  }
 
 }
 
-/* < 1024px — fixed bottom-nav clearance
-   (padding on <main> only: article panels are glass-surfaced and would
-    visibly stretch with inner padding; no !important needed — no competing rule) */
-@media (max-width: 1023px) {
+/* < 992px — fixed bottom-nav clearance */
+@media (max-width: 991px) {
 
   main { padding-bottom: 110px; }
+  html { scroll-padding-bottom: 100px; }
+  article { margin-bottom: var(--sp-4); }
 
 }
 
@@ -1777,6 +1806,110 @@ article.active {
   box-shadow: 0 0 10px rgba(14, 116, 144, 0.35);
 }
 
+[data-theme="light"] .filter-item button {
+  background: var(--bg-1);
+  border-color: var(--line-2);
+  color: var(--text-2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .filter-item button:hover {
+  background: var(--bg-2);
+  color: var(--text-1);
+  border-color: var(--accent-1);
+}
+
+[data-theme="light"] .filter-item button.active {
+  background: var(--grad-accent);
+  color: #FFFFFF;
+  border-color: transparent;
+  box-shadow: 0 4px 14px rgba(14, 116, 144, 0.28);
+}
+
+[data-theme="light"] .btn--ghost {
+  background: #FFFFFF;
+  border-color: var(--line-2);
+  color: var(--text-1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .btn--ghost:hover {
+  background: #F8FAFC;
+  border-color: var(--accent-1);
+  color: var(--accent-1);
+}
+
+[data-theme="light"] .navbar-link {
+  color: #475569;
+}
+
+[data-theme="light"] .navbar-link:hover {
+  color: #0F172A;
+}
+
+[data-theme="light"] .navbar-link.active {
+  color: var(--accent-1);
+  background: rgba(14, 116, 144, 0.10);
+  font-weight: 600;
+}
+
+[data-theme="light"] .chip {
+  background: #F1F5F9;
+  border-color: rgba(15, 23, 42, 0.10);
+  color: #334155;
+}
+
+[data-theme="light"] .chip:hover {
+  border-color: rgba(14, 116, 144, 0.35);
+  color: #0F172A;
+}
+
+[data-theme="light"] .stat {
+  background: #FFFFFF;
+  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .stat:hover {
+  border-color: rgba(14, 116, 144, 0.3);
+  box-shadow: 0 6px 16px -4px rgba(14, 116, 144, 0.12);
+}
+
+[data-theme="light"] .service-item {
+  background: #FFFFFF;
+  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 2px 10px -2px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .service-item:hover {
+  border-color: rgba(14, 116, 144, 0.25);
+  box-shadow: 0 8px 24px -6px rgba(14, 116, 144, 0.10);
+}
+
+[data-theme="light"] .project-card {
+  background: #FFFFFF;
+  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 2px 12px -2px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .project-card:hover {
+  border-color: rgba(14, 116, 144, 0.3);
+  box-shadow: 0 12px 30px -8px rgba(14, 116, 144, 0.12);
+}
+
+[data-theme="light"] .project-card--featured {
+  border-color: rgba(14, 116, 144, 0.35);
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(14, 116, 144, 0.06), transparent 60%),
+    #FFFFFF;
+}
+
+[data-theme="light"] .pipeline {
+  background: #F1F5F9;
+  border-color: rgba(15, 23, 42, 0.12);
+  color: #0F172A;
+}
+
 /*-----------------------------------*\
   #14 RTL & PERSIAN TYPOGRAPHY
 \*-----------------------------------*/
@@ -1784,6 +1917,19 @@ article.active {
 html[lang="fa"] {
   --ff-body: 'Vazirmatn', 'Inter', sans-serif;
   --ff-display: 'Vazirmatn', 'Space Grotesk', sans-serif;
+}
+
+html[lang="fa"] .persian-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-top: 4px;
+}
+
+html[lang="fa"] .info-content .name {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--text-2);
 }
 
 /* code tokens, chips and the pipeline stay JetBrains Mono in both languages */
@@ -1804,6 +1950,16 @@ html[lang="fa"] .pipeline { font-family: var(--ff-mono); }
                 .logs-status) {
   font-family: var(--ff-body);
   letter-spacing: 0;
+}
+
+[dir="rtl"] .timeline-period {
+  direction: ltr;
+  unicode-bidi: isolate;
+  display: inline-block;
+}
+
+[dir="rtl"] .copy-btn {
+  margin-inline-start: auto;
 }
 
 /* directional arrows flip in RTL */

@@ -207,7 +207,7 @@
     const eduItems = r.education.map(function (e) {
       return '<li class="timeline-item">' +
         '<h4 class="timeline-item-title">' + esc(L(e.title, lang)) + '</h4>' +
-        '<span>' + esc(e.period) + '</span>' +
+        '<span class="timeline-period"><bdi dir="ltr">' + esc(e.period) + '</bdi></span>' +
         '<p class="timeline-text">' + esc(L(e.desc, lang)) + '</p>' +
         '</li>';
     }).join('');
@@ -215,7 +215,7 @@
     const expItems = r.experience.map(function (e) {
       return '<li class="timeline-item">' +
         '<h4 class="timeline-item-title">' + esc(L(e.role, lang)) + '</h4>' +
-        '<span>' + esc(e.period) + '</span>' +
+        '<span class="timeline-period"><bdi dir="ltr">' + esc(e.period) + '</bdi></span>' +
         '<p class="timeline-company">' + esc(L(e.company, lang)) + '</p>' +
         e.bullets.map(function (b) { return '<p class="timeline-text">' + L(b, lang) + '</p>'; }).join('') +
         '</li>';

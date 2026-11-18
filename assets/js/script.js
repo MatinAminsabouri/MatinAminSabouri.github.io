@@ -362,7 +362,7 @@ if (sidebarBtn) {
 
 const controlsEl = document.querySelector(".controls");
 const sidebarInfoEl = document.querySelector(".sidebar-info");
-const desktopMQ = window.matchMedia("(min-width: 1024px)");
+const desktopMQ = window.matchMedia("(min-width: 992px)");
 
 const placeControls = function () {
   if (!controlsEl || !sidebarInfoEl) return;
